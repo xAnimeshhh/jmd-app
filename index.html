@@ -1,0 +1,2274 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JMD Traders Dashboard</title>
+<meta name="description" content="JMD Traders daily sales and expense dashboard">
+<meta name="theme-color" content="#850026">
+    <meta name="google-site-verification" content="pYjH7s-JS-5LATmPz4IbwXtk2s0l4PM9SEAXsUrAo24" />
+<!-- ✅ LOCAL LOGO -->
+<link rel="icon" href="assets/logo.webp">
+<link rel="apple-touch-icon" href="assets/logo.webp">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.json">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1"></script>
+	
+    <style>
+        :root { 
+    --bg: #1a0202; /* Wine match */
+    --card: #1a1b1f; 
+    --primary: #f1c40f; 
+    --secondary: #2ecc71; 
+    --error: #e74c3c; 
+    --info: #3498db; 
+    --text: #f5f6fa; 
+}
+
+body { 
+    font-family: 'Segoe UI', sans-serif; 
+    /* Ye background ab tere login page se match karega */
+    background: radial-gradient(circle at center, #4a0e0e 0%, #0d0d0d 100%);
+    background-attachment: fixed;
+    color: var(--text); 
+    margin: 0; 
+    padding: 15px; 
+}
+
+.app-container { max-width: 1200px; margin: auto; }
+
+.header { text-align: center; padding: 10px 0; border-bottom: 2px solid var(--primary); margin-bottom: 15px; }
+
+.header h1 { margin: 0; color: var(--primary); font-size: 1.3rem; letter-spacing: 1px; }
+
+.analytics-toggle { 
+    width: 100%; padding: 12px; background: #25262b; border: 1px solid #333; 
+    border-radius: 12px; color: var(--primary); font-weight: bold; 
+    cursor: pointer; margin-bottom: 10px; display: flex; 
+    justify-content: space-between; align-items: center; 
+}
+
+.analytics-content { display: none; margin-bottom: 20px; animation: slideDown 0.3s ease-out; }@keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+.filter-bar {
+    background: #1a1a1a;
+    padding: 15px;
+    border: 1px solid #444;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    display: flex;
+    gap: 12px;
+}
+/* Purana customDialog wala CSS hata sakte ho, ye naya toaster style hai */
+.confirm-toast {
+    position: fixed;
+    top: -100px; /* Shuruat mein screen ke upar chhupa rahega */
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1a1b1f;
+    border: 1px solid var(--error);
+    padding: 15px 20px;
+    border-radius: 12px;
+    z-index: 10000;
+    transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+/* Toastr Container - Slim & Professional Bar */
+#toastr {
+    position: fixed;
+    bottom: 15px; /* Thoda aur niche corner mein */
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 8px 14px; /* Padding kam kar di */
+    border-radius: 4px;
+    font-size: 0.85rem; /* Font size chhota kiya */
+    font-weight: 700;
+    z-index: 10000;
+    display: none;
+    width: auto; /* Jitna text utni width */
+    min-width: 200px; 
+    max-width: 85%; /* Mobile side edges se na chipke */
+    text-align: left;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    transition: opacity 0.3s ease;
+    border-left: 4px solid; /* Patli side patti */
+}
+
+/* Success - Slim Green */
+.toast-success {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+    border-left: 4px solid #28a745;
+}
+
+/* Error - Slim Red */
+.toast-error {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+    border-left: 4px solid #dc3545;
+}
+
+/* Info - Slim Blue */
+.toast-info {
+    background: #d1ecf1;
+    color: #0c5460;
+    border: 1px solid #bee5eb;
+    border-left: 4px solid #17a2b8;
+}
+.confirm-toast.show { top: 20px; } /* Jab 'show' class lagegi toh niche aayega */
+.btn-table-wp {
+    background-color: #25D366; /* WhatsApp Green */
+    border: none;
+    border-radius: 4px;
+    padding: 4px 8px;
+    cursor: pointer;
+    margin-left: 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-table-wp:hover {
+    background-color: #128C7E;
+    transform: scale(1.1);
+}
+/* Filter Bar Container */
+.filter-bar {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 15px;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.05); /* Subtle glass effect */
+    padding: 8px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Common style for Input and Select */
+.filter-bar input, .filter-bar select {
+    background: #121212;
+    color: #efefef;
+    border: 1px solid #333;
+    padding: 8px 10px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+/* Focus effect jab click karein */
+.filter-bar input:focus, .filter-bar select:focus {
+    border-color: #FFC107; /* Your brand gold color */
+    box-shadow: 0 0 5px rgba(255, 193, 7, 0.2);
+}
+
+.filter-bar input {
+    flex: 2;
+}
+
+.filter-bar select {
+    flex: 1;
+    cursor: pointer;
+}
+
+/* Small WhatsApp Button */
+.btn-report {
+    background: #25D366;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.1s active;
+}
+
+.btn-report:active {
+    transform: scale(0.95);
+}
+.row-actions {
+    display: flex;
+    gap: 5px;
+}
+.toast-btns { display: flex; gap: 10px; width: 100%; }
+.btn-yes { background: var(--error); color: white; flex: 1; padding: 8px; border-radius: 6px; border: none; font-weight: bold; }
+.btn-no { background: #333; color: white; flex: 1; padding: 8px; border-radius: 6px; border: none; }
+.filter-bar input, .filter-bar select {
+    background: #2d2d2d;
+    color: #fff;
+    border: 1px solid #ffd700; /* Yellow border match */
+    padding: 10px;
+    border-radius: 4px;
+    outline: none;
+}
+.btn-group {
+    display: flex; 
+    gap: 4px; /* Kam gap taaki zyada buttons fit hon */
+    flex-wrap: wrap; 
+    margin-bottom: 6px;
+	margin-top	 : 6px;
+}
+
+.btn-item {
+    padding: 2px 6px; /* Ekdum tight padding */
+    font-size: 10px; /* Chota font mobile ke liye */
+    border-radius: 4px; 
+    border: 1px solid #444; 
+    background: #2a2a2a; /* Dark theme se match karega */
+    color: #fff;
+    cursor: pointer;
+    font-weight: 600;
+    transition: 0.2s;
+}
+
+.btn-tag {
+    padding: 2px 6px; 
+    font-size: 9px; /* Tags ko aur chota rakha hai */
+    font-weight: 800; 
+    border-radius: 4px; 
+    border: none; 
+    background: #FFC107; /* JMD Gold for highlighting */
+    color: #000;
+    cursor: pointer;
+    text-transform: uppercase;
+}
+
+/* Hover/Active states for better feedback */
+.btn-item:active, .btn-tag:active {
+    transform: scale(0.9);
+    opacity: 0.8;
+}
+.btn-whatsapp {
+    background: #25D366;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+    flex-grow: 1;
+}
+/* GRID */
+.summary-grid { 
+    display: grid; 
+    grid-template-columns: repeat(2, 1fr); 
+    gap: 12px; 
+    margin-bottom: 15px; 
+}
+
+/* CARD */
+.summary-box { 
+    background: linear-gradient(145deg, #1e2025, #15171c);
+    padding: 14px 12px;
+    border-radius: 12px; 
+    border: 1px solid #2a2d33; 
+    text-align: center; 
+    box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+    transition: 0.2s;
+}
+
+.summary-box:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(0,0,0,0.6);
+}
+
+/* TITLE */
+.summary-box h4 { 
+    margin: 0 0 6px; 
+    font-size: 10px; 
+    color: #888; 
+    text-transform: uppercase; 
+    letter-spacing: 1px;
+}
+
+/* VALUE */
+.summary-box span { 
+    font-size: 18px; 
+    font-weight: 700; 
+}
+
+/* NET BAL ALIGN */
+.net-values {
+    display: flex;
+    justify-content: center;
+    align-items: baseline;
+    gap: 6px;
+}
+
+.net-values .divider {
+    color: #555;
+    font-size: 12px;
+}
+
+/* COMMON FOOTER */
+.card-footer {
+    margin-top: 8px;
+    padding-top: 6px;
+    border-top: 1px solid #2a2d33;
+    font-size: 10px;
+    color: #aaa;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+}
+
+/* FILTER STYLE */
+.filter-wrap {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.filter-wrap button {
+    background: #2a2d33;
+    border: none;
+    color: #fff;
+    padding: 2px 6px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.filter-wrap button:hover {
+    background: #444;
+}
+
+#dashMonthDisplay {
+    color: #ffd700;
+    font-weight: 600;
+}
+
+/* CHART */
+.chart-card { 
+    background: linear-gradient(145deg, #1e2025, #15171c);
+    padding: 12px; 
+    border-radius: 12px; 
+    border: 1px solid #2a2d33; 
+    margin-bottom: 10px; 
+}
+        .top-bar { margin-bottom: 15px; background: var(--card); padding: 12px; border-radius: 12px; display: flex; flex-direction: column; gap: 8px; border: 1px solid #333; }
+        input[type="date"] { background: #2c2c2c; border: 1px solid #444; color: white; padding: 10px; border-radius: 8px; font-size: 1rem; width: 100%; box-sizing: border-box; }
+        #dateAlert { color: var(--error); font-size: 0.8rem; font-weight: 900; display: none; text-align: center; background: rgba(231, 76, 60, 0.1); padding: 5px; border-radius: 4px; }
+
+        .shops-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px; }
+        .shop-card { background: var(--card); padding: 15px; border-radius: 12px; border-left: 4px solid var(--primary); }
+        .shop-card h3 { color: var(--primary); margin: 0 0 12px; font-size: 0.95rem; border-bottom: 1px solid #333; padding-bottom: 8px; }
+        .input-row { margin-bottom: 10px; }
+        .input-row label { display: block; font-size: 0.8rem; color: #bbb; margin-bottom: 3px; font-weight: 900;}
+        .input-row input { width: 100%; padding: 12px; background: #26272d; border: 1px solid #3d3e42; border-radius: 8px; color: white; box-sizing: border-box; font-weight: 900; font-size: 0.8rem; }
+        
+        .actions { margin: 20px 0; display: flex; flex-direction: column; }
+        .button-row { display: grid; grid-template-columns: 1fr 1fr; }
+        button { padding: 15px; border-radius: 10px; font-weight: 900; cursor: pointer; border: none; font-size: 0.85rem;}
+        .btn-save { background: var(--primary); color: #000; font-weight: 900; font-size: 0.8rem}
+        .btn-whatsapp { background: #25D366; color: white;font-weight: 900; font-size: 0.8rem }
+        .btn-sync { background: #333; color: white; font-weight: 900; font-size: 0.8rem}
+/* Buttons ko barabar size mein set karne ke liye */
+.button-row {
+    display: flex;
+    gap: 8px; /* Buttons ke beech ki jagah */
+    margin-bottom: 10px;
+}
+.btn-cancel:hover {
+    background-color: #800000 !important; /* Thoda aur gehra red */
+    box-shadow: 0px 4px 8px rgba(0,0,0,0.2);
+    transform: translateY(-1px);
+}
+.button-row button {
+    flex: 1; /* Saare buttons ko barabar width dega */
+    padding: 12px 5px;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+    border: none;
+}
+.filter-bar {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    background: #1e1e1e;
+    padding: 10px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+/* Modern Select Styling */
+.filter-bar select {
+    appearance: none; /* Default arrow hatao */
+    -webkit-appearance: none;
+    flex: 1;
+    background-color: #2a2a2a;
+    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23FFC107%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px top 50%;
+    background-size: 10px auto;
+    color: #fff;
+    border: 1px solid #444;
+    padding: 10px 35px 10px 15px; /* Right padding arrow ke liye */
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+/* Hover & Focus */
+.filter-bar select:hover {
+    border-color: #FFC107;
+    background-color: #333;
+}
+
+.filter-bar select:focus {
+    outline: none;
+    border-color: #FFC107;
+    box-shadow: 0 0 8px rgba(255, 193, 7, 0.3);
+}
+
+/* Search Box matching style */
+.filter-bar input {
+    flex: 2;
+    background: #2a2a2a;
+    border: 1px solid #444;
+    color: #fff;
+    padding: 10px 15px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    outline: none;
+}
+
+.filter-bar input:focus {
+    border-color: #FFC107;
+}
+/* Cancel button ka dark/grey look */
+.btn-cancel {
+    background-color: #800000 !important;
+    color: white !important;
+}
+/* Stepper Container Style */
+.month-stepper {
+    display: flex;
+    align-items: center;
+    background: #2a2a2a;
+    border: 1px solid #444;
+    border-radius: 20px; /* Thoda kam rounded for space */
+    padding: 0 4px;
+    gap: 4px;
+    flex: 1.5; /* Search ke mukable thoda chota */
+    min-width: 100px; /* Width kam ki taaki mobile par fit ho */
+    justify-content: space-between;
+    height: 36px; /* Size kam ki hai */
+}
+
+.stepper-btn {
+    background: none;
+    border: none;
+    color: #FFC107;
+    font-size: 1rem;
+    cursor: pointer;
+    padding: 4px 8px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+}
+
+.stepper-label {
+    color: #fff;
+    font-weight: 600;
+    font-size: 0.75rem; /* Font chota kiya taaki mobile par "Full History" ki jagah "Full" fit ho */
+    text-transform: uppercase;
+    text-align: center;
+    min-width: 35px;
+}
+
+.stepper-btn:active {
+    transform: scale(0.85);
+}
+/* PC View: Same grid */
+@media (min-width: 769px) {
+    .mobile-tab-wrapper { display: none; }
+    .shops-grid { display: grid !important; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .shop-card { display: block !important; }
+}
+
+/* Mobile View: Premium Non-Sticky Tabs */
+@media (max-width: 768px) {
+    .mobile-tab-wrapper {
+        display: flex;
+        justify-content: center;
+        padding: 15px 0;
+        top: 0;
+        z-index: 1000;
+        background: rgba(18, 18, 18, 0.8);
+        backdrop-filter: blur(10px);
+    }
+
+    .segmented-control {
+        display: flex;
+        position: relative;
+        width: 92%;
+        background: #252525;
+        padding: 5px;
+        border-radius: 14px;
+        border: 1px solid #333;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    }
+
+    .segmented-control input { display: none; }
+
+    .tab-item {
+        flex: 1;
+        text-align: center;
+        padding: 12px 0;
+        font-size: 0.85rem;
+        font-weight: 800;
+        color: #777;
+        cursor: pointer;
+        z-index: 2;
+        transition: color 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .tab-selection {
+        position: absolute;
+        width: calc(50% - 5px);
+        height: calc(100% - 10px);
+        background: #FFDE21;
+        border-radius: 10px;
+        top: 5px;
+        left: 5px;
+        transition: transform 0.35s cubic-bezier(0.65, 0, 0.35, 1);
+        z-index: 1;
+		box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+
+    /* Logic for Selection */
+    #tab-s1:checked ~ .tab-selection { transform: translateX(0); }
+    #tab-s2:checked ~ .tab-selection { transform: translateX(100%); }
+    #tab-s1:checked ~ label[for="tab-s1"], 
+    #tab-s2:checked ~ label[for="tab-s2"] { color: #000; }
+
+    .shop-card {
+        animation: slideUp 0.4s ease-out;
+    }
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.btn-cancel:hover {
+    background-color: #800000 !important;
+}
+        .history-card { background: var(--card); border-radius: 12px; overflow: hidden; border: 1px solid #333; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.8rem; min-width: 600px; font-weight: 900; }
+        th { text-align: left; padding: 12px; background: #25262b; color: var(--primary); }
+        td { padding: 12px; border-bottom: 1px solid #2a2b30; vertical-align: top; }
+        .btn-del { background: none; color: var(--error); border: 1px solid var(--error); padding: 4px 8px; border-radius: 4px; font-size: 0.65rem; }
+        
+        .app-footer { text-align: center; margin-top: 40px; padding: 20px 0; border-top: 1px solid #222; opacity: 0.8; }
+        .footer-text { font-style: italic; font-size: 0.8rem; color: #aaa; letter-spacing: 0.5px; font-weight: 900; }
+        .breakdown-box { font-size: 0.65rem; color: #888; margin-top: 5px; border-top: 1px solid #333; padding-top: 5px; line-height: 1.4; }
+
+        @media (max-width: 600px) { .actions { grid-template-columns: 1fr; } }
+#loginPage {
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        /* Background gradient with a subtle pulse */
+        background: radial-gradient(circle at center, #4a0e0e 0%, #1a0202 100%);
+        font-family: 'Segoe UI', sans-serif;
+        overflow: hidden;
+    }
+
+    .login-box {
+        background: rgba(43, 5, 5, 0.7);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        padding: 40px;
+        border-radius: 35px;
+        border: 1px solid rgba(241, 196, 15, 0.4); 
+        width: 100%;
+        max-width: 340px;
+        text-align: center;
+        box-shadow: 0 40px 80px rgba(0,0,0,0.8), 0 0 30px rgba(241, 196, 15, 0.15);
+        position: relative;
+        overflow: hidden; /* Shine ko box ke andar rakhne ke liye */
+    }
+
+    /* ✨ FIXED SHINE (Shaing) */
+    .login-box::after {
+        content: '';
+        position: absolute;
+        top: -150%; left: -150%; width: 300%; height: 300%;
+        background: linear-gradient(45deg, transparent, rgba(255, 215, 0, 0.08), transparent);
+        transform: rotate(45deg);
+        animation: shineFlow 6s infinite linear;
+        
+        /* 🛡️ CRITICAL FIX: Taaki ye clicks ko block na kare */
+        pointer-events: none; 
+        z-index: 10;
+    }
+
+    @keyframes shineFlow {
+        0% { transform: translate(-30%, -30%) rotate(45deg); }
+        100% { transform: translate(30%, 30%) rotate(45deg); }
+    }
+
+    /* Logo Container */
+    .logo-container {
+        width: 100px; height: 100px; margin: 0 auto 25px;
+        background: #4e0707; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        border: 2px solid #f1c40f; box-shadow: 0 0 25px rgba(241, 196, 15, 0.5);
+        overflow: hidden;
+        position: relative;
+        z-index: 20; /* Z-index high rakha hai taaki hamesha upar dikhe */
+    }
+
+    .logo-container img { width: 90%; height: 90%; object-fit: contain; }
+
+    .input-field {
+        width: 100%; padding: 15px; margin-bottom: 15px;
+        border-radius: 15px; border: 1px solid rgba(241, 196, 15, 0.2);
+        background: rgba(0, 0, 0, 0.5); color: white; outline: none; box-sizing: border-box;
+        position: relative; z-index: 20; /* Taaki click hamesha ho sake */
+        font-size: 16px;
+    }
+
+    #adminUser { text-transform: uppercase; letter-spacing: 2px; font-weight: bold; }
+
+    .pass-wrapper { position: relative; z-index: 20; }
+    .eye-btn { position: absolute; right: 15px; top: 15px; cursor: pointer; color: #f1c40f; opacity: 0.7; font-size: 18px; }
+
+    .login-btn {
+        width: 100%; padding: 16px;
+        background: linear-gradient(135deg, #f1c40f 0%, #b8860b 100%);
+        border: none; border-radius: 15px; font-weight: 900;
+        cursor: pointer; color: #2b0505; font-size: 16px; text-transform: uppercase;
+        position: relative; z-index: 25;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        transition: transform 0.2s;
+    }
+
+    .login-btn:active { transform: scale(0.97); }
+
+    /* Shake Effect for error */
+    @keyframes shakeEffect {
+        0%, 100% { transform: translateX(0); }
+        25% { transform: translateX(-10px); }
+        75% { transform: translateX(10px); }
+    }
+/* GRID */
+.summary-grid { 
+    display: grid; 
+    grid-template-columns: repeat(2, 1fr); 
+    gap: 12px; 
+}
+
+/* CARD */
+.summary-box { 
+    background: #1e2025;
+    padding: 14px;
+    border-radius: 14px; 
+    border: 1px solid #2c2f36;
+    text-align: center;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;  /* FIXED */
+}
+
+/* TITLE */
+.summary-box h4 { 
+    font-size: 11px;
+    color: #888;
+    margin-bottom: 6px;
+    letter-spacing: 1px;
+}
+
+/* MAIN VALUE (CONTROLLED) */
+.summary-box span { 
+    font-size: 17px;     /* ↓ reduce */
+    font-weight: 700;    /* ↓ less bold */
+}
+
+/* COLORS */
+#monSale { color: #fff; }
+#monNet { color: #ffd700; }
+#monCash { color: #00ff88; }
+#monBank { color: #00d9ff; }
+#monExp { color: #ff4d4d; }
+
+/* NET BALANCE */
+.net-values {
+    display: flex;
+    justify-content: center;
+    align-items: baseline;
+    gap: 6px;
+}
+
+/* divider */
+.divider {
+    color: #555;
+    font-size: 12px;
+}
+
+/* FOOTER BASE */
+.card-footer {
+    margin-top: 8px;
+    padding-top: 6px;
+    border-top: 1px solid #2a2d33;
+    font-size: 11px;
+    color: #aaa;
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* 🔥 FULL WIDTH ARROW MODE */
+.card-footer.spread {
+    justify-content: space-between;
+}
+
+/* FILTER BUTTON */
+.card-footer button {
+    background: #2a2d33;
+    border: none;
+    color: #fff;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 11px;
+}
+
+/* MONTH LABEL */
+#dashMonthDisplay {
+    color: #ffd700;
+    font-weight: 600;
+    font-size: 12px;
+}
+
+/* HOVER */
+.summary-box:hover {
+    transform: translateY(-2px);
+    transition: 0.2s;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.6);
+}
+.btn-table-wp {
+    background: #25D366;
+    border: none;
+    padding: 6px 8px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.app-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 70px;
+    background: var(--nav-bg);
+    display: flex;
+    align-items: center;
+    border-top: 1px solid #ddd;
+    box-shadow: 0 -4px 10px rgba(0,0,0,0.05);
+    z-index: 10000;
+}
+
+.nav-item {
+    flex: 1;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #555;
+    transition: 0.3s;
+}
+
+/* Pill Shape Logic */
+.icon-pill {
+    padding: 4px 20px;
+    border-radius: 20px;
+    margin-bottom: 4px;
+    transition: 0.3s;
+    font-size: 18px;
+}
+
+/* Active State - Page Change par automatically differentiate karega */
+.nav-item.active .icon-pill {
+    background: var(--pill-active);
+    color: var(--wine);
+}
+
+.nav-item.active span {
+    color: var(--wine);
+    font-weight: 800;
+}
+
+/* Loading Spinner Animation */
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+body { padding-bottom: 80px; }
+.logo-wrapper {
+    position: relative;
+    width: 150px; /* Size thoda bada kiya hai clear dikhne ke liye */
+    height: 150px;
+    margin-bottom: 20px;
+}
+
+.logo-base {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    opacity: 0.8; /* Grey waala thoda sa soft dikhega */
+}
+
+.logo-anim {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 2;
+    /* Niche se upar clipping ka logic */
+    clip-path: inset(100% 0 0 0); 
+    animation: customFill 2.5s ease-in-out infinite;
+}
+
+@keyframes customFill {
+    0% {
+        clip-path: inset(100% 0 0 0);
+    }
+    60% {
+        clip-path: inset(0% 0 0 0);
+    }
+    80% {
+        clip-path: inset(0% 0 0 0);
+        opacity: 1;
+    }
+    100% {
+        clip-path: inset(0% 0 0 0);
+        opacity: 0; /* Smooth fade out transition */
+    }
+}
+
+.loading-text {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 800;
+    font-size: 14px;
+    color: #800020; /* Wine Color */
+    letter-spacing: 1.5px;
+    text-align: center;
+    animation: textPulse 1.5s infinite;
+}
+
+@keyframes textPulse {
+    0%, 100% { opacity: 0.4; transform: scale(0.98); }
+    50% { opacity: 1; transform: scale(1); }
+}.app-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 60px; /* Pehle 70px tha, ab 60px hai */
+    background: #f8f9fa;
+    display: flex;
+    align-items: center;
+    border-top: 1px solid #ddd;
+    box-shadow: 0 -3px 8px rgba(0,0,0,0.05);
+    z-index: 10000;
+}
+
+.nav-item {
+    flex: 1;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #64748b;
+    transition: 0.3s;
+}
+
+.icon-pill {
+    padding: 2px 16px; /* Padding kam ki hai */
+    border-radius: 15px;
+    margin-bottom: 2px;
+    transition: 0.2s;
+    font-size: 16px; /* Icon size chhota kiya */
+}
+
+.nav-item span {
+    font-size: 9px; /* Font size chhota kiya */
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+/* Active State */
+.nav-item.active .icon-pill {
+    background: #ffebf0; /* Soft Wine tint */
+    color: #800020;
+}
+
+.nav-item.active span {
+    color: #800020;
+}
+.btn-table-wp i {
+    color: white;
+    font-size: 14px;
+}
+.btn-table-wp:hover {
+    transform: scale(1.1);
+    background: #1ebe5d;
+}
+</style>
+</head>
+<body>
+  <div id="loginPage">
+        <div class="login-box" id="loginCard">
+            <div class="logo-container">
+                <img src="assets/logo.webp" alt="JMD Logo">
+            </div>
+
+            <h2 style="color: #f1c40f; letter-spacing: 3px; margin: 0;">JMD TRADERS</h2>
+            <p style="color: rgba(241, 196, 15, 0.6); font-size: 10px; margin-bottom: 30px;">SECURE ACCESS</p>
+
+            <input type="text" id="adminUser" class="input-field" placeholder="USER ID" oninput="this.value = this.value.toUpperCase()">
+            
+            <div class="pass-wrapper">
+                <input type="password" id="adminPass" class="input-field" placeholder="PASSCODE">
+                <span class="eye-btn" onclick="togglePass()">👁️</span>
+            </div>
+
+            <button onclick="handleLogin()" class="login-btn">Log In 🔑</button>
+
+            <p id="errorMsg" style="color: #ff4d4d; margin-top: 20px; font-size: 13px; display: none; font-weight: bold;">
+                🚫 Invalid ID or Password!
+            </p>
+        </div>
+    </div>
+  <div id="mainApp" style="display: none;">
+<div class="app-container">
+    <div class="header"><h1>JMD TRADERS</h1></div>
+
+    <button class="analytics-toggle" onclick="toggleAnalytics()">
+        📊 Mahine Ka Hisaab <span id="toggleIcon">▼</span>
+    </button>
+    
+    <div id="analyticsSection" class="analytics-content">
+        <div class="summary-grid">
+            <div class="summary-box">
+    <h4>Monthly Sale</h4>
+    <span id="monSale">₹0</span>
+
+    <div class="card-footer spread">
+        <button onclick="changeDashMonth(-1)">◀</button>
+        <span id="dashMonthDisplay">Full</span>
+        <button onclick="changeDashMonth(1)">▶</button>
+    </div>
+</div>
+            <div class="summary-box">
+    <h4>Net Bal (Home | Bank)</h4>
+
+    <div class="net-values">
+        <span id="monNet" class="cash">₹0</span>
+        <span class="divider">|</span>
+        <span id="monBankNet" class="bank">₹0</span>
+    </div>
+
+    <div class="card-footer">
+        Adjustment : <span id="monAdj">₹0</span>
+    </div>
+</div>
+            <div class="summary-box"><h4>Cash Savings (40%)</h4><span id="monCash" style="color:var(--secondary)">₹0</span></div>
+            <div class="summary-box"><h4>Bank Savings (40%)</h4><span id="monBank" style="color:var(--info)">₹0</span></div>
+            <div class="summary-box" style="grid-column: span 2; border-color: var(--error);">
+                <h4>Monthly Expenses</h4><span id="monExp" style="color:var(--error)">₹0</span>
+            </div>
+        </div>
+        <div class="chart-card"><canvas id="salesChart" height="120"></canvas></div>
+    </div>
+
+    <div class="shop-card" style="border-left-color: #00ccff; padding: 10px 15px; margin-bottom: 10px;">
+    <div style="display: flex; align-items: center; gap: 15px;">
+        <h3 style="color: #00ccff; font-weight: 900; text-transform: uppercase; margin: 0; font-size: 0.9rem; white-space: nowrap;">
+            Select Date :
+        </h3>
+        <input type="date" id="entryDate" onchange="autoFillOpeningCash()"
+               style="flex-grow: 1; font-weight: 900; font-size: 1rem; padding: 5px; border: 1px solid #444; background: #1a1b1f; color: white; border-radius: 6px; text-align: center; outline: none;">
+    </div>
+</div>
+
+<div id="mini_dash" style="position: sticky; top: 10px; z-index: 999; background: #1a1b1f; border: 1px solid #444; border-radius: 50px; display: flex; align-items: center; justify-content: center; gap: 20px; padding: 5px 20px; margin: 0 auto 0 auto; width: fit-content; box-shadow: 0 4px 15px rgba(0,0,0,0.6);">
+    <div style="display: flex; align-items: baseline; gap: 5px;">
+        <span style="color: #888; font-size: 10px; font-weight: bold;">TOTAL SALE:</span>
+        <span id="total_sales_display" style="color: #fff; font-size: 14px; font-weight: bold;">₹0</span>
+    </div>
+    <div style="width: 1px; height: 12px; background: #444;"></div>
+    <div style="display: flex; align-items: baseline; gap: 5px;">
+        <span style="color: #00ff88; font-size: 10px; font-weight: bold;">PROFIT (40%):</span>
+        <span id="net_profit_display" style="color: #00ff88; font-size: 14px; font-weight: bold;">₹0</span>
+    </div>
+</div>
+
+<div class="mobile-tab-wrapper">
+    <div class="segmented-control">
+        <input type="radio" name="shop-toggle" id="tab-s1" checked onclick="showShop('s1')">
+        <label for="tab-s1" class="tab-item">Sankat Mochan</label>     
+        <input type="radio" name="shop-toggle" id="tab-s2" onclick="showShop('s2')">
+        <label for="tab-s2" class="tab-item">JMD Pooja Bhandar</label>
+        <div class="tab-selection"></div>
+    </div>
+</div>
+<div class="shops-grid">
+    <div class="shop-card" id="card-s1">
+        <h3>Sankat Mochan</h3>
+        <div class="input-row"><label>Opening Cash</label><input type="number" id="s1_open"></div>
+        <div class="input-row"><label>To Home</label><input type="number" id="s1_home"></div>
+        <div class="input-row"><label>Closing</label><input type="number" id="s1_close"></div>
+        <div class="input-row"><label>Counter Exp</label><input type="number" id="s1_exp"></div>
+        <div class="input-row"><label>GPay Sale</label><input type="number" id="s1_gpay"></div>
+    </div>
+
+    <div class="shop-card" id="card-s2" style="display: none;">
+        <h3>JMD Pooja Bhandar</h3>
+        <div class="input-row"><label>Opening Cash</label><input type="number" id="s2_open"></div>
+        <div class="input-row"><label>To Home</label><input type="number" id="s2_home"></div>
+        <div class="input-row"><label>Closing</label><input type="number" id="s2_close"></div>
+        <div class="input-row"><label>Counter Exp</label><input type="number" id="s2_exp"></div>
+        <div class="input-row"><label>GPay Sale</label><input type="number" id="s2_gpay"></div>
+    </div>
+</div>
+
+    <div class="shop-card" style="margin-top:15px; border-left-color: var(--error);">
+        <h3 style="color: var(--error);">Daily Expense (C, H, GP)</h3>
+		
+        <div class="input-row">
+            <label>Expense Details :</label>
+			<div class="btn-group">
+    <button class="btn-tag" style="background:#b3e5fc;" onclick="formatLine('C1')">C1</button>
+    <button class="btn-tag" style="background:#b3e5fc;" onclick="formatLine('C2')">C2</button>
+    <button class="btn-tag" style="background:#fff9c4;" onclick="formatLine('G')">GP</button>
+    <button class="btn-tag" style="background:#f1f1f1;" onclick="formatLine('H')">H</button>
+</div>
+            <textarea id="exp_details" placeholder="From Counter C1, C2..." oninput="calculateLiveExpenses()" 
+          onblur="handleBlur()"
+                style="width: 100%; 
+                 box-sizing: border-box; /* Yeh line layout fix karegi */
+                 padding: 10px; 
+                 border-radius: 8px; 
+                 border: 1px solid #333; 
+                 background: #1a1b1f; 
+                 color: WHITE; 
+                 font-family: inherit; 
+                 font-weight: 900; 
+                 font-size: 0.8rem; 
+                 resize: none; 
+                 display: block;" 
+                rows="2"></textarea>
+				<div class="btn-group">
+    <button class="btn-item" onclick="addItem('Nariyal')">Nariyal</button>
+    <button class="btn-item" onclick="addItem('Pathpeti')">Pathpeti</button>
+        </div>
+        <div class="input-row">
+            <label>Expenses from Home :</label>
+            <input type="number" id="jeb_pay_out" placeholder="₹ Kitna paisa diya?">
+        </div>
+        <div class="input-row">
+            <label>Expenses from Gpay :</label>
+            <input type="number" id="gpay_exp"  placeholder="₹ Kitna paisa diya?">
+        </div>
+    </div>
+
+   <div class="actions">
+    <div class="button-row">
+        <button id="saveBtn" class="btn-save" style="font-weight: 900;" onclick="saveEntry()">SAVE DATA</button>
+        <button id="cancelBtn" class="btn-cancel" onclick="cancelEdit()" style="display:none;font-weight: 900;">CANCEL EDITING</button>
+    </div>
+    
+    <div class="button-row secondary">
+        <button class="btn-sync" style="font-weight: 900;" onclick="exportData()">⎘ EXPORT</button>
+        <button class="btn-sync" style="font-weight: 900;" onclick="document.getElementById('fileIn').click()">⎘ IMPORT</button>
+    </div>
+    
+    <input type="file" id="fileIn" style="display:none" onchange="importData(event)">
+</div>
+<div id="logo-fill-loader" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:#ffffff; z-index:20000; flex-direction:column; align-items:center; justify-content:center;">
+    <div class="logo-wrapper">
+        <img src="assets/grey.webp" class="logo-base">
+        <img src="assets/logo.webp" class="logo-anim">
+    </div>
+</div>
+<nav class="app-nav">
+    <a href="home.html" class="nav-item" onclick="showLoader(event, 'home.html')">
+        <div class="icon-pill"><i class="fa-solid fa-house-chimney"></i></div>
+        <span>Home</span>
+    </a>
+
+    <a href="invoice.html" class="nav-item " onclick="showLoader(event, 'invoice.html')">
+        <div class="icon-pill"><i class="fa-solid fa-file-invoice-dollar"></i></div>
+        <span>Invoice</span>
+    </a>
+
+    <a href="index.html" class="nav-item" onclick="showLoader(event, 'index.html')">
+        <div class="icon-pill"><i class="fa-solid fa-chart-line"></i></div>
+        <span>Sales</span>
+    </a>
+
+    <a href="dashboard.html" class="nav-item" onclick="showLoader(event, 'dashboard.html')">
+        <div class="icon-pill"><i class="fa-solid fa-bar-chart"></i></div>
+        <span>Dashboard</span>
+    </a>
+
+    <a href="graphics.html" class="nav-item" onclick="showLoader(event, 'graphics.html')">
+        <div class="icon-pill"><i class="fa-solid fa-crown"></i></div>
+        <span>Graphics</span>
+    </a>
+</nav>
+<div class="filter-bar" style="display: flex; gap: 6px; padding: 6px; background: #1e1e1e; border-radius: 12px; align-items: center;">
+    <input type="text" id="searchBox" placeholder="Search..." onkeyup="renderApp()" 
+        style="flex: 2; min-width: 70px; padding: 8px 12px; border-radius: 20px; border: 1px solid #444; background: #2a2a2a; color: #fff; font-size: 0.8rem; outline: none;">
+
+    <div class="month-stepper">
+        <button class="stepper-btn" onclick="changeMonth(-1)">◀</button>
+        <div class="stepper-label" id="monthDisplay">Full</div>
+        <button class="stepper-btn" onclick="changeMonth(1)">▶</button>
+    </div>
+
+    <input type="hidden" id="monthFilter" value="all">
+
+    <button class="btn-report" onclick="shareWhatsApp()" style="width: 38px; height: 38px; min-width: 38px; padding: 0; border-radius: 20%; background: #25D366; display: flex; align-items: center; justify-content: center; border: none;">
+        <span style="font-size: 0.8rem;">ᯓ➤</span>
+    </button>
+</div>
+    <div class="history-card">
+        <div style="overflow-x: auto;">
+            <table>
+                <thead>
+                    <tr><th>Report</th><th>Date</th><th>Sale</th><th>Savings (C/B)</th><th>Net Cash</th><th>GPay Bal</th><th>Exp/Out</th><th>Action</th></tr>
+                </thead>
+                <tbody id="historyBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="app-footer">
+        <div class="footer-text">
+            © 2026 JMD Traders. All Rights Reserved. <br>
+            <i>Designed & Developed with ❤️ by Animesh Verma</i>
+        </div>
+    </div>
+
+   <div id="confirmToast" class="confirm-toast">
+    <span id="confirmMsg" style="font-weight: 900; color: #fff;">Uda du entry?</span>
+    <div class="toast-btns">
+        <button class="btn-no" onclick="closeConfirmToast()">Nahi</button>
+        <button id="toastConfirmBtn" class="btn-yes">Haan</button>
+    </div>
+</div>
+<div id="toastr"></div>
+</div>
+</div>
+<script>
+function togglePass() {
+            const p = document.getElementById('adminPass');
+            p.type = p.type === "password" ? "text" : "password";
+        }
+
+        function handleLogin() {
+            const u = document.getElementById('adminUser').value.trim().toUpperCase();
+            const p = document.getElementById('adminPass').value.trim();
+            const err = document.getElementById('errorMsg');
+            const card = document.getElementById('loginCard');
+
+            const sU = "Sk1E"; 
+            const sP = "MTcwNw==";
+
+            if (btoa(u) === sU && btoa(p) === sP) {
+                document.getElementById('loginPage').style.display = 'none';
+                document.getElementById('mainApp').style.display = 'block';
+                sessionStorage.setItem('jmd_session_active', 'true'); 
+            } else {
+                err.style.display = 'block';
+                card.style.animation = "shakeEffect 0.4s ease-in-out";
+                setTimeout(() => { card.style.animation = ""; }, 400);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (sessionStorage.getItem('jmd_session_active') === 'true') {
+                document.getElementById('loginPage').style.display = 'none';
+                document.getElementById('mainApp').style.display = 'block';
+            }
+        });
+		
+const dateIn = document.getElementById('entryDate');
+    const today = new Date().toISOString().split('T')[0];
+    dateIn.value = today;
+    dateIn.max = today; 
+	let history = JSON.parse(localStorage.getItem('jmd_traders_v5')) || [];
+    let myChart;
+	const FINAL_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyeBTkmzTLR7Ra-LcjFuqzKoAD5XiHVDdYj93Ho1VYR_2xQaBNULubfS4UwrPB_3abVWw/exec';
+    function toggleAnalytics() {
+        const section = document.getElementById('analyticsSection');
+        const icon = document.getElementById('toggleIcon');
+        section.style.display = (section.style.display === "block") ? "none" : "block";
+        icon.innerText = (section.style.display === "block") ? "▲" : "▼";
+        if(section.style.display === "block") updateChart();
+    }
+let availableMonths = []; // Globally save unique months
+let dashAvailableMonths = [];
+let currentDashIndex = 0;
+const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+function showLoader(event, url) {
+    event.preventDefault();
+    
+    const loader = document.getElementById('logo-fill-loader');
+    if (loader) {
+        loader.style.display = 'flex';
+    }
+
+    const isSamePage = window.location.href.includes(url);
+
+    // Agar same page hai toh thoda lamba animation dikhao fir refresh karo
+    if (isSamePage) {
+        setTimeout(() => {
+            window.location.reload();
+        }, 1500); 
+    } else {
+        setTimeout(() => {
+            window.location.href = url;
+        }, 600);
+    }
+}
+
+window.addEventListener('load', () => {
+    const loader = document.getElementById('logo-fill-loader');
+    if (loader) loader.style.display = 'none';
+    
+    // AUTO-ACTIVE LOGIC
+    let currentPath = window.location.pathname.split("/").pop();
+    
+    // Agar path khali hai toh iska matlab index.html khula hai
+    if (currentPath === "") currentPath = "index.html"; 
+
+    const navItems = document.querySelectorAll('.nav-item');
+
+    navItems.forEach(item => {
+        const itemHref = item.getAttribute('href');
+        if (currentPath === itemHref) {
+            item.classList.add('active');
+        } else {
+            item.classList.remove('active');
+        }
+    });
+});
+	function showShop(shop) {
+    if (window.innerWidth <= 768) {
+        const s1 = document.getElementById('card-s1');
+        const s2 = document.getElementById('card-s2');
+        
+        if (shop === 's1') {
+            s1.style.display = 'block';
+            s2.style.display = 'none';
+        } else {
+            s1.style.display = 'none';
+            s2.style.display = 'block';
+        }
+    }
+}
+// 1. Data load hote hi list update karo (Pehle jaisa kaam karega)
+function updateMonthDropdown(data) {
+    // Unique months extract karo (0-11)
+    const monthsInHistory = [...new Set(data.map(entry => new Date(entry.date).getMonth()))].sort((a, b) => a - b);
+    
+    // "all" ko list ke start mein rakho
+    availableMonths = ["all", ...monthsInHistory];
+
+    // Current selection display update karo
+    const currentVal = document.getElementById('monthFilter').value;
+    updateLabel(currentVal);
+	// Dashboard ke liye bhi same months use karo
+	dashAvailableMonths = ["all", ...monthsInHistory];
+
+		// current month find karo
+		const currentMonth = new Date().getMonth();
+
+		// agar current month list me hai to usko select karo
+		const foundIndex = dashAvailableMonths.indexOf(currentMonth);
+
+		// agar mila to usko set karo warna "all"
+		currentDashIndex = foundIndex !== -1 ? foundIndex : 0;
+
+		// label update
+		updateDashLabel(dashAvailableMonths[currentDashIndex]);
+}
+
+// 2. Arrows click karne par kya hoga
+function changeMonth(direction) {
+    if (availableMonths.length <= 1) return; // Sirf 'all' hai toh kuch mat karo
+
+    const hiddenInput = document.getElementById('monthFilter');
+    const currentVal = hiddenInput.value === "all" ? "all" : parseInt(hiddenInput.value);
+    
+    // Current index dhundo
+    let currentIndex = availableMonths.indexOf(currentVal);
+    
+    // Agla index calculate karo (Cycle mode: Dec ke baad All aayega)
+    let nextIndex = currentIndex + direction;
+    if (nextIndex >= availableMonths.length) nextIndex = 0;
+    if (nextIndex < 0) nextIndex = availableMonths.length - 1;
+
+    const nextVal = availableMonths[nextIndex];
+    
+    // Value set karo aur UI update karo
+    hiddenInput.value = nextVal;
+    updateLabel(nextVal);
+    
+    // Refresh the table
+    renderApp();
+}
+
+// 3. Label text update karne ke liye
+function updateLabel(val) {
+    const display = document.getElementById('monthDisplay');
+    if (val === "all") {
+        display.innerText = "Full";
+    } else {
+        display.innerText = monthNames[parseInt(val)];
+    }
+}
+function changeDashMonth(direction) {
+    if (dashAvailableMonths.length <= 1) return;
+
+    currentDashIndex += direction;
+
+    if (currentDashIndex >= dashAvailableMonths.length) currentDashIndex = 0;
+    if (currentDashIndex < 0) currentDashIndex = dashAvailableMonths.length - 1;
+
+    const val = dashAvailableMonths[currentDashIndex];
+    updateDashLabel(val);
+
+    updateDashboardOnly(); // Sirf dashboard update hoga
+}
+
+function updateDashLabel(val) {
+    const display = document.getElementById('dashMonthDisplay');
+    if (!display) return;
+
+    if (val === "all") {
+        display.innerText = "Full";
+    } else {
+        display.innerText = monthNames[parseInt(val)];
+    }
+}
+async function fetchSheetData() {
+    showToast("Syncing... 🔄", "info");
+    try {
+        const response = await fetch(FINAL_SCRIPT_URL);
+        const sheetData = await response.json();
+        
+        if (Array.isArray(sheetData)) {
+            // Ab seedha data save karo kyunki Backend se name match ho rahe hain
+            history = sheetData.map(item => ({
+                ...item,
+                id: Date.now() + Math.random() 
+            }));
+
+            localStorage.setItem('jmd_traders_v5', JSON.stringify(history));
+            renderApp();
+            showToast("Sync Done! ✅", "success");
+        }
+    } catch (error) {
+        console.error("Fetch Error:", error);
+        showToast("Offline mode: Purana data load hua.", "info");
+    }
+}function quickAdd(itemText) {
+    const box = document.getElementById('exp_details');
+    let currentVal = box.value.trim();
+    
+    // Nayi line tabhi dalo agar box pehle se khali na ho
+    if (currentVal !== "") {
+        box.value = currentVal + "\n" + itemText;
+    } else {
+        box.value = itemText;
+    }
+    
+    // Cursor ko text ke ekdum aakhiri mein le jao aur focus karo
+    box.focus();
+    box.selectionStart = box.selectionEnd = box.value.length;
+    
+    // Agar box bhar gaya hai toh automatic niche scroll karega
+    box.scrollTop = box.scrollHeight;
+}// Sirf naam add karne ke liye
+// Step 1: Naam add karo
+function addItem(name) {
+    const box = document.getElementById('exp_details');
+    const currentVal = box.value.trim();
+    // Nayi line tabhi dalo jab pehle se kuch likha ho
+    box.value = currentVal ? currentVal + "\n" + name : name;
+    box.focus();
+}
+
+// Step 2: Category format karo
+function formatLine(tag) {
+    const box = document.getElementById('exp_details');
+    let lines = box.value.split('\n');
+    let lastLine = lines[lines.length - 1].trim();
+
+    if (lastLine && !lastLine.includes(':')) {
+        // Sirf tabhi format karega agar pehle se ':' nahi hai
+        lines[lines.length - 1] = `${lastLine} (${tag}) : `;
+        box.value = lines.join('\n');
+    }
+    
+    box.focus();
+    box.selectionStart = box.selectionEnd = box.value.length;
+}
+
+function calculateLiveExpenses() {
+    const box = document.getElementById('exp_details');
+    const text = box.value;
+    const lines = text.split('\n');
+    
+    // Sabhi totals ko 0 se start karein
+    let t1 = 0, t2 = 0, tG = 0, tH = 0;
+
+    lines.forEach(line => {
+        // Sirf wahi lines check karo jisme ':' ho
+        if (line.includes(':')) {
+            const parts = line.split(':');
+            let valStr = parts[1].trim();
+            
+            // '/-' ko hata kar sirf number nikalne ke liye
+            valStr = valStr.replace('/-', '').trim();
+            const amt = parseFloat(valStr) || 0;
+            
+            const txt = line.toUpperCase();
+            
+            // Tag ke basis par sahi box mein amount jodo
+            if (txt.includes('(C1)')) t1 += amt;
+            else if (txt.includes('(C2)')) t2 += amt;
+            else if (txt.includes('(G)')) tG += amt;
+            else if (txt.includes('(H)')) tH += amt;
+        }
+    });
+
+    // Niche waale boxes ko turant update karo
+    const s1Field = document.getElementById('s1_exp');
+    const s2Field = document.getElementById('s2_exp');
+    const gpayField = document.getElementById('gpay_exp');
+    const jebField = document.getElementById('jeb_pay_out');
+
+    if (s1Field) s1Field.value = t1;
+    if (s2Field) s2Field.value = t2;
+    if (gpayField) gpayField.value = tG;
+    if (jebField) jebField.value = tH;
+
+updateLiveDash();
+}
+
+// /- apne aap lagane ke liye ye function jab aap Line badlo tab chale
+function handleBlur() {
+    const box = document.getElementById('exp_details');
+    let lines = box.value.split('\n');
+    
+    let updatedLines = lines.map(line => {
+        // Agar ':' hai aur aakhir mein number hai par '/-' nahi hai
+        if (line.includes(':') && line.trim().match(/\d$/)) {
+            return line.trim() + " /-";
+        }
+        return line;
+    });
+    
+    box.value = updatedLines.join('\n');
+    calculateLiveExpenses();
+}
+async function deleteEntry(date) {
+    showToast("Deleting... ⏳", "info");
+    
+    // UI se turant hatao (Optimistic Update)
+    history = history.filter(h => h.date !== date);
+    localStorage.setItem('jmd_traders_v5', JSON.stringify(history));
+    renderApp();
+
+    try {
+        await fetch(FINAL_SCRIPT_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            body: JSON.stringify({ action: "DELETE", date: date }) // 'action' bhejna must hai
+        });
+        showToast("Gayab! ✅", "success");
+        // 2 second baad background sync
+        setTimeout(fetchSheetData, 2000);
+    } catch (e) {
+        showToast("Network Error!", "error");
+    }
+}
+function cancelEdit() {
+    // 1. Alert box aur highlights saaf karo
+    const alertBox = document.getElementById('dateAlert');
+    if (alertBox) alertBox.style.display = 'none';
+
+    // 2. Form reset function call karo jo humne banaya tha
+    resetForm(); 
+
+    // 3. Validation dobara check karo (kyunki date reset ho gayi hai)
+    validateForm();
+
+    // 4. Cancel button wapas chhupao
+    document.getElementById('cancelBtn').style.display = "none";
+    
+    showToast("Edit Cancelled! Back to New Entry.", "success");
+}
+function formatDate(dateStr) {
+    if(!dateStr) return "-";
+    const date = new Date(dateStr);
+    // Agar date invalid hai toh original string hi dikhao
+    if (isNaN(date)) return dateStr.split('T')[0]; 
+    
+    return date.toLocaleDateString('en-GB', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric'
+    });
+}
+// App load hote hi data fetch karo
+window.onload = fetchSheetData;
+    function autoFillOpeningCash() {
+    const selectedDate = document.getElementById('entryDate').value;
+    if (!selectedDate) return;
+
+    // Kal ki date nikaalo
+    let d = new Date(selectedDate);
+    d.setDate(d.getDate() - 1);
+    const prevDateStr = d.toISOString().split('T')[0];
+    
+    // History mein kal ki entry dhundo
+    const prevEntry = history.find(h => h.date === prevDateStr);
+
+    const s1Open = document.getElementById('s1_open');
+    const s2Open = document.getElementById('s2_open');
+
+    if (prevEntry) {
+        // Mapping fix: Pehle 's1_cl' check karo (naya), fir 's1_close' (purana)
+        s1Open.value = prevEntry.s1_cl || prevEntry.s1_close || "";
+        s2Open.value = prevEntry.s2_cl || prevEntry.s2_close || "";
+        
+        if (s1Open.value || s2Open.value) {
+            showToast("Kal ka Closing load ho gaya! 💰", "info");
+        } else {
+            showToast("⚠️ Kal ki entry mili par closing zero hai.", "info");
+        }
+    } else {
+        s1Open.value = "";
+        s2Open.value = "";
+    }
+    
+    if (typeof validateForm === "function") validateForm();
+}
+    function getFormattedDate(dateStr) {
+        if (!dateStr) return "";
+        const date = new Date(dateStr);
+        const day = date.getDate();
+        const month = date.toLocaleString('en-IN', { month: 'long' });
+        const year = date.getFullYear();
+        let suffix = "th";
+        if (day === 1 || day === 21 || day === 31) suffix = "st";
+        else if (day === 2 || day === 22) suffix = "nd";
+        else if (day === 3 || day === 23) suffix = "rd";
+        return `${day}${suffix} ${month}, ${year}`;
+    }
+
+    function shareToWhatsApp(existingData = null) {
+    const v = (id, objKey) => {
+        if (existingData) return parseFloat(existingData[objKey]) || 0;
+        const el = document.getElementById(id);
+        return el ? parseFloat(el.value) || 0 : 0;
+    };
+
+    const t = (id, objKey) => {
+        if (existingData) return existingData[objKey] || "";
+        const el = document.getElementById(id);
+        return el ? el.value : "";
+    };
+
+    // 1. Core Data
+    const s1_cl = v('s1_close', 's1_cl');
+    const s1_hm = v('s1_home', 's1_hm');
+    const s1_gp = v('s1_gpay', 's1_gp');
+    const s1_ex = v('s1_exp', 's1_ex');
+    const s1_op = v('s1_open', 's1_op');
+    const s1TotalSale = (s1_cl + s1_hm + s1_ex) - s1_op + s1_gp;
+
+    const s2_cl = v('s2_close', 's2_cl');
+    const s2_hm = v('s2_home', 's2_hm');
+    const s2_gp = v('s2_gpay', 's2_gp');
+    const s2_ex = v('s2_exp', 's2_ex');
+    const s2_op = v('s2_open', 's2_op');
+    const s2TotalSale = (s2_cl + s2_hm + s2_ex) - s2_op + s2_gp;
+
+    // Today's Calculations
+    const totalSale = s1TotalSale + s2TotalSale;
+    const totalCashSale = (s1_cl + s1_hm + s1_ex - s1_op) + (s2_cl + s2_hm + s2_ex - s2_op);
+    const totalGpaySale = s1_gp + s2_gp;
+
+    const cashSav = Math.round((totalCashSale * 0.40) / 100) * 100;
+    const bankSav = Math.round((totalGpaySale * 0.40) / 100) * 100;
+    const homeCashTotal = s1_hm + s2_hm;
+    const short40 = Math.max(0, cashSav - homeCashTotal);
+    const netJeb = homeCashTotal - cashSav - v('jeb_pay_out', 'jeb');
+
+    // 2. SMART TILL DATE (Error Fix)
+    // Agar existingData null hai (naye page se), toh hum 0 dikhayenge bajaye crash hone ke
+    let finalTillC = 0, finalTillB = 0, finalTillN = 0;
+
+    if (existingData) {
+        finalTillC = existingData.till_c || 0;
+        finalTillB = existingData.till_b || 0;
+        finalTillN = existingData.till_n || 0;
+    } else {
+        // Option: Yahan naye calculation ka logic bhi daal sakte hain 
+        // par naye report mein Till Date hamesha fetch se hi aana chahiye
+        finalTillC = 0; finalTillB = 0; finalTillN = 0;
+    }
+
+    const selectedDate = existingData ? existingData.date : t('entryDate');
+    const details = t('exp_details', 'details') || "None";
+    const formattedDetails = details.split('\n').join('%0A');
+
+    const msg = `*JMD TRADERS - Daily Report*%0A` +
+                `*Date: ${getFormattedDate(selectedDate)}*%0A` +
+                `━━━━━━━━━━━━━━━━━━━%0A` +
+                `*SANKAT MOCHAN (S1)*%0A` +
+                `*• Cash in Counter : ₹${s1_cl}*%0A` +
+                `*• To Home : ₹${s1_hm}*%0A` +
+                `*• GPay Sale : ₹${s1_gp}*%0A` +
+                `*• Today's Sale : ₹${s1TotalSale.toLocaleString()}*%0A%0A` +
+                `*JMD POOJA (S2)*%0A` +
+                `*• Cash in Counter : ₹${s2_cl}*%0A` +
+                `*• To Home : ₹${s2_hm}*%0A` +
+                `*• GPay Sale : ₹${s2_gp}*%0A` +
+                `*• Today's Sale : ₹${s2TotalSale.toLocaleString()}*%0A%0A` +
+                `*EXPENSES*%0A` +
+                `${formattedDetails}%0A%0A` +
+                `*• Home Exp : ₹${v('jeb_pay_out', 'jeb')}*%0A` +
+                `*• GPay Exp : ₹${v('gpay_exp', 'gpay_ex')}*%0A%0A` +
+                `*_TOTAL HISAAAB (For Today)_*%0A` +
+                `*_• Total Sale : ₹${totalSale.toLocaleString()}_*%0A` +
+                `*_• Cash Savings (40%) : ₹${cashSav.toLocaleString()}_*%0A` +
+                `*_• Bank Savings (40%) : ₹${bankSav.toLocaleString()}_*%0A` +
+                `*_• Net Cash (To Home) : ₹${netJeb.toLocaleString()}_*%0A` +
+                `_(Adjusted Amt from NetCash : ₹${short40})_%0A` +
+                `━━━━━━━━━━━━━━━━━━━%0A` +
+                `*Till Date Balance*%0A` +
+                `> *• Net Bal (40% Cash) : ₹${finalTillC.toLocaleString()}*%0A` +
+                `> *• Net Bal (40% Bank) : ₹${finalTillB.toLocaleString()}*%0A` +
+                `> *• Net Bal (Cash at home) : ₹${finalTillN.toLocaleString()}*%0A` +
+                `━━━━━━━━━━━━━━━━━━━%0A` +
+                `_Report generated by JMD Pro Software_`;
+
+    window.open(`https://wa.me/?text=${msg}`, '_blank');
+} 
+
+   function validateForm() {
+    const selected = document.getElementById('entryDate').value;
+    const alertBox = document.getElementById('dateAlert');
+    const saveBtn = document.getElementById('saveBtn');
+    
+    if (!selected) return;
+
+    const exists = history.some(h => h.date === selected);
+    const todayStr = new Date().toISOString().split('T')[0];
+    const isFuture = selected > todayStr;
+
+    // --- RESET DEFAULT STYLE ---
+    saveBtn.style.border = "none";
+    saveBtn.style.filter = "none";
+    saveBtn.style.cursor = "pointer";
+
+    if (isFuture) {
+        alertBox.innerText = "⚠️ Future date allowed nahi hai!";
+        alertBox.style.display = 'block';
+        alertBox.style.color = "#ff4d4d";
+        
+        saveBtn.disabled = true;
+        saveBtn.innerText = "SAVE DATA";
+        saveBtn.style.filter = "grayscale(1) brightness(0.7)";
+        saveBtn.style.cursor = "not-allowed";
+    } 
+    else if (exists && !isEditing) { 
+        // Case: Date mili par Edit mode ON nahi hai
+        alertBox.innerText = "⚠️ Entry exists! Edit (✎) button use karein.";
+        alertBox.style.display = 'block';
+        alertBox.style.color = "#ffd700";
+        
+        saveBtn.disabled = true;
+        saveBtn.innerText = "SAVE DATA"; // Yahan Save hi rahega
+        saveBtn.style.border = "2px solid #ffd700"; // Yellow border
+        saveBtn.style.filter = "grayscale(1) brightness(0.8)";
+        saveBtn.style.cursor = "not-allowed";
+    } 
+    else {
+        // Case: Nayi entry YA Edit mode ON hai
+        saveBtn.disabled = false;
+        saveBtn.style.filter = "none";
+        saveBtn.style.border = "none";
+
+        if (isEditing) {
+            saveBtn.innerText = "UPDATE DATA"; // <--- AB YE PAKKA CHALU HOGA
+            saveBtn.style.backgroundColor = "#C8E5EE"; // Orange for Update
+        } else {
+            saveBtn.innerText = "SAVE DATA";
+            saveBtn.style.backgroundColor = ""; // Default Green/Blue
+        }
+    }
+}
+    function showToast(message, type = 'success') {
+    const toast = document.getElementById('toastr');
+    
+    let icon = "";
+    if (type === 'success') icon = "✅ ";
+    if (type === 'error') icon = "❌ ";
+    if (type === 'info') icon = "ℹ️ ";
+
+    toast.className = '';
+    toast.classList.add('toast-' + type);
+    
+    // Ek hi line mein Title aur Message
+    toast.innerHTML = `<strong>${type.toUpperCase()}:</strong> ${icon}${message}`;
+    
+    toast.style.display = 'block';
+    toast.style.opacity = '1';
+
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => { toast.style.display = 'none'; }, 300);
+    }, 3000);
+}
+
+// --- Usage Examples ---
+// showToast("Saving Data...", "info");    // Light Blue
+// showToast("Sync Done!", "success");      // Green
+// showToast("Error Found!", "error");     // Red
+	
+	let isEditing = false; // Track karne ke liye ki edit mode on hai ya nahi
+
+function editEntry(date) {
+    const h = history.find(entry => entry.date === date);
+    if (h) {
+        isEditing = true; // Edit mode ON
+        
+        // Date field ko lock karo taaki duplicate na bane
+        const dateInput = document.getElementById('entryDate');
+        dateInput.value = h.date;
+        dateInput.readOnly = true; 
+        dateInput.style.background = "#333"; // Hint ki ye change nahi hoga
+
+        // Inputs bharna (Same as your code)
+        document.getElementById('s1_open').value = h.s1_op;
+        document.getElementById('s1_home').value = h.s1_hm;
+        document.getElementById('s1_close').value = h.s1_cl;
+        document.getElementById('s1_exp').value = h.s1_ex;
+        document.getElementById('s1_gpay').value = h.s1_gp;
+        document.getElementById('s2_open').value = h.s2_op;
+        document.getElementById('s2_home').value = h.s2_hm;
+        document.getElementById('s2_close').value = h.s2_cl;
+        document.getElementById('s2_exp').value = h.s2_ex;
+        document.getElementById('s2_gpay').value = h.s2_gp;
+        document.getElementById('exp_details').value = h.details;
+        document.getElementById('jeb_pay_out').value = h.jeb;
+        document.getElementById('gpay_exp').value = h.gpay_ex;
+window.scrollTo({ top: 0, behavior: 'smooth' });
+        showToast("Editing: Date Locked 🔒","success");isEditing = true;
+    const cBtn = document.getElementById('cancelBtn');
+        cBtn.style.display = "block"; // Cancel dikhao
+    validateForm();
+	window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+}
+async function saveEntry() {
+    const v = (id) => parseFloat(document.getElementById(id).value) || 0;
+    const t = (id) => document.getElementById(id).value;
+    const selectedDate = t('entryDate');
+    if (!selectedDate) return showToast("Please select a date!", "info");
+
+    // --- SAFETY CHECK ---
+    const dateExists = history.some(h => h.date === selectedDate);
+    
+    // Agar hum Nayi entry kar rahe hain aur date pehle se hai -> STOP
+    if (!isEditing && dateExists) {
+        showToast("⚠️ ERROR: Is date ki entry pehle se hai!", "error");
+        return; 
+    }// 1. Basic Inputs (S1 & S2)
+    const s1 = { op: v('s1_open'), hm: v('s1_home'), cl: v('s1_close'), ex: v('s1_exp'), gp: v('s1_gpay') };
+    const s2 = { op: v('s2_open'), hm: v('s2_home'), cl: v('s2_close'), ex: v('s2_exp'), gp: v('s2_gpay') };
+    const jebOut = v('jeb_pay_out');
+    const gpayExp = v('gpay_exp');
+
+    // 2. Core Logic (JMD Traders V5 Standard)
+    let s1CashSale = (s1.hm + s1.cl + s1.ex) - s1.op;
+    let s2CashSale = (s2.hm + s2.cl + s2.ex) - s2.op;
+    
+    let totalCashSale = s1CashSale + s2CashSale;
+    let totalGpaySale = s1.gp + s2.gp;
+    
+    // Target Calculations (40% Rule)
+    let cashSavingsTarget = Math.round((totalCashSale * 0.40) / 100) * 100;
+    let bankSavingsTarget = Math.round((totalGpaySale * 0.40) / 100) * 100;
+    
+    let homeCashTotal = s1.hm + s2.hm; // Actual cash collected
+    
+    // Shortage and Pocket Money logic
+    let short40 = Math.max(0, cashSavingsTarget - homeCashTotal);
+    let netCashJeb = homeCashTotal - cashSavingsTarget - jebOut;
+	let netBankJeb = totalGpaySale - bankSavingsTarget - gpayExp;
+    // 3. Mapping for Sheets (Fixed for your columns)
+    const fullData = {
+        date: selectedDate,
+        s1_op: s1.op, s1_hm: s1.hm, s1_cl: s1.cl, s1_ex: s1.ex, s1_gp: s1.gp,
+        s2_op: s2.op, s2_hm: s2.hm, s2_cl: s2.cl, s2_ex: s2.ex, s2_gp: s2.gp,
+        details: t('exp_details'), 
+        jeb: jebOut, 
+        gpay_ex: gpayExp,
+        ts1: s1CashSale + s1.gp, // Total Sale Shop 1
+        ts2: s2CashSale + s2.gp, // Total Sale Shop 2
+        ts_all: totalCashSale + totalGpaySale, // Net Total Sale
+        c_sav: cashSavingsTarget,  
+        b_sav: bankSavingsTarget, // Column T (Bank Target)
+        n_bal: netCashJeb,
+		n_bank: netBankJeb, // Column U (Jeb Balance)
+        t_exp: s1.ex + s2.ex + gpayExp, // Combined Expenses
+        n_out: short40, // Column V (Shortfall)
+    };
+
+    // 4. Local Storage Sync
+    const existingIndex = history.findIndex(h => h.date === selectedDate);
+    
+    if (existingIndex !== -1) {
+        // Agar date pehle se hai, toh sirf usi index ko update karo
+        history[existingIndex] = fullData;
+    } else {
+        // Agar bilkul nayi date hai, toh push karo
+        history.push(fullData);
+    }
+
+    // Reset Editing State
+    isEditing = false;
+    const dateInput = document.getElementById('entryDate');
+    dateInput.readOnly = false;
+    dateInput.style.background = "";
+    localStorage.setItem('jmd_traders_v5', JSON.stringify(history));
+    renderApp();
+    
+    showToast("Syncing with Google Sheets... ⏳", "info");
+
+    try {
+        await fetch(FINAL_SCRIPT_URL, {
+            method: 'POST',
+            mode: 'no-cors', 
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(fullData)
+        });
+        
+        showToast("Data Sent Successfully! ✅", "success");
+        if (typeof fetchSheetData === "function") setTimeout(fetchSheetData, 2000); 
+		resetForm();
+    } catch (e) { 
+        showToast("Network Error! Saved Locally.", "info"); 
+		resetForm();
+    }
+	validateForm();
+}
+function resetForm() {
+    // 1. Saare inputs (Number, Text, Textarea) khali karo
+    const inputs = document.querySelectorAll('input[type="number"], input[type="text"], textarea');
+    inputs.forEach(input => input.value = "");
+
+    // 2. Date field ko unlock aur reset karo
+    const dateInput = document.getElementById('entryDate');
+    dateInput.readOnly = false;
+    dateInput.style.background = "";
+    // Optionally: Aaj ki date set kardo
+    dateInput.value = new Date().toISOString().split('T')[0];
+
+    // 3. Button ko wapas "SAVE DATA" mode mein lao
+    const saveBtn = document.getElementById('saveBtn');
+    saveBtn.innerText = "SAVE DATA";
+    saveBtn.disabled = false;
+    saveBtn.style.backgroundColor = ""; // Default color par jayega
+    saveBtn.style.border = "none";
+    saveBtn.style.filter = "none";
+    saveBtn.style.cursor = "pointer";
+
+    // 4. Alert box ko chhupao
+    const alertBox = document.getElementById('dateAlert');
+    if (alertBox) alertBox.style.display = 'none';
+
+    document.getElementById('cancelBtn').style.display = "none";
+    isEditing = false;
+    console.log("Form & Validation Reset Complete! ✅");
+}
+function updateDashboardOnly() {
+    const selectedMonth = dashAvailableMonths[currentDashIndex];
+
+    const filtered = history.filter(h => {
+        const d = new Date(h.date);
+        return selectedMonth === "all" || d.getMonth() == selectedMonth;
+    });
+
+    const totals = filtered.reduce((acc, curr) => ({
+        sale: acc.sale + Number(curr.ts_all || 0),
+        cash: acc.cash + Number(curr.c_sav || 0),
+        bank: acc.bank + Number(curr.b_sav || 0),
+        net: acc.net + Number(curr.n_bal || 0),
+		netBank: acc.netBank + Number(curr.n_bank || 0),
+        exp: acc.exp + Number(curr.t_exp || 0) + Number(curr.jeb || 0),
+        short: acc.short + Number(curr.n_out || 0)
+    }), { sale: 0, cash: 0, bank: 0, net: 0, exp: 0, short: 0 });
+
+    document.getElementById('monSale').innerText = "₹" + totals.sale.toLocaleString();
+    document.getElementById('monNet').innerText = "₹" + totals.net.toLocaleString();
+    document.getElementById('monCash').innerText = "₹" + totals.cash.toLocaleString();
+    document.getElementById('monBank').innerText = "₹" + totals.bank.toLocaleString();
+    document.getElementById('monExp').innerText = "₹" + totals.exp.toLocaleString();
+	if(document.getElementById('monBankNet')) {
+    document.getElementById('monBankNet').innerText = "₹" + totals.netBank.toLocaleString();
+	}
+    // Agar tune HTML mein 'monAdj' id banayi hai toh ye bhi dikhega
+    if(document.getElementById('monAdj')) {
+        document.getElementById('monAdj').innerText = "₹" + totals.short.toLocaleString();
+    }
+
+    updateChartWithData(filtered);
+}
+function updateChartWithData(data) {
+    const ctx = document.getElementById('salesChart').getContext('2d');
+
+    const last7 = [...data]
+        .sort((a,b) => new Date(a.date) - new Date(b.date))
+        .slice(-7);
+
+    if (myChart) myChart.destroy();
+
+    myChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: last7.map(h => h.date.split('-').reverse().slice(0,2).join('/')),
+            datasets: [
+                {
+                    label: 'Sale',
+                    data: last7.map(h => Number(h.ts_all || 0)),
+                },
+                {
+                    label: 'Expense',
+                    data: last7.map(h => Number(h.t_exp || 0) + Number(h.jeb || 0)),
+                }
+            ]
+        }
+    });
+}
+
+
+function renderApp() {
+    updateMonthDropdown(history);
+	const searchTerm = document.getElementById('searchBox').value.toLowerCase();
+    const selectedMonth = document.getElementById('monthFilter').value;
+
+    const filtered = history.filter(h => {
+        const d = new Date(h.date);
+        const matchesSearch = h.date.includes(searchTerm) || (h.ts_all && h.ts_all.toString().includes(searchTerm));
+        const matchesMonth = selectedMonth === "all" || d.getMonth() == selectedMonth;
+        return matchesSearch && matchesMonth;
+    });
+
+    const totals = filtered.reduce((acc, curr) => ({
+    sale: acc.sale + Number(curr.ts_all || 0),
+    cash: acc.cash + Number(curr.c_sav || 0),
+    bank: acc.bank + Number(curr.b_sav || 0),
+    net: acc.net + Number(curr.n_bal || 0),
+    netBank: acc.netBank + Number(curr.n_bank || 0),
+    // Monthly Exp = Total Exp (Shop+Gpay) + Jeb Out
+    exp: acc.exp + Number(curr.t_exp || 0) + Number(curr.jeb || 0),
+    short: acc.short + Number(curr.n_out || 0) 
+	}), { sale: 0, cash: 0, bank: 0, net: 0, exp: 0, short: 0,  netBank: 0 });
+
+    document.getElementById('monSale').innerText = "₹" + totals.sale.toLocaleString();
+    document.getElementById('monNet').innerText = "₹" + totals.net.toLocaleString();
+    document.getElementById('monCash').innerText = "₹" + totals.cash.toLocaleString();
+    document.getElementById('monBank').innerText = "₹" + totals.bank.toLocaleString();
+    document.getElementById('monExp').innerText = "₹" + totals.exp.toLocaleString();
+	if(document.getElementById('monBankNet')) {
+    document.getElementById('monBankNet').innerText = "₹" + totals.netBank.toLocaleString();
+	}
+    // Agar tune HTML mein 'monAdj' id banayi hai toh ye bhi dikhega
+    if(document.getElementById('monAdj')) {
+        document.getElementById('monAdj').innerText = "₹" + totals.short.toLocaleString();
+    }
+
+    const body = document.getElementById('historyBody');
+    body.innerHTML = filtered
+        .sort((a, b) => new Date(b.date) - new Date(a.date))
+        .map(h => {
+            const s = Number(h.ts_all || h.sale || 0);
+            const n = Number(h.n_bal || h.netCash || 0);
+			const b = Number(h.n_bank || 0);
+            const a = Number(h.n_out || h.adj || 0);
+            const jo = Number(h.jeb || h.jebOut || 0);
+            const ex = Number(h.t_exp || h.totalExp || 0);
+			const gpex = Number(h.gpay_ex || 0);
+            return `
+            <tr><td>
+			<button class="btn-table-wp" onclick="shareExistingRow('${h.date}')">
+    			<i class="fab fa-whatsapp"></i>
+			</button></td>
+                <td>${h.date.split('-').reverse().slice(0,2).join('/')}</td>
+                <td style="color:#ffd700">₹${s.toLocaleString()}</td>
+                <td>
+                    <span style="color:#00ff88">C: ${Number(h.c_sav || h.cash || 0).toLocaleString()}</span><br>
+                    <span style="color:#00d9ff">B: ${Number(h.b_sav || h.bank || 0).toLocaleString()}</span>
+                </td>
+                <td>
+                    <b style="color:${n < 0 ? '#ff4d4d' : '#ffd700'}">₹${n.toLocaleString()}</b>
+                    <div style="font-size:11px; color:#aaa; margin-top:4px; line-height:1.4;">
+                        40% Adj : ₹${a.toLocaleString()}<br>
+                        Exp (H) : ₹${jo.toLocaleString()}
+                    </div>
+                </td>
+				<td>
+                    <b style="color:${n < 0 ? '#ff4d4d' : '#ffd700'}">₹${b.toLocaleString()}</b>
+					<div style="font-size:11px; color:#aaa; margin-top:4px; line-height:1.4;">
+        Exp (G) : ₹${gpex.toLocaleString()}
+    </div>
+                </td>
+                <td style="color:#ff4d4d">
+                    Exp: ${ex.toLocaleString()}<br>
+                    Out : ${jo.toLocaleString()}
+                </td>
+                <td>
+                    <button class="btn-del" onclick="askDelete('${h.date}')">x</button>
+                    <button class="btn-sync" style="padding:4px 8px; font-size:0.65rem;" onclick="editEntry('${h.date}')">✎</button>
+                </td>
+            </tr>`;
+        }).join('');
+}
+let dateToDelete = null; // Ye yaad rakhega konsi date udaani hai
+function shareExistingRow(date) {
+    const entry = history.find(h => h.date === date);
+    if (entry) {
+        shareToWhatsApp(entry); // Wahi purana function use karenge jo format banata hai
+    } else {
+        showToast("Error: Data nahi mila!", "error");
+    }
+}
+// 1. Toaster dikhane wala function
+function askDelete(date) {
+    dateToDelete = date;
+    const toast = document.getElementById('confirmToast');
+    document.getElementById('confirmMsg').innerText = `Uda du ye wali entry?`;
+    
+    // Naya 'Haan' logic
+    document.getElementById('toastConfirmBtn').onclick = function() {
+        closeConfirmToast(); // Pehle toaster hatao
+        deleteEntry(dateToDelete); // Phir seedha delete karo (bina dubara pooche)
+    };
+    
+    toast.classList.add('show');
+}
+
+// 2. Toaster chhupane wala function
+function closeConfirmToast() {
+    document.getElementById('confirmToast').classList.remove('show');
+}
+// Ye code apne renderApp() ke upar ya filters section mein daal sakte hain
+function filterHistory() {
+    const searchTerm = document.getElementById('historySearch').value.toLowerCase();
+    const selectedMonth = document.getElementById('monthSelect').value;
+    
+    const filtered = history.filter(h => {
+        const date = new Date(h.date);
+        const matchesSearch = h.date.includes(searchTerm) || h.sale.toString().includes(searchTerm);
+        const matchesMonth = selectedMonth === "all" || date.getMonth() == selectedMonth;
+        return matchesSearch && matchesMonth;
+    });
+    
+    renderTable(filtered); // Table ko refresh karne ke liye
+}
+
+
+// WhatsApp par report bhejne ka function
+function shareWhatsApp() {
+    const sale = document.getElementById('monSale').innerText;
+    const net = document.getElementById('monNet').innerText;
+    const msg = `📊 *JMD TRADERS REPORT*\n💰 Total Sale: ${sale}\n💵 Net Cash: ${net}\n\nApp se generated.`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`);
+}
+
+    function updateChart() {
+    const ctx = document.getElementById('salesChart').getContext('2d');
+    
+    // Sirf pichle 7 din ka data, sahi order mein
+    const last7 = [...history]
+        .sort((a,b) => new Date(a.date) - new Date(b.date))
+        .slice(-7);
+
+    if (myChart) myChart.destroy();
+
+    myChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            // Date format: DD/MM
+            labels: last7.map(h => h.date.split('-').reverse().slice(0,2).join('/')),
+            datasets: [
+                { 
+                    label: 'Daily Sale', 
+                    data: last7.map(h => Number(h.ts_all || 0)), // Sahi variable: ts_all
+                    borderColor: '#f1c40f', 
+                    backgroundColor: 'rgba(241, 196, 15, 0.1)', 
+                    tension: 0.3, 
+                    fill: true 
+                },
+                { 
+                    label: 'Daily Expense', 
+                    // Sahi variables: t_exp (Total) aur jeb (Pocket Expense)
+                    data: last7.map(h => Number(h.t_exp || 0) + Number(h.jeb || 0)), 
+                    borderColor: '#e74c3c', 
+                    backgroundColor: 'rgba(231, 76, 60, 0.1)', 
+                    tension: 0.3, 
+                    fill: true 
+                }
+            ]
+        },
+        options: { 
+            responsive: true, 
+            maintainAspectRatio: false, 
+            plugins: { 
+                legend: { labels: { color: '#888', font: { size: 10 } } } 
+            }, 
+            scales: { 
+                y: { grid: { color: '#222' }, ticks: { color: '#888' } }, 
+                x: { grid: { display: false }, ticks: { color: '#888' } } 
+            } 
+        }
+    });
+}
+
+    function exportData() {
+        const blob = new Blob([JSON.stringify(history)], {type: 'application/json'});
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `JMD_Backup_${today}.json`;
+        a.click();
+    }
+
+    function importData(e) {
+    const reader = new FileReader();
+    reader.onload = (f) => {
+        try {
+            const imported = JSON.parse(f.target.result);
+            // Purana aur naya data merge karke duplicates hatana
+            const combined = [...history, ...imported];
+            const unique = Array.from(new Map(combined.map(item => [item.date, item])).values());
+            
+            history = unique;
+            localStorage.setItem('jmd_traders_v5', JSON.stringify(history));
+            renderApp();
+            showToast("Import Success! ✅", "success");
+        } catch (err) {
+            alert("File sahi nahi hai bhai!");
+        }
+    };
+    reader.readAsText(e.target.files[0]);
+}
+// 1. Dashboard Update Logic (Fixed IDs)
+function updateLiveDash() {
+    const v = (id) => {
+        const el = document.getElementById(id);
+        return el ? (parseFloat(el.value) || 0) : 0;
+    };
+
+    // Live Calculation Logic
+    // S1 = (Closing + Home + Exp) - Opening + GPay
+    const s1 = ((v('s1_close') + v('s1_home') + v('s1_exp')) - v('s1_open')) + v('s1_gpay');
+    // S2 = (Closing + Home + Exp) - Opening + GPay
+    const s2 = ((v('s2_close') + v('s2_home') + v('s2_exp')) - v('s2_open')) + v('s2_gpay');
+
+    const total = s1 + s2;
+    const profit = Math.round((total * 0.40) / 100) * 100;
+
+    // UI Update (Dashboard)
+    const sDisp = document.getElementById('total_sales_display');
+    const pDisp = document.getElementById('net_profit_display');
+    
+    if (sDisp) sDisp.innerText = `₹${total.toLocaleString()}`;
+    if (pDisp) pDisp.innerText = `₹${profit.toLocaleString()}`;
+}
+
+document.addEventListener('input', function (e) {
+    if (e.target.type === 'number' || e.target.id === 'exp_details') {
+        if (e.target.id === 'exp_details') {
+            if (typeof calculateLiveExpenses === "function") calculateLiveExpenses();
+        }
+        updateLiveDash();
+    }
+}); // <--- Ye bracket missing tha pehle
+
+// 3. PAGE LOAD LOGIC (Data aane ke baad Opening Cash bharega)
+document.addEventListener('DOMContentLoaded', async () => {
+    // Pehle data aane do
+    await fetchSheetData(); 
+    const currentMonth = new Date().getMonth(); // 0-11 return karta hai
+    const mFilter = document.getElementById('monthFilter');
+    if (mFilter) {
+        mFilter.value = currentMonth.toString();
+    }
+    // Ab automatic opening cash fill hoga
+    autoFillOpeningCash(); 
+    
+    renderApp();
+    updateLiveDash();
+	setTimeout(updateDashboardOnly, 400);    
+	console.log("JMD App Ready! Opening Cash & Dash Updated.");
+});
+document.addEventListener('contextmenu', (e) => {
+    e.preventDefault();
+    showToast("Bhai, yahan right click allow nahi hai! 🍷", "info");
+});
+document.addEventListener('keydown', (e) => {
+    if (e.key === "F12") {
+        e.preventDefault();
+        return false;
+    }
+
+    if (e.ctrlKey && (e.shiftKey && (e.key === 'I' || e.key === 'J') || e.key === 'u' || e.key === 's')) {
+        e.preventDefault();
+        return false;
+    }
+});
+window.addEventListener('load', updateLiveDash);
+</script>
+</body>
+</html>
