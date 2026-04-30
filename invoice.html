@@ -1,0 +1,3561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>JMD Traders - Business Suite</title>
+    <meta name="description" content="JMD Traders billing, reports and business management system">
+    <meta name="theme-color" content="#850026">
+
+    <!-- ✅ LOGO -->
+    <link rel="icon" href="assets/logo.webp">
+    <link rel="apple-touch-icon" href="assets/logo.webp">
+
+    <!-- ✅ PWA FIX -->
+    <link rel="manifest" href="manifest.json">
+
+    <!-- ✅ JS LIBRARIES (STABLE) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <!-- ✅ ICONS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+:root { --wine: #4a0e0e; --text: #1e293b; --light: #f8fafc; }
+* { box-sizing: border-box; margin: 0; padding: 0; } /* Global Box Sizing */
+body { font-family: 'Segoe UI', sans-serif; background: #f1f5f9; padding: 20px; overflow-x: hidden; }
+/* Desktop Grid Layout */
+.app-layout {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 30px;
+    max-width: 1400px;
+    margin: auto;
+}
+		
+.sidebar { display: flex; flex-direction: column; gap: 20px; }
+.main-container { display: flex; flex-direction: column; gap: 30px; width: 100%; min-width: 0; }
+.side-box, .invoice-card, .history-card {
+    background: white; border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08); padding: 25px;
+}
+/* Header & Meta Grid Desktop */
+
+.logo { width: 80px; height: 80px; border-radius: 50%; border: 2px solid var(--wine); }
+.details h1 { font-size: 22px; color: var(--wine); }
+.details p { font-size: 12px; color: #64748b; }
+.header { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: flex-start; 
+    border-bottom: 2px solid #eee; 
+    padding-bottom: 20px; 
+    margin-bottom: 20px; 
+}
+
+.brand { display: flex; gap: 15px; flex: 1; }
+
+.header-meta-row { 
+    display: flex; 
+    gap: 10px; 
+    justify-content: flex-end; 
+    align-items: flex-end;
+}
+.header-meta-row .field { width: 140px; } /* Fixed width taaki Date aur Inv no ek line mein rahein */
+
+/* --- Bill Info Fix: Bill To, Payment Type, aur Amount ek line mein --- */
+.meta-grid { 
+    display: flex !important; 
+    flex-direction: row !important; 
+    gap: 15px; 
+    margin-bottom: 25px; 
+    align-items: flex-end; /* Labels ke sath sahi align karne ke liye */
+}
+
+/* Width Settings */
+.meta-grid .field:first-child { 
+    flex: 2; /* Customer Name wala box bada rahega */
+}
+
+.meta-grid .field:last-child { 
+    flex: 1; /* Contact No wala box thoda chota */
+}
+/* Item Table Desktop */
+.table-head { display: grid; grid-template-columns: 3fr 1fr 1fr 1fr 40px; gap: 10px; background: var(--wine); color: white; padding: 12px; border-radius: 6px; font-size: 12px; }
+<!-- .item-row label { display: none; } -->
+input { padding: 10px; border: 1px solid #e2e8f0; border-radius: 6px; width: 100%; }
+.summary-box { float: right; width: 300px; margin-top: 30px; border-top: 2px solid #eee; padding-top: 20px; }
+        .sum-line { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px; align-items: center; }
+        .total-line { color: var(--wine); font-weight: 800; font-size: 18px; border-top: 1px solid #eee; padding-top: 10px; }
+
+@media (max-width: 768px) {
+    body { 
+        padding: 5px; 
+        margin: 0 !important;
+        background: #f1f5f9; /* Taki background color bana rahe */
+    }
+#toastr {
+        white-space: normal; 
+        min-width: 200px;
+    }
+    .app-layout { 
+        grid-template-columns: 1fr; 
+        gap: 0 !important; /* Sidebar aur Main container ke beech ka gap mobile pe khatam */
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    /* 2. White Card (invoice-card) ko edges tak phailao */
+    .invoice-card, .history-card, .side-box {
+        border-radius: 12px /* Mobile par rounded corners ki jagah full width */
+        margin: 0 0 10px 0 !important; /* Sirf niche 10px ka gap rakha hai */
+        width: 100% !important;
+        box-shadow: none !important; /* Gaps hatane par shadow ajeeb lag sakti hai */
+        padding: 15px 10px !important; /* Box ke andar thoda sa gap zaroori hai */
+    }
+.side-box:nth-child(2) { 
+        display: none !important; 
+    }
+
+    /* Sidebar ko normal block banao taaki Summary top pe dikhe */
+    .sidebar {
+        display: block !important;
+        width: 100% !important;
+        gap: 10px !important;
+    }
+
+    /* Summary box ko thoda compact karo mobile ke liye */
+    .side-box:nth-child(1) {
+        margin-bottom: 10px !important;
+        padding: 15px !important;
+    }
+    /* 3. Header aur Meta Grid adjustment */
+    .header { 
+        padding-bottom: 15px !important; 
+    }
+    .hide-on-mobile {
+        display: none !important;
+    }
+    .meta-grid {
+        margin-bottom: 15px !important;
+    }
+    .header { flex-direction: column !important; align-items: flex-start !important; }
+    .header-meta-row { width: 100%; justify-content: flex-start; margin-top: 15px; }
+    .header-meta-row .field { flex: 1; }
+    .meta-grid { gap: 5px; } /* Space kam kar di */
+    .meta-grid label { font-size: 9px; } /* Label chota kar diya */
+    .meta-grid input { 
+        font-size: 12px; 
+        padding: 8px 5px; 
+    }
+    /* Item Card Fix */
+    .table-head { display: none !important; }
+    .item-row { 
+        display: block !important; /* Stack rows vertically */
+        position: relative !important;
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 8px !important;
+        padding: 8px !important;
+        margin-bottom: 8px !important;
+        background: #fff !important;
+    }
+
+    /* Row 1: Item Name (Full Width) */
+    .row-line-1 { 
+        width: 100% !important; 
+        margin-bottom: 10px !important;
+        padding-right: 25px !important; /* Space for X button */
+    }
+
+    /* Row 2: Qty, Rate, Amount (Teeno ek line mein) */
+    .row-line-2 { 
+        display: flex !important; 
+        flex-direction: row !important;
+        gap: 8px !important;
+        align-items: flex-end !important;
+    }
+    .row-line-2 div { 
+        flex: 1 !important; 
+    }
+
+    /* Delete Button: Top Right Corner */
+    .btn-rm { 
+        position: absolute !important;
+        top: 8px !important;
+        right: 8px !important;
+        margin: 0 !important;
+        padding: 5px !important;
+        font-size: 20px !important;
+        color: #ef4444 !important;
+        background: transparent !important;
+        border: none !important;
+    }
+
+    /* Labels chote aur saaf */
+    .item-row label { 
+        display: block !important; 
+        font-size: 10px !important; 
+        color: #64748b !important;
+        margin-bottom: 2px !important;
+    }
+    .item-row input { 
+        font-size: 13px !important; 
+        padding: 6px !important; 
+    }
+
+    /* History Scroll Fix */
+    .history-card { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    table { min-width: 600px; }
+    
+    .summary-box { width: 100%; float: none; }
+}
+.button-row { 
+    display: flex; 
+    gap: 5px; 
+    margin-top: 5px;
+    width: 100%;
+}
+
+.btn-dl { 
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 15px 5px;
+    border: none;
+    border-radius: 10px;
+    font-weight: bold;
+    color: white !important; /* Text hamesha white rahega */
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+/* --- HAR BUTTON KA APNA ASLI RANG --- */
+.color-blue { 
+    flex: 3; 
+    background-color: #007bff !important; 
+}
+
+.color-wine { 
+    flex: 1.2; 
+    background-color: #722f37 !important; 
+}
+
+.color-whatsapp { 
+    flex: 1.2; 
+    background-color: #075e54 !important; 
+}
+
+/* --- SHINING EFFECT --- */
+.shine {
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        120deg, 
+        transparent, 
+        rgba(255, 255, 255, 0.4), 
+        transparent
+    );
+    animation: shine-loop 3s infinite;
+}
+
+@keyframes shine-loop {
+    0% { left: -100%; }
+    20% { left: 100%; }
+    100% { left: 100%; }
+}
+
+/* Mobile responsive logic */
+@media (max-width: 500px) {
+    .hide-mobile { display: none; }
+    .btn-dl { padding: 12px 2px; }
+    .color-blue { flex: 4; } /* Mobile pe Save Bill aur bada dikhega */
+}
+
+
+/* Neela Button (Save Mode) */
+.btn-primary {
+    background-color: #007bff !important;
+    color: white;
+    border: none;
+}
+
+/* Peela Button (Update Mode) */
+.btn-warning {
+    background-color: #ffc107 !important;
+    color: black;
+    border: none;
+}
+@media (min-width: 769px) {
+    /* Header (Inv No & Date) ek line mein */
+    .header-meta-row {
+        display: flex !important;
+        flex-direction: row !important;
+        gap: 20px !important;
+        align-items: center !important;
+    }
+    .header-meta-row .field {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        gap: 8px;
+        width: auto !important;
+    }
+    .header-meta-row label { margin-bottom: 0 !important; white-space: nowrap; }
+
+    /* Bill To aur Contact No ek line mein */
+    .meta-grid {
+        display: flex !important;
+        flex-direction: row !important;
+        gap: 20px !important;
+        align-items: flex-end !important;
+    }
+    .meta-grid .field { display: flex !important; flex-direction: column !important; }
+    .meta-grid .field:first-child { flex: 3 !important; } /* Bill To bada */
+    .meta-grid .field:last-child { flex: 1 !important; }  /* Contact chota */
+
+    /* Item Row Setup */
+    .item-row {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        padding: 10px 0 !important;
+        border-bottom: 1px solid #eee !important;
+    }
+    .item-row label { display: none !important; }
+    .row-line-1 { flex: 0 0 45% !important; padding-right: 15px !important; }
+    .row-line-2 { 
+        flex: 0 0 50% !important; 
+        display: flex !important; 
+        justify-content: space-between !important; 
+        align-items: center !important;
+    }.row-line-2 { 
+        flex: 0 0 50% !important; 
+        display: flex !important; 
+        flex-direction: row !important; /* Force horizontal layout */
+        justify-content: space-between !important; 
+        align-items: center !important;
+        gap: 15px !important; /* Yeh gap dono boxes ko alag rakhega */
+    }
+
+    /* Qty Box */
+    .row-line-2 div:nth-child(1) { 
+        flex: 1 !important; 
+    }
+
+    /* Rate Box */
+    .row-line-2 div:nth-child(2) { 
+        flex: 1 !important; 
+    }
+
+    /* Amount Box */
+    .row-line-2 div:nth-child(3) { 
+        flex: 1 !important; 
+        text-align: right !important;
+        padding-right: 10px;
+    }
+
+    /* Input boxes ki width bhi control mein rahegi */
+    .row-line-2 input {
+        width: 100% !important;
+    }
+    .btn-rm { flex: 0 0 5% !important; text-align: right; }
+}
+label { font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: uppercase; margin-bottom: 5px; }
+/* Save Bill ko specific green/blue color do */
+.btn-save { background-color: #2563eb !important; }
+.btn-pdf { background-color: #10b981 !important; }
+.quick-btn { width: 100%; text-align: left; padding: 12px; margin-bottom: 8px; cursor: pointer; border: 1px solid #e2e8f0; border-radius: 8px; background: #f8fafc; font-weight: 600; transition: 0.3s; }
+.quick-btn:hover { background: var(--wine); color: white; }
+.btn { padding: 12px 25px; border: none; border-radius: 6px; font-weight: 700; cursor: pointer; transition: 0.2s; }
+.btn-add { background: #f1f5f9; color: var(--text); margin-top: 15px; width: 100%; }
+.btn-dl { background: #10b981; color: white; margin-top: 40px; width: 100%; font-size: 16px; }
+.btn-rm { font-size: 24px; color: #ef4444; background: none; border: none; cursor: pointer; }
+/* Suggestion Box Styling */
+#customSuggest div {
+    padding: 12px;
+    cursor: pointer;
+    border-bottom: 1px solid #eee;
+    background-color: white !important; /* Force white background */
+    color: #1e293b;
+    transition: all 0.1s ease;
+}
+
+/* 2. Hover Effect (For PC) */
+#customSuggest div:hover {
+    background-color: #f1f5f9 !important;
+}
+
+/* 3. Click/Touch Feedback (For Mobile) */
+/* Isse tap karte hi color change hoga */
+#customSuggest div:active {
+    background-color: #cbd5e1 !important; 
+    transform: scale(0.97); /* Halkasa dabne ka effect */
+}
+
+#toastr {
+    position: fixed;
+    bottom: 15px; /* Thoda aur niche corner mein */
+    left: 50%;
+    transform: translateX(-50%);
+    padding:10px 20px; /* Padding kam kar di */
+    border-radius: 4px;
+    font-size: 0.85rem; /* Font size chhota kiya */
+    font-weight: 700;
+    z-index: 10000;
+    display: none;
+    width: max-content; /* Jitna bada text, utni width */
+    min-width: 280px;   /* Itna toh rahega hi */
+    max-width: 90%;    /* Mobile par screen se bahar na jaye */
+    text-align: center; /* Center mein text zyada clean lagta hai */
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    transition: opacity 0.3s ease;
+    border-left: 4px solid; /* Patli side patti */
+	white-space: nowrap;
+}
+
+/* Success - Slim Green */
+.toast-success {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+    border-left: 4px solid #28a745;
+}
+
+/* Error - Slim Red */
+.toast-error {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+    border-left: 4px solid #dc3545;
+}
+
+/* Info - Slim Blue */
+.toast-info {
+    background: #d1ecf1;
+    color: #0c5460;
+    border: 1px solid #bee5eb;
+    border-left: 4px solid #17a2b8;
+}
+#watermarkLogo {
+        display: none;
+    }
+	
+	/* Blue - Save Mode */
+.btn-primary {
+    background-color: #007bff !important;
+    color: white;
+}
+/* Labels ko bold karne ke liye */
+.field label, .sum-line span, .total-line span {
+    font-weight: 700 !important;
+    color: #333;
+}
+
+/* Input values ko Sentence Case (Manoj Verma) dikhane ke liye */
+input[type="text"] {
+    text-transform: capitalize;
+}
+
+/* Summary Box ke numbers ko bhi bold rakhein */
+#subTotal, #grandTotal, #balDue {
+    font-weight: 800;
+}
+/* Yellow - Update Mode */
+.btn-warning {
+    background-color: #ffc107 !important;
+    color: black;
+}
+/* PC View (Default) */
+.meta-grid { 
+    display: flex !important; 
+    flex-direction: row !important; 
+    gap: 15px; 
+    align-items: flex-end;
+}
+
+.meta-grid .field:first-child { flex: 2; }
+.meta-grid .field:last-child { flex: 1; }
+
+/* Address row setup */
+#rentalAddressSection .field {
+    display: flex;
+    flex-direction: column;margin-bottom: 10px !important;
+}
+
+/* --- Mobile Fix --- */
+@media screen and (max-width: 600px) {
+    .meta-grid {
+        gap: 10px !important;
+        margin-bottom: 10px !important;
+    }
+    
+    .meta-grid label, #rentalAddressSection label { 
+        font-size: 9px !important; 
+    }
+    
+    .meta-grid input, #rentalAddressSection input { 
+        font-size: 12px !important; 
+        padding: 8px 5px !important; margin-bottom: 10px !important;
+    }
+}
+@keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
+@keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
+/* Compact Buttons */
+.lite-btn {
+    background: #fff;
+    border: 1px solid #e9dca9;
+    border-radius: 8px;
+    padding: 8px 2px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.lite-btn i { font-size: 14px; color: #450a0a; }
+.lite-btn span { font-size: 9px; font-weight: 700; color: #334155; text-transform: uppercase; }
+.lite-btn:active { background: #fdfce8; transform: scale(0.96); border-color: #fbbf24; }
+
+/* Slim Input Labels */
+.slim-input label { font-size: 8px; font-weight: 800; color: #8e7e4a; margin-bottom: 2px; display: block; }
+.slim-input input { 
+    width: 100%; padding: 6px; border: 1px solid #e9dca9; border-radius: 6px; 
+    font-size: 11px; font-weight: 600; outline: none; background: #fff;
+}
+
+/* Compact Toggle */
+.compact-switch { position: relative; width: 34px; height: 18px; }
+.compact-slider { 
+    position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; 
+    background: rgba(255,255,255,0.2); transition: .4s; border-radius: 20px; 
+}
+.compact-slider:before { 
+    position: absolute; content: ""; height: 14px; width: 14px; left: 2px; bottom: 2px; 
+    background: white; transition: .4s; border-radius: 50%;
+}.selected-item {
+    background: #450a0a !important;
+    border: 2px solid #fbbf24 !important;
+    color: #fbbf24 !important;
+    transform: scale(1.05);
+}
+.selected-item i, .selected-item span { color: #fbbf24 !important; }
+#isRentMode:checked + .compact-slider { background: #fbbf24; }
+#isRentMode:checked + .compact-slider:before { transform: translateX(16px); }
+/* Premium JMD Rental Buttons */
+.lite-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 12px 8px;
+    background: #ffffff;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.lite-btn i {
+    font-size: 18px;
+    color: #450a0a; /* Maroon */
+    transition: transform 0.3s ease;
+}
+
+.lite-btn span {
+    font-size: 11px;
+    font-weight: 700;
+    color: #4b5563;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+/* Hover Effect */
+.lite-btn:hover {
+    border-color: #fbbf24; /* Gold */
+    background: #fffbeb;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(251, 191, 36, 0.2);
+}
+
+.lite-btn:hover i {
+    transform: scale(1.2);
+    color: #b45309;
+}
+
+/* Active State (Jab item list mein add ho jaye) */
+.lite-btn.active-rent {
+    background: #450a0a; /* Maroon background */
+    border-color: #fbbf24;
+    animation: pulse-gold 1.5s infinite;
+}
+
+.lite-btn.active-rent i, 
+.lite-btn.active-rent span {
+    color: #fbbf24 !important; /* Gold text/icon */
+}
+/* Buttons ko compact karne ke liye */
+.lite-btn {
+    padding: 8px 4px !important; /* Padding kam kar di */
+    min-height: 60px;
+    border-bottom: 3px solid #cbd5e1 !important; /* Mobile par thoda kam depth */
+}
+
+.lite-btn i {
+    font-size: 16px !important; /* Icon thoda chhota */
+}
+
+.lite-btn span {
+    font-size: 9px !important; /* Text chhota kiya */
+    white-space: nowrap; /* Text line break na ho */
+}
+
+/* Input boxes ke liye compact style */
+.slim-input input {
+    height: 35px; /* Height fix ki taaki screen na bhare */
+    font-size: 14px !important;
+    padding: 2px !important;
+}
+
+.slim-input label {
+    font-size: 8px !important; /* Label chhota kiya */
+    margin-bottom: 2px;
+}
+
+/* Mobile specific adjustments (max-width: 480px) */
+@media (max-width: 480px) {
+    #rentFields {
+        padding: 8px !important;
+    }
+    
+    #rentQuickControls {
+        padding: 8px !important;
+        gap: 5px !important;
+    }
+    
+    .lite-btn {
+        gap: 4px !important;
+    }
+
+    /* Agar mobile par 3 column bohot tight lag rahe hain, 
+       toh gap kam karo taaki screen se bahar na jaye */
+    #rentFields > div {
+        gap: 5px !important;
+    }
+}
+/* Normal Row */
+.item-row {
+    transition: all 0.2s ease;
+    border-bottom: 1px solid #eee;
+    padding: 10px;
+    position: relative;
+    background: #fff;
+}
+
+/* PC Hover Effect */
+.item-row:hover {
+    background-color: #f8f9fa;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+    z-index: 2;
+}
+
+/* Rental Highlight (PC & Mobile) */
+.rental-highlight {
+    background-color: #fff9db !important; /* Golden BG */
+    border-left: 5px solid #fab005 !important; /* Gold Border */
+    margin: 4px 0;
+    border-radius: 4px;
+}
+
+.rental-highlight:hover {
+    background-color: #fff3bf !important; /* Slightly darker on hover */
+    transform: scale(1.01); /* Thoda bada dikhega PC par */
+}
+
+/* Mobile Specific */
+@media (max-width: 480px) {
+    .rental-highlight {
+        margin: 8px 0; /* Mobile par thoda gap taaki items mix na ho */
+        box-shadow: 0 2px 5px rgba(250, 176, 5, 0.2);
+    }
+}
+@keyframes pulse-gold {
+    0% { box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.4); }
+    70% { box-shadow: 0 0 0 10px rgba(251, 191, 36, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(251, 191, 36, 0); }
+}
+#settleBanner {
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}.stats-toggle {
+    cursor: pointer;
+    font-size: 10px;
+    background: #721422;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 10px;
+    float: right;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+.stats-toggle:hover { background: #a01d31; }
+#billSearchInput:focus {
+    border-color: var(--wine) !important;
+    box-shadow: 0 4px 12px rgba(114, 20, 34, 0.1) !important;
+    background-color: #fff;
+}
+
+.history-card {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+}
+.quick-btn {
+    width: 100%;
+    padding: 8px 12px;
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.quick-btn:hover {
+    background: #fffafa;
+    border-color: var(--wine);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    transform: translateY(-1px);
+}
+
+.quick-btn:active {
+    transform: scale(0.98);
+}
+
+@media (max-width: 768px) {
+    .hide-on-mobile {
+        display: none !important;
+    }
+}:root {
+    --wine: #800020;
+    --nav-bg: #f8f9fa; /* Page se alag light grey background */
+    --pill-active: #ffebf0; /* Active icon ka background */
+}
+
+.app-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 70px;
+    background: var(--nav-bg);
+    display: flex;
+    align-items: center;
+    border-top: 1px solid #ddd;
+    box-shadow: 0 -4px 10px rgba(0,0,0,0.05);
+    z-index: 10000;
+}
+
+.nav-item {
+    flex: 1;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #555;
+    transition: 0.3s;
+}
+
+/* Pill Shape Logic */
+.icon-pill {
+    padding: 4px 20px;
+    border-radius: 20px;
+    margin-bottom: 4px;
+    transition: 0.3s;
+    font-size: 18px;
+}
+
+/* Active State - Page Change par automatically differentiate karega */
+.nav-item.active .icon-pill {
+    background: var(--pill-active);
+    color: var(--wine);
+}
+
+.nav-item.active span {
+    color: var(--wine);
+    font-weight: 800;
+}
+
+/* Loading Spinner Animation */
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+body { padding-bottom: 80px; }
+.logo-wrapper {
+    position: relative;
+    width: 150px; /* Size thoda bada kiya hai clear dikhne ke liye */
+    height: 150px;
+    margin-bottom: 20px;
+}
+
+.logo-base {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    opacity: 0.8; /* Grey waala thoda sa soft dikhega */
+}
+
+.logo-anim {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 2;
+    /* Niche se upar clipping ka logic */
+    clip-path: inset(100% 0 0 0); 
+    animation: customFill 2.5s ease-in-out infinite;
+}
+
+@keyframes customFill {
+    0% {
+        clip-path: inset(100% 0 0 0);
+    }
+    60% {
+        clip-path: inset(0% 0 0 0);
+    }
+    80% {
+        clip-path: inset(0% 0 0 0);
+        opacity: 1;
+    }
+    100% {
+        clip-path: inset(0% 0 0 0);
+        opacity: 0; /* Smooth fade out transition */
+    }
+}
+
+.loading-text {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 800;
+    font-size: 14px;
+    color: #800020; /* Wine Color */
+    letter-spacing: 1.5px;
+    text-align: center;
+    animation: textPulse 1.5s infinite;
+}
+
+@keyframes textPulse {
+    0%, 100% { opacity: 0.4; transform: scale(0.98); }
+    50% { opacity: 1; transform: scale(1); }
+}.app-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 60px; /* Pehle 70px tha, ab 60px hai */
+    background: #f8f9fa;
+    display: flex;
+    align-items: center;
+    border-top: 1px solid #ddd;
+    box-shadow: 0 -3px 8px rgba(0,0,0,0.05);
+    z-index: 10000;
+}
+
+.nav-item {
+    flex: 1;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #64748b;
+    transition: 0.3s;
+}
+
+.icon-pill {
+    padding: 2px 16px; /* Padding kam ki hai */
+    border-radius: 15px;
+    margin-bottom: 2px;
+    transition: 0.2s;
+    font-size: 16px; /* Icon size chhota kiya */
+}
+
+.nav-item span {
+    font-size: 9px; /* Font size chhota kiya */
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+/* Active State */
+.nav-item.active .icon-pill {
+    background: #ffebf0; /* Soft Wine tint */
+    color: #800020;
+}
+
+.nav-item.active span {
+    color: #800020;
+}
+</style>
+</head>
+        
+<body>
+    <div class="app-layout">
+    
+    <div class="sidebar">
+    <div class="side-box">
+    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom:1px solid #eee; padding-bottom:10px;">
+        <h3 style="color:var(--wine); font-size:14px; margin:0;">SUMMARY</h3>
+        <span id="statsToggleBtn" onclick="cycleStatsMode()" style="cursor:pointer; font-size:10px; background:var(--wine); color:white; padding:2px 8px; border-radius:12px; font-weight:bold; text-transform:uppercase;">Today</span>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top:10px;">
+        <div>
+            <label id="labelSales" style="font-size:9px; color:#666;">SALES</label>
+            <div id="dayTotal" style="font-size:18px; font-weight:800; color:#10b981;">₹0.00</div>
+        </div>
+        <div>
+            <label style="font-size:9px; color:#666;">BILLS</label>
+            <div id="dayCount" style="font-size:18px; font-weight:800;">0</div>
+        </div>
+        <div>
+            <label style="font-size:9px; color:#666;">DEPOSITS</label>
+            <div id="dayDeposit" style="font-size:18px; font-weight:800; color:#f59e0b;">₹0.00</div>
+        </div>
+        <div>
+            <label style="font-size:9px; color:#666;">PENDING RENTS</label>
+            <div id="dayPending" style="font-size:18px; font-weight:800; color:#ef4444;">0</div>
+        </div>
+    </div>
+
+    <div style="margin-top: 15px; padding-top: 10px; border-top: 1px dashed #eee;">
+        <label style="font-size:10px; font-weight: bold; color: #444; display:block; margin-bottom:8px;">QUICK FILTER</label>
+        <div style="display: flex; gap: 4px; background: #f0f0f0; padding: 3px; border-radius: 8px;">
+            <button onclick="applyNewFilter('all')" id="btnFilterAll" style="flex:1; border:none; padding:5px; border-radius:6px; font-size:10px; font-weight:bold; cursor:pointer; background:#fff; box-shadow:0 1px 3px rgba(0,0,0,0.1);">ALL</button>
+            <button onclick="applyNewFilter('Rented')" id="btnFilterRented" style="flex:1; border:none; padding:5px; border-radius:6px; font-size:10px; font-weight:bold; cursor:pointer; background:transparent;">RENTED</button>
+            <button onclick="applyNewFilter('Returned')" id="btnFilterReturned" style="flex:1; border:none; padding:5px; border-radius:6px; font-size:10px; font-weight:bold; cursor:pointer; background:transparent;">RETURNED</button>
+        </div>
+    </div>
+</div>
+<div id="qrcode" style="display:none;"></div>
+        
+	<div class="side-box hide-on-mobile">
+    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom:1px solid #eee; padding-bottom:10px; margin-bottom:10px;">
+        <h3 style="color:var(--wine); font-size:14px; margin:0;">FAST BILLING</h3>
+        <span style="font-size:9px; color:#999; font-weight:bold;">AUTO-SYNC</span>
+    </div>
+    
+    <div id="fastBillingContainer" style="display: flex; flex-direction: column; gap: 6px;">
+        <p style="font-size:11px; color:#ccc; text-align:center;">Loading Inventory...</p>
+    </div>
+    </div>
+</div>
+<div id="hidden-qr-design" style="position: absolute; left: -9999px; top : -9999px">
+    <div id="qr-card-template" style="width: 1080px; height: 1920px; position: relative;">
+		<img src="assets/qr.png" style="width:100%; height:100%;">
+        <div id="actual-qr-code" style="position: absolute; top: 765px; left: 290px; width: 500px; height: 500px; background: white; display: flex; align-items: center; justify-content: center;"></div>
+  </div>
+</div>
+
+<div class="main-container">
+<div class="invoice-card">
+<div class="header">
+    <div class="brand">
+        <img id="logoImg" class="logo" src="assets/icon.png">
+        <div class="details">
+            <h1>JMD Traders</h1>
+            <p>Branch 1 : Shop no.03, Gajanan Chowk</p>
+            <p>Branch 2 : Shop no.10, Vastu B, </p>
+			<p>Copyright by Animesh | Since: 2021</p>
+        </div>
+    </div>
+    <div class="header-meta-row" style="font-weight: 700;">
+        <div class="field">
+            <label>Inv No.</label>
+            <input type="text" style="font-weight: bold;" id="invNo" readonly style="background-color: #f0f0f0; cursor: not-allowed;">
+        </div>
+        <div class="field">
+            <label>Date</label>
+            <input type="date" style="font-weight: bold;" id="invDate">
+        </div>
+    </div>
+</div>
+
+    <div class="meta-container">
+    <div class="meta-grid">
+        <div class="field">
+            <label>Bill To <span style="color: red;">*</span></label>
+            <input type="text" style="font-weight: bold;" id="billTo" placeholder="Customer Name">
+        </div>
+        <div class="field">
+            <label>Contact No <span style="color: red;">*</span></label>
+            <input type="tel" style="font-weight: bold;"
+                   id="custContact" 
+                   placeholder="Enter 10 Digit Number" 
+                   maxlength="10" 
+                   oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);">
+        </div>
+    </div>
+
+    <div id="rentalAddressSection" style="display: none; margin-top: 10px;">
+        <div class="field">
+            <label style="color: #450a0a; font-weight: bold;">Delivery/Site Address</label>
+            <input type="text" id="custAddress" placeholder="Enter complete delivery address..." 
+                   style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #fbbf24; background: #fffdf0; font-weight: bold;">
+        </div>
+    </div>
+</div>
+
+    <div class="table-head" style="font-weight: 800;">
+        <div>ITEM DESCRIPTION</div>
+        <div>QTY</div>
+        <div>RATE</div>
+		<div>DAYS</div>
+        <div style="text-align:right">AMOUNT</div>
+        <div></div>
+    </div>
+	<div id="customSuggest" style="display:none; position:absolute; background:white; border:1px solid #ccc; z-index:1000; box-shadow:0 4px 8px rgba(0,0,0,0.1); width:200px; border-radius:8px; overflow:hidden;"></div>
+    <div id="itemsContainer" style="font-weight: bold;"></div>
+    <button class="btn btn-add" onclick="addItem()">+ Add Item</button>
+
+
+<div class="jmd-rental-lite" style="background: #fffdf0; border-radius: 12px; border: 1px solid #f3e8c1; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin: 10px 0; overflow: hidden; font-family: sans-serif;">
+    
+    <div style="background: #450a0a; padding: 8px 12px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #fbbf24;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <i class="fas fa-calendar-check" style="color: #fbbf24; font-size: 13px;"></i>
+            <span style="color: white; font-weight: 700; font-size: 11px; letter-spacing: 0.5px;">RENTAL SYSTEM</span>
+        </div>
+        <label class="compact-switch">
+            <input type="checkbox" id="isRentMode" onchange="toggleRentUI()" style="display:none;">
+            <span class="compact-slider"></span>
+        </label>
+    </div>
+
+    <div id="rentFields" style="display: none; padding: 12px;">
+	<div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px;">
+        <button onclick="startBooking('Chaurang', 70, this)" class="lite-btn" id="btn-Chaurang">
+            <i class="fas fa-chair"></i><span>Chaurang</span>
+        </button>
+        <button onclick="startBooking('Hawankund', 40, this)" class="lite-btn" id="btn-Hawankund">
+            <i class="fas fa-fire"></i><span>Hawan</span>
+        </button>
+        <button onclick="startBooking('Paath', 50, this)" class="lite-btn" id="btn-Paath">
+            <i class="fas fa-book-open"></i><span>Paath</span>
+        </button>
+    </div>
+
+   <div id="rentQuickControls" style="display: none; background: #fff; padding: 12px; border-radius: 10px; border: 1px solid #fbbf24; margin-top: 10px;">
+    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;"> <div class="slim-input">
+            <label style="color: #450a0a; font-weight: 900; font-size: 10px;">RENTAL DAYS</label>
+            <input type="number" id="totalDays" value="1" min="1" oninput="syncAllRentalRows()" 
+                   style="border: 2px solid #fbbf24; font-weight: 800; font-size: 16px; width: 100%; text-align: center;">
+        </div>
+
+        <div class="slim-input">
+            <label style="color: #450a0a; font-weight: 900; font-size: 10px;">DEPOSIT (PER ITEM)</label>
+            <input type="number" id="globalDeposit" placeholder="₹ 0" oninput="updateSecurityDeposit()"
+                   style="border: 2px solid #fbbf24; font-weight: 800; font-size: 16px; width: 100%; text-align: center;">
+        </div>
+
+        <div class="slim-input">
+            <label style="color: #d97706; font-weight: 900; font-size: 10px;">TOTAL SEC. DEPOSIT</label>
+            <input type="text" id="totalSecDepositDisplay" value="₹ 0.00" readonly 
+                   style="border: 2px solid #d97706; background: #fffbeb; color: #b45309; font-weight: 900; font-size: 16px; width: 100%; text-align: center; cursor: default;">
+        </div>
+
+    </div>
+</div>
+</div>
+</div>
+<div id="logo-fill-loader" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:#ffffff; z-index:20000; flex-direction:column; align-items:center; justify-content:center;">
+    <div class="logo-wrapper">
+        <img src="assets/grey.webp" class="logo-base">
+        <img src="assets/logo.webp" class="logo-anim">
+    </div>
+</div>
+<nav class="app-nav">
+    <a href="home.html" class="nav-item" onclick="showLoader(event, 'home.html')">
+        <div class="icon-pill"><i class="fa-solid fa-house-chimney"></i></div>
+        <span>Home</span>
+    </a>
+
+    <a href="invoice.html" class="nav-item " onclick="showLoader(event, 'invoice.html')">
+        <div class="icon-pill"><i class="fa-solid fa-file-invoice-dollar"></i></div>
+        <span>Invoice</span>
+    </a>
+
+    <a href="index.html" class="nav-item" onclick="showLoader(event, 'index.html')">
+        <div class="icon-pill"><i class="fa-solid fa-chart-line"></i></div>
+        <span>Sales</span>
+    </a>
+
+    <a href="dashboard.html" class="nav-item" onclick="showLoader(event, 'dashboard.html')">
+        <div class="icon-pill"><i class="fa-solid fa-bar-chart"></i></div>
+        <span>Dashboard</span>
+    </a>
+
+    <a href="graphics.html" class="nav-item" onclick="showLoader(event, 'graphics.html')">
+        <div class="icon-pill"><i class="fa-solid fa-crown"></i></div>
+        <span>Graphics</span>
+    </a>
+</nav>
+
+    <div class="summary-box" style="font-weight: bold;">
+        <div class="sum-line"><span>Subtotal</span><span id="subTotal">0.00</span></div>
+		<div id="depositRow" style="display: none; justify-content: space-between; padding: 5px 0; border-bottom: 1px dashed #eee;">
+    <span style="font-weight: 700; color: #450a0a;">Security Deposit (+)</span>
+    <span id="displayDeposit" style="font-weight: 800; color: #450a0a;">0.00</span>
+</div>
+        <div class="sum-line"><span>Discount (%)</span><input type="number" id="overallDisc" value="0" oninput="calc()" style="width: 50px; text-align: right;"></div>
+        <div class="total-line sum-line"><span>Total</span><span id="grandTotal">0.00</span></div>
+        <div class="sum-line" style="margin-top: 10px; color: red; font-weight:700;"><span>Balance Due</span><span id="balDue">0.00</span></div>
+    </div>
+    <div style="clear: both;"></div>
+    <div id="bannerContainer"></div>
+	<div class="button-row">
+    <button id="saveBtn" class="btn-dl color-blue" onclick="saveBillToHistory()">
+        <span><i class="fa fa-save"></i></span>
+        <span class="always-show">Save Bill</span>
+        <div class="shine"></div>
+    </button>
+    
+    <button class="btn-dl color-wine" onclick="saveVyaparPDF()">
+        <span><i class='fas fa-file-export'></i></span>
+        <span class="hide-mobile">Download PDF</span>
+        <div class="shine"></div>
+    </button>
+    
+    <button class="btn-dl color-whatsapp" onclick="shareOnWhatsApp()">
+        <span><i class="fa-brands fa-whatsapp"></i></span>
+        <span class="hide-mobile">WhatsApp</span>
+        <div class="shine"></div>
+    </button>
+</div>
+</div><div id="toastr"></div>
+<div class="history-card">
+            <h3 style="color:var(--wine); font-size:16px; border-bottom:2px solid var(--wine); margin-bottom:15px;">
+			RECENT TRANSACTIONS
+			   </h3>
+			   <div class="search-container" style="margin-bottom: 20px; position: relative;">
+    <i class="fa fa-search" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #999;"></i>
+    <input type="text" id="billSearchInput" onkeyup="filterBills()" placeholder="Search by Customer Name or Bill Number..." 
+        style="width: 100%; padding: 12px 12px 12px 40px; border-radius: 12px; border: 1.5px solid #eee; font-size: 14px; outline: none; transition: all 0.3s ease; box-shadow: 0 2px 5px rgba(0,0,0,0.02);">
+</div>
+            <table style="width:100%; border-collapse:collapse;">
+                <thead style="background:#f1f5f9;">
+                    <tr>
+						<th style="width: 50px;padding:10px; text-align:left;">QR</th> 
+                        <th style="padding:10px; text-align:left;">Date</th>
+                        <th style="padding:10px; text-align:left;">Bill No.</th>
+                        <th style="padding:10px; text-align:left;">Customer</th>
+                        <th style="padding:10px; text-align:right;">Amount</th>
+                        <th style="padding:10px; text-align:right;">Action</th>
+                    </tr>
+                </thead>
+                <tbody id="billHistoryBody">
+                    </tbody>
+            </table>
+        </div>
+	</div>
+</div>
+<div id="deleteModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:9999; align-items:center; justify-content:center;">
+    <div style="background:white; padding:25px; border-radius:12px; width:90%; max-width:350px; text-align:center; box-shadow:0 10px 25px rgba(0,0,0,0.2);">
+        <div style="font-size:40px; margin-bottom:15px;">⚠️</div>
+        <h3 style="color:var(--wine); margin-bottom:10px; font-size:18px;">Bill Delete Karein?</h3>
+        <p style="color:#64748b; font-size:14px; margin-bottom:25px; line-height:1.5;">Kya aap pakka is bill ko hatana chahte hain? Isse aaj ka **Total Sales** kam ho jayega.</p>
+        
+        <div style="display:flex; gap:10px;">
+            <button onclick="closeDeleteModal()" style="flex:1; padding:12px; border:1px solid #e2e8f0; background:white; border-radius:8px; cursor:pointer; font-weight:600;">Nahi, Rehne Do</button>
+            <button id="confirmDeleteBtn" style="flex:1; padding:12px; background:#ef4444; color:white; border:none; border-radius:8px; cursor:pointer; font-weight:600;">Haan, Delete Karo</button>
+        </div>
+    </div>
+</div>
+<div id="quickItemModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:10000; justify-content:center; align-items:center; backdrop-filter: blur(4px);">
+    <div style="background:white; padding:25px; border-radius:20px; width:85%; max-width:380px; box-shadow: 0 15px-35px rgba(0,0,0,0.3);">
+        <h3 style="color:var(--wine); margin:0 0 15px 0; font-size:18px; border-bottom: 2px solid #f8f8f8; padding-bottom:10px;">📦 Add New to Inventory</h3>
+        
+        <div style="margin-bottom:15px;">
+            <label style="font-size:12px; color:#888; display:block; margin-bottom:5px;">ITEM NAME</label>
+            <input type="text" id="new_item_name" style="width:100%; padding:12px; border:1px solid #ddd; border-radius:10px; font-size:14px; box-sizing:border-box; background:#f9f9f9;">
+        </div>
+
+        <div style="margin-bottom:20px;">
+            <label style="font-size:12px; color:#888; display:block; margin-bottom:5px;">RATE / PRICE (₹)</label>
+            <input type="number" id="new_item_rate" placeholder="0.00" style="width:100%; padding:12px; border:1px solid #ddd; border-radius:10px; font-size:14px; box-sizing:border-box;">
+        </div>
+
+        <div style="display:flex; gap:12px;">
+            <button onclick="closeQuickModal()" style="flex:1; background:#f1f1f1; color:#555; border:none; padding:12px; border-radius:10px; font-weight:bold; cursor:pointer;">Cancel</button>
+            <button onclick="saveNewItemToDB()" id="saveBtnText" style="flex:1; background:var(--wine); color:white; border:none; padding:12px; border-radius:10px; font-weight:bold; cursor:pointer; box-shadow:0 4px 10px rgba(114,20,34,0.2);">Save & Add</button>
+        </div>
+    </div>
+</div>
+<div id="viewConfirmModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:9999; align-items:center; justify-content:center;">
+    <div style="background:white; padding:25px; border-radius:12px; width:90%; max-width:350px; text-align:center; box-shadow:0 10px 25px rgba(0,0,0,0.2);">
+        <div style="font-size:40px; margin-bottom:15px;">📝</div>
+        <h3 style="color:var(--wine); margin-bottom:10px; font-size:18px;">Bill Load Karein?</h3>
+        <p style="color:#64748b; font-size:14px; margin-bottom:25px; line-height:1.5;">Bhai, abhi jo items aapne bhare hain wo **clear** ho jayenge. Kya purana bill load karna hai?</p>
+        
+        <div style="display:flex; gap:10px;">
+            <button onclick="closeViewModal()" style="flex:1; padding:12px; border:1px solid #e2e8f0; background:white; border-radius:8px; cursor:pointer; font-weight:600;">Nahi, Ruko</button>
+            <button id="confirmViewBtn" style="flex:1; padding:12px; background:#fbbf24; color:#450a0a; border:none; border-radius:8px; cursor:pointer; font-weight:600;">Haan, Load Karo</button>
+        </div>
+    </div>
+</div>
+<div id="dateConfirmModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:10000; align-items:center; justify-content:center;">
+    <div style="background:white; padding:25px; border-radius:12px; width:90%; max-width:380px; text-align:center;">
+        <h3 style="color:var(--wine); margin-bottom:15px;">Date Select Karein</h3>
+        <p style="font-size:14px; margin-bottom:20px;">Is bill ke liye kaunsi date use karni hai?</p>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+            <button id="keepOldDateBtn" style="padding:12px; background:#f1f5f9; border:none; border-radius:8px; font-weight:600; cursor:pointer;">Purani Date</button>
+            <button id="useNewDateBtn" style="padding:12px; background:var(--wine); color:white; border:none; border-radius:8px; font-weight:600; cursor:pointer;">Aaj ki Date</button>
+        </div>
+    </div>
+</div>
+<div id="returnModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:9999; justify-content:center; align-items:center;">
+    <div style="background:white; padding:20px; border-radius:8px; width:90%; max-width:400px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+        <h3 style="margin-top:0; color:#721422; border-bottom:2px solid #eee; padding-bottom:10px;">🚩 JMD - Return Entry</h3>
+        <div id="modalContent" style="font-size:14px; line-height:1.6; margin-bottom:20px;">
+            </div>
+        <div style="display:flex; gap:10px;">
+            <button onclick="confirmReturnToDB()" style="flex:1; background:#28a745; color:white; border:none; padding:10px; border-radius:4px; cursor:pointer; font-weight:bold;">Confirm Return</button>
+            <button onclick="document.getElementById('returnModal').style.display='none'" style="flex:1; background:#6c757d; color:white; border:none; padding:10px; border-radius:4px; cursor:pointer;">Cancel</button>
+        </div>
+    </div>
+</div>
+<script>
+function addItem(name = '', rate = 0, qty = 1, deposit = 0, skipCalc = false) {
+    const isRentalItem = name.includes("(Rent)");
+    const isViewMode = (typeof editingRowNum !== 'undefined' && editingRowNum !== null);
+
+    if (!isViewMode && !skipCalc && !isRentalItem) {
+        const lastRow = document.querySelector('.item-row:last-child');
+        if (lastRow) {
+            const lastItemName = lastRow.querySelector('.i-n').value.trim();
+            const lastRate = parseFloat(lastRow.querySelector('.i-r').value) || 0;
+            if (lastItemName === "" || lastRate <= 0) {
+                return showToast("Pehle upar wala item sahi se bharo!", "error");
+            }
+        }
+    }
+    
+    const container = document.getElementById('itemsContainer');
+    if (!container) return;
+
+    const dashboardDays = document.getElementById('totalDays')?.value || 1;
+    const currentGlobalDep = document.getElementById('globalDeposit')?.value || 0;
+    const finalDeposit = (deposit > 0) ? deposit : (isRentalItem ? currentGlobalDep : 0);
+    
+    const row = document.createElement('div');
+    
+    // --- PC & MOBILE HIGHLIGHT LOGIC ---
+    row.className = isRentalItem ? 'item-row rental-highlight' : 'item-row';
+    if(isRentalItem) {
+        row.style.backgroundColor = "#fff9db"; // Soft Gold BG
+        row.style.borderLeft = "5px solid #fab005"; // Deep Gold Strip
+    }
+
+    row.innerHTML = `
+        <div class="row-line-1">
+            <div>
+                <label>Item Name <span class="rent-tag" style="display:${isRentalItem ? 'inline' : 'none'}; color:#450a0a; font-weight:bold; font-size:9px;">(RENTAL)</span></label>
+                <input type="text" style="font-weight: bold;" class="i-n" list="itemList" placeholder="Item name..." value="${name}" oninput="autoFillPrice(this)">
+            </div>
+        </div>
+        <div class="row-line-2" style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 5px;">
+            <div><label>Qty</label><input type="number" class="i-q" value="${qty}" oninput="calc()"></div>
+            <div><label>Rate</label><input type="number" class="i-r" value="${rate}" oninput="calc()"></div>
+            <div>
+                <label>Days</label>
+                <input type="number" class="i-d" 
+                       value="${isRentalItem ? dashboardDays : 1}" 
+                       oninput="calc()"
+                       readonly 
+                       style="font-weight: bold; border: 1px solid #fbbf24; width:100%; text-align:center; 
+                       ${isRentalItem ? 'background:white; pointer-events:auto;' : 'background:#eee; pointer-events:none; opacity:0.6;'}">
+                
+                <input type="hidden" class="i-dep" value="${finalDeposit}">
+            </div>
+            <div>
+                <label>Amount</label>
+                <div style="font-weight:800; color:#450a0a; padding-top: 5px; font-size:13px;">₹<span class="i-a">0.00</span></div>
+            </div>
+        </div>
+        <button class="btn-rm" onclick="this.parentElement.remove(); calc(); updateRentalModeLock();refreshRentalButtonLabels();">&times;</button>
+    `;
+    
+    container.appendChild(row);
+    if(!skipCalc) calc();
+}
+let myItems = [];
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw9uig1LhdLqvGNjPulepOqcumcWPUC8ZT3IsghUxKUYUvFdclH2XqlOEGCzXAyjgBz0w/exec";
+document.getElementById('isRentMode').parentElement.addEventListener('click', function(e) {
+    const sw = document.getElementById('isRentMode');
+    if (sw.disabled) {
+        showToast("Bhai, list mein Rental items hain! Pehle unhe delete karo.", "error");
+    }
+});
+let editingRowNum = null; // Ye track karega ki kaunsi row edit ho rahi hai
+function showLoader(event, url) {
+    event.preventDefault();
+    
+    const loader = document.getElementById('logo-fill-loader');
+    if (loader) {
+        loader.style.display = 'flex';
+    }
+
+    const isSamePage = window.location.href.includes(url);
+
+    // Agar same page hai toh thoda lamba animation dikhao fir refresh karo
+    if (isSamePage) {
+        setTimeout(() => {
+            window.location.reload();
+        }, 1500); 
+    } else {
+        setTimeout(() => {
+            window.location.href = url;
+        }, 600);
+    }
+}
+
+window.addEventListener('load', () => {
+    const loader = document.getElementById('logo-fill-loader');
+    if (loader) loader.style.display = 'none';
+    
+    // AUTO-ACTIVE LOGIC
+    let currentPath = window.location.pathname.split("/").pop();
+    
+    // Agar path khali hai toh iska matlab index.html khula hai
+    if (currentPath === "") currentPath = "index.html"; 
+
+    const navItems = document.querySelectorAll('.nav-item');
+
+    navItems.forEach(item => {
+        const itemHref = item.getAttribute('href');
+        if (currentPath === itemHref) {
+            item.classList.add('active');
+        } else {
+            item.classList.remove('active');
+        }
+    });
+});
+	function quickRent(itemName, rate) {
+    const currentGlobalDays = document.getElementById('totalDays')?.value || 1;
+    const currentGlobalDep = document.getElementById('globalDeposit')?.value || 0;
+
+    // Direct values ke saath addItem call karo
+    addItem(itemName + " (Rent)", rate, 1, currentGlobalDep); 
+    
+    const allRows = document.querySelectorAll('.item-row');
+    const lastRow = allRows[allRows.length - 1];
+    
+    if (lastRow) {
+        // UI Highlight
+        lastRow.style.backgroundColor = "#fff9db"; 
+        lastRow.style.borderLeft = "5px solid #fab005";
+        calc();
+    }
+}
+function updateRowLabels() {
+    const isRent = document.getElementById('isRentMode').checked;
+    document.querySelectorAll('.rent-tag').forEach(tag => {
+        tag.style.display = isRent ? 'inline' : 'none';
+    });
+}
+function startBooking(name, rate, btn) {
+    if(!document.getElementById('isRentMode')?.checked) {
+        showToast("Pehle RENTAL SYSTEM switch ON karo!", "error");
+        return;
+    }
+
+    const daysEl = document.getElementById('totalDays');
+    const depositEl = document.getElementById('globalDeposit');
+    const daysVal = daysEl.value;
+    const depositVal = depositEl.value;
+
+    // VALIDATION: Shake effect aur red glow
+    if (!daysVal || daysVal <= 0 || !depositVal || depositVal === "") {
+        showToast("Pehle Days aur Deposit bharo!", "error");
+        [daysEl, depositEl].forEach(el => {
+            el.style.borderColor = "#ef4444";
+            el.style.backgroundColor = "#fff1f1";
+            el.classList.add('shake-anim'); // Shake animation
+            setTimeout(() => el.classList.remove('shake-anim'), 500);
+        });
+        return;
+    }
+
+    // Reset styles if valid
+    [daysEl, depositEl].forEach(el => {
+        el.style.borderColor = "#fbbf24";
+        el.style.backgroundColor = "#fff";
+    });
+
+    // Button Animation: Click feel dene ke liye
+    btn.style.transform = "scale(0.9)";
+    btn.classList.add('btn-active-glow');
+    setTimeout(() => {
+        btn.style.transform = "scale(1)";
+        btn.classList.remove('btn-active-glow');
+    }, 200);
+
+    const itemName = name + " (Rent)";
+    let existingRow = null;
+    let count = 0;
+document.querySelectorAll('.item-row .i-n').forEach(inp => {
+    if(inp.value.includes(name)) {
+        count += parseInt(inp.parentElement.parentElement.parentElement.querySelector('.i-q').value);
+    }
+});
+btn.querySelector('span').innerText = `${name} (${count})`;
+    document.querySelectorAll('.item-row').forEach(row => {
+        if (row.querySelector('.i-n')?.value === itemName) existingRow = row;
+    });
+
+    if (existingRow) {
+        const qtyInp = existingRow.querySelector('.i-q');
+        const dayInp = existingRow.querySelector('.i-d');
+        const depInp = existingRow.querySelector('.i-dep');
+        
+        if (qtyInp) qtyInp.value = (parseInt(qtyInp.value) || 0) + 1;
+        if (dayInp) dayInp.value = daysVal;
+        if (depInp) depInp.value = depositVal;
+    } else {
+        addItem(itemName, rate, 1); 
+        const allRows = document.querySelectorAll('.item-row');
+        const lastRow = allRows[allRows.length - 1];
+        if(lastRow) {
+            const dInp = lastRow.querySelector('.i-dep');
+            if(dInp) dInp.value = depositVal;
+        }
+    }
+
+    calc();
+    if (typeof updateSecurityDeposit === 'function') updateSecurityDeposit();
+    showToast(`${name} added!`, "success");
+}
+function refreshRentalButtonLabels() {
+    const rentalButtons = [
+        { id: 'btn-Chaurang', name: 'Chaurang' },
+        { id: 'btn-Hawankund', name: 'Hawan' }, // Note: Id aur Name check kar lena HTML se
+        { id: 'btn-Paath', name: 'Paath' }
+    ];
+
+    rentalButtons.forEach(btnInfo => {
+        const btn = document.getElementById(btnInfo.id);
+        if (!btn) return;
+
+        let totalQty = 0;
+        document.querySelectorAll('.item-row').forEach(row => {
+            const nameInp = row.querySelector('.i-n')?.value || "";
+            const qtyInp = parseInt(row.querySelector('.i-q')?.value || 0);
+            
+            // Check if name contains the item key
+            if (nameInp.includes(btnInfo.name)) {
+                totalQty += qtyInp;
+            }
+        });
+
+        const span = btn.querySelector('span');
+        if (span) {
+            // Update Text: Chaurang (5)
+            span.innerText = totalQty > 0 ? `${btnInfo.name} (${totalQty})` : btnInfo.name;
+        }
+
+        // Visual change: Agar list mein hai toh highlight rakho
+        if (totalQty > 0) {
+            btn.style.borderColor = "#fbbf24";
+            btn.style.boxShadow = "0 0 8px rgba(251, 191, 36, 0.3)";
+        } else {
+            btn.style.borderColor = "#e2e8f0";
+            btn.style.boxShadow = "none";
+        }
+    });
+}
+function toggleRentUI() {
+    const isRent = document.getElementById('isRentMode')?.checked;
+    
+    const elements = {
+        'rentFields': 'block',
+        'rentQuickControls': 'block',
+        'depositRow': 'flex',           // Summary mein deposit line
+        'rentalAddressSection': 'block'
+    };
+
+    for (let id in elements) {
+        const el = document.getElementById(id);
+        if (el) el.style.display = isRent ? elements[id] : 'none';
+    }
+
+    // IMPORTANT: Agar Rent mode OFF hua, toh summary ka deposit reset hona chahiye
+    if (!isRent) {
+        const depDisplay = document.getElementById('displayDeposit');
+        if (depDisplay) depDisplay.innerText = "0.00";
+    }
+
+    calc(); // Ye call hona zaroori hai live update ke liye
+}
+function syncAllRentalRows() {
+    const daysVal = document.getElementById('totalDays').value || 1;
+    const depositVal = document.getElementById('globalDeposit').value || 0;
+    
+    document.querySelectorAll('.item-row').forEach(row => {
+        const name = row.querySelector('.i-n')?.value || "";
+        const dayInp = row.querySelector('.i-d');
+        const depInp = row.querySelector('.i-dep');
+        
+        if (name.includes("(Rent)")) {
+            if (dayInp) dayInp.value = daysVal;
+            if (depInp) depInp.value = depositVal;
+        }
+    });
+    calc();
+}
+function updateRentalModeLock() {
+    const isRentSwitch = document.getElementById('isRentMode');
+    const rentFields = document.getElementById('rentFields');
+    const rentQuickControls = document.getElementById('rentQuickControls');
+    
+    if (!isRentSwitch) return;
+
+    let hasRentalItem = false;
+    // Check if any row has (Rent)
+    document.querySelectorAll('.item-row .i-n').forEach(input => {
+        if (input.value.includes("(Rent)")) {
+            hasRentalItem = true;
+        }
+    });
+
+    if (hasRentalItem) {
+        // 1. Switch ko ON karke lock karo
+        isRentSwitch.checked = true;
+        isRentSwitch.disabled = true;
+
+        // 2. Dono containers ko ZABARDASTI dikhao (Display: block)
+        if (rentFields) {
+            rentFields.style.setProperty('display', 'block', 'important');
+        }
+        if (rentQuickControls) {
+            rentQuickControls.style.setProperty('display', 'block', 'important');
+        }
+
+        // 3. Inputs ko active rakho taaki edits ho sakein
+        const daysInput = document.getElementById('totalDays');
+        const depositInput = document.getElementById('globalDeposit');
+        
+        if (daysInput) {
+            daysInput.disabled = false;
+            daysInput.style.backgroundColor = "#fff";
+        }
+        if (depositInput) {
+            depositInput.disabled = false;
+            depositInput.style.backgroundColor = "#fff";
+        }
+
+        isRentSwitch.parentElement.style.cursor = "not-allowed";
+    } else {
+        // Agar rental item nahi hai toh lock hata do
+        isRentSwitch.disabled = false;
+        isRentSwitch.parentElement.style.cursor = "pointer";
+        
+        // Yahan hide karne ki zaroorat nahi, wo toggleRentUI handles karega
+    }
+}
+function autoFillPrice(input) {
+    const val = input.value.toLowerCase();
+    const suggestBox = document.getElementById('customSuggest');
+    
+    if (val.length < 1) {
+        suggestBox.style.display = 'none';
+        return;
+    }
+
+    const matches = myItems.filter(item => item.name.toLowerCase().includes(val));
+
+    const rect = input.getBoundingClientRect();
+    suggestBox.style.left = rect.left + 'px';
+    suggestBox.style.top = (rect.bottom + window.scrollY) + 'px';
+    suggestBox.style.width = rect.width + 'px';
+    suggestBox.style.display = 'block';
+
+    // 1. Matches render karo
+    let html = matches.map(item => {
+        const displayName = item.name.toLowerCase().replace(/\b\w/g, s => s.toUpperCase());
+        const regex = new RegExp(`(${val})`, 'gi');
+        const highlightedName = displayName.replace(regex, "<strong>$1</strong>");
+
+        return `
+            <div onmousedown="selectItem('${displayName}', ${item.price})" 
+                 style="padding: 10px; border-bottom: 1px solid #eee; cursor: pointer;">
+                ${highlightedName} 
+                <span style="float:right; color:#888;">₹${item.price}</span>
+            </div>`;
+    }).join('');
+
+    // 2. "Add New Item" button hamesha bottom mein dikhao
+    // Ispe click karte hi modal khulega aur typed value wahan chali jayegi
+    html += `
+    <div onmousedown="openQuickItemModal('${input.value}')" 
+         style="padding: 8px 12px; color: var(--wine); font-size: 13px; cursor: pointer; background: #fff9f9; border-top: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;">
+        <span><i class="fa fa-plus-circle"></i> Add New Item</span>
+        <span style="font-size: 11px; opacity: 0.7;">"${input.value}"</span>
+    </div>`;
+
+    suggestBox.innerHTML = html;
+}
+let currentStatsMode = 'today'; // default mode
+let currentFilter = 'all';
+
+function applyNewFilter(type) {
+    currentFilter = type;
+    
+    // 1. Button UI Update (Highlighting)
+    const btns = ['All', 'Rented', 'Returned'];
+    btns.forEach(b => {
+        const el = document.getElementById('btnFilter' + b);
+        if (b.toLowerCase() === type.toLowerCase()) {
+            el.style.background = '#fff';
+            el.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1)';
+            el.style.color = 'var(--wine)';
+        } else {
+            el.style.background = 'transparent';
+            el.style.boxShadow = 'none';
+            el.style.color = '#666';
+        }
+    });
+
+    // 2. Table Filtering
+    if (typeof currentCloudHistory !== 'undefined') {
+        let filteredData;
+        if (type === 'all') {
+            filteredData = currentCloudHistory;
+        } else {
+            filteredData = currentCloudHistory.filter(bill => bill.status === type);
+        }
+        renderTable(filteredData);
+		updateSidebarStats(currentCloudHistory);
+    }
+}
+function cycleStatsMode() {
+    const modes = ['today', 'weekly', 'monthly', 'yearly'];
+    currentStatsMode = modes[(modes.indexOf(currentStatsMode) + 1) % modes.length];
+    document.getElementById('statsToggleBtn').innerText = currentStatsMode;
+    updateSidebarStats(currentCloudHistory);
+	let nextIndex = (modes.indexOf(currentStatsMode) + 1) % modes.length;
+    currentStatsMode = modes[nextIndex];
+    
+    // UI update
+    document.getElementById('statsToggleBtn').innerText = currentStatsMode;
+    document.getElementById('labelSales').innerText = `SALES (${currentStatsMode.toUpperCase()})`;
+    
+    // Global data available honi chahiye (currentCloudHistory)
+    if (typeof currentCloudHistory !== 'undefined') {
+        updateSidebarStats(currentCloudHistory);
+    }
+}
+function updateSidebarStats(data) {
+    const now = new Date();
+    const todayStr = now.toLocaleDateString('en-IN'); // "26/4/2026"
+    
+    let tSales = 0, tBills = 0, tDep = 0, tPending = 0;
+
+    data.forEach(bill => {
+        if (!bill.date) return;
+
+        // 1. Date Parsing
+        let bDateParts = bill.date.split(',')[0].split('/'); // [26, 4, 2026]
+        let bDate = new Date(bDateParts[2], bDateParts[1] - 1, bDateParts[0]);
+        
+        // 2. Time Match Check (Today, Weekly, Monthly, Yearly)
+        let isTimeMatch = false;
+        if (currentStatsMode === 'today') {
+            isTimeMatch = (bill.date.split(',')[0].trim() === todayStr);
+        } else if (currentStatsMode === 'weekly') {
+            let diff = (now - bDate) / (1000 * 60 * 60 * 24);
+            isTimeMatch = diff <= 7;
+        } else if (currentStatsMode === 'monthly') {
+            isTimeMatch = (bDate.getMonth() === now.getMonth() && bDate.getFullYear() === now.getFullYear());
+        } else if (currentStatsMode === 'yearly') {
+            isTimeMatch = (bDate.getFullYear() === now.getFullYear());
+        }
+
+        // 3. Filter Match Check (All, Rented, Returned)
+        // Ye line check karegi ki kya bill ka status wahi hai jo tune niche select kiya hai
+        let isFilterMatch = (currentFilter === 'all' || bill.status === currentFilter);
+
+        // 4. Final Calculation
+        // Agar Time aur Filter dono sahi hain, tabhi Sales aur Bill Count mein jodo
+        if (isTimeMatch && isFilterMatch) {
+            tSales += parseFloat(bill.amount || bill.total || 0);
+            tBills++;
+        }
+
+        // Rented Items/Deposit hamesha total pending hi dikhayenge (No change here)
+        if (bill.status === "Rented") {
+            tDep += parseFloat(bill.deposit || 0);
+            tPending++;
+        }
+    });
+
+    // Boxes Update Karo
+    document.getElementById('dayTotal').innerText = `₹${tSales.toFixed(2)}`;
+    document.getElementById('dayCount').innerText = tBills;
+    document.getElementById('dayDeposit').innerText = `₹${tDep.toFixed(2)}`;
+    document.getElementById('dayPending').innerText = tPending;
+}
+function applyQuickFilter() {
+    const isChecked = document.getElementById('rentFilter').checked;
+    if (isChecked) {
+        const onlyRented = currentCloudHistory.filter(b => b.status === "Rented");
+        renderTable(onlyRented);
+    } else {
+        renderTable(currentCloudHistory);
+    }
+}
+function showToast(message, type = 'success') {
+    const toast = document.getElementById("toastr");
+    if (!toast) return; // Agar HTML bhul gaye toh error nahi aayega
+
+    let icon = "";
+    if (type === 'success') icon = "✅ ";
+    if (type === 'error') icon = "❌ ";
+    if (type === 'info') icon = "ℹ️ ";
+
+    toast.className = '';
+    toast.classList.add('toast-' + type);
+    
+    // Ek hi line mein Title aur Message
+    toast.innerHTML = `<strong>${type.toUpperCase()}:</strong> ${icon}${message}`;
+    
+    toast.style.display = 'block';
+    toast.style.opacity = '1';
+
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => { toast.style.display = 'none'; }, 300);
+    }, 3000);
+}
+function selectItem(name, price) {
+    const activeInput = document.activeElement; 
+    if (activeInput && activeInput.classList.contains('i-n')) {
+        // Sentence Case logic: har word ka pehla letter capital
+        const formattedName = name.toLowerCase().replace(/\b\w/g, s => s.toUpperCase());
+        
+        activeInput.value = formattedName; // Input mein 'Manoj Verma' dikhega
+        const row = activeInput.closest('.item-row');
+        row.querySelector('.i-r').value = price; // Rate automatic fill ho jayega
+        
+        document.getElementById('customSuggest').style.display = 'none';
+        showToast(`${formattedName} Added!`, "success");
+        calc();
+    }
+}
+// Focus hatne par box band ho jaye (Lekin mousedown ke baad)
+document.addEventListener('click', (e) => {
+    if (!e.target.classList.contains('i-n')) {
+        document.getElementById('customSuggest').style.display = 'none';
+    }
+});
+// 1. Inventory se Buttons banane ka function
+function syncFastBilling(inventoryData) {
+    const container = document.getElementById('fastBillingContainer');
+    if (!container) return;
+    
+    container.innerHTML = ""; // Purana content saaf
+
+    // Sirf top 12 items dikhayenge taaki sidebar boht bada na ho jaye
+    const topItems = inventoryData.slice(0, 12); 
+
+    topItems.forEach(item => {
+        const btn = document.createElement('button');
+        btn.className = "quick-btn";
+        
+        // Layout: Item Name (Left) | Price (Right)
+        btn.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                <span style="font-weight: 600; font-size: 11px; color: #444; text-transform: uppercase;">${item.name}</span>
+                <span style="color: var(--wine); font-weight: 800; font-size: 12px;">₹${item.price}</span>
+            </div>
+        `;
+        
+        btn.onclick = () => quickAdd(item.name, item.price);
+        container.appendChild(btn);
+    });
+}
+
+// 2. Click karne par Bill mein Item add karne ka function
+function quickAdd(name, rate) {
+    let found = false;
+    let emptyRow = null;
+
+    // Matching ke liye lowercase logic use karenge
+    const searchName = name.trim().toLowerCase();
+    const rows = document.querySelectorAll('.item-row');
+
+    rows.forEach(row => {
+        const nameInput = row.querySelector('.i-n');
+        const qInput = row.querySelector('.i-q');
+        const rInput = row.querySelector('.i-r');
+
+        const currentName = nameInput.value.trim().toLowerCase();
+
+        // Agar item pehle se bill mein hai toh Quantity +1 karo
+        if (currentName === searchName) {
+            qInput.value = parseInt(qInput.value || 0) + 1;
+            found = true;
+        }
+        
+        // Khali row dhoondho agar naya item add karna pade
+        if (!nameInput.value.trim() && !found && !emptyRow) {
+            emptyRow = row;
+        }
+    });
+
+    if (!found) {
+        if (emptyRow) {
+            // Khali row mein data bharo
+            emptyRow.querySelector('.i-n').value = name;
+            emptyRow.querySelector('.i-r').value = rate;
+            emptyRow.querySelector('.i-q').value = 1;
+        } else {
+            // Nayi row add karo (addItem function hona chahiye aapke code mein)
+            if (typeof addItem === "function") {
+                addItem(name, rate);
+            }
+        }
+    }
+
+    // Saari calculation update karo
+    if (typeof calc === "function") calc(); 
+    
+    // Success confirmation
+    showToast(`${name} Added!`, "success");
+}
+async function shareOnWhatsApp() {
+    const phone = document.getElementById('custContact').value.trim();
+    const customer = document.getElementById('billTo').value.trim() || "Customer";
+    const invNo = document.getElementById('invNo').value;
+    const total = document.getElementById('grandTotal').innerText;
+
+    if (phone.length < 10) {
+        return showToast("Bhai, WhatsApp ke liye valid number chahiye!", "error");
+    }
+
+    // STEP 1: Pehli line mein Naam + Ji + Jai Mata Di 🚩
+    const caption = encodeURIComponent(
+        `Pranam ${customer} Ji, Jai Mata Di! \n\n` +
+        `> *"Sarva Mangala Mangalye, Shive Sarvartha Sadhike,*\n` +
+        `> *Sharanye Tryambake Gauri, Narayani Namostute"* \n\n` +
+        `*JMD Traders* par aapki sewa karne ka saubhagya mila, dhanyawad. Aapka digital bill taiyar hai:\n\n` +
+        `*➢ Bill Details:*\n` +
+        `*➢ Bill No: #${invNo}*\n` +
+        `*➢ Total: ₹${total}*\n\n` +
+        `_Hamari shudh samagri par aapka ek chhota sa "Review" hamare liye prasad saman hoga. Kripya yahan aashirwad dein:_\n` +
+        `*➢ https://g.page/r/CeIty-yWYpIgEAE/review .* \n\n` +
+        `*Mata Rani ki kripa aap par bani rahe!* `
+    );
+
+    // STEP 2: WhatsApp Chat kholo
+    const waLink = `https://wa.me/91${phone}?text=${caption}`;
+    
+    // Pehle PDF download trigger karo
+    saveVyaparPDF(); 
+    
+    // Phir chat kholo
+    setTimeout(() => {
+        window.open(waLink, '_blank');
+    }, 1500);
+}
+// Modal kholne ke liye
+function openQuickItemModal(typedValue) {
+    document.getElementById('new_item_name').value = typedValue || "";
+    document.getElementById('new_item_rate').value = "";
+    document.getElementById('quickItemModal').style.display = 'flex';
+}
+
+function closeQuickModal() {
+    document.getElementById('quickItemModal').style.display = 'none';
+}
+
+// Google Sheet mein save karne ke liye
+async function saveNewItemToDB() {
+    let rawName = document.getElementById('new_item_name').value.trim();
+    const name = rawName.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
+    const rate = document.getElementById('new_item_rate').value;
+    const btn = document.getElementById('saveBtnText');
+
+    if (!name || !rate) {
+	showToast("Bhai, item ka naam aur rate dono bharo!", "error");
+        return;
+    }
+
+    btn.innerText = "Saving...";
+    btn.disabled = true;
+
+    try {
+        // Yahan apna Google Apps Script URL daalna
+        const response = await fetch(SCRIPT_URL, {
+            method: 'POST',
+            mode: 'no-cors', // Basic post ke liye
+            body: JSON.stringify({
+                action: "addToInventory",
+                itemName: name,
+                price: rate
+            })
+        });
+		
+        closeQuickModal();
+		showToast(`${name} saved to inventory!`, "success");
+        myItems.push({ name: name, price: parseFloat(rate) });
+        // Refresh local items list (agar tune array banaya hai)
+        if(typeof loadInventoryItems === 'function') loadInventoryItems();
+        
+    } catch (e) {
+	showToast("Save nahi ho paya!", "error");
+    } finally {
+        btn.innerText = "Save & Add";
+        btn.disabled = false;
+    }
+}
+async function generateAndDownloadQR(invNo, total) {
+    showToast("JMD Extreme-HD QR taiyar ho raha hai...", "info");
+
+    const upiID = "Q060843824@ybl"; 
+    const upiLink = `upi://pay?pa=${upiID}&pn=JMD%20TRADERS&am=${total}&tn=Bill%20No%20${invNo}&cu=INR`;
+
+    const existing = document.getElementById('qr-capture-wrapper');
+    if (existing) existing.remove();
+
+    const wrapper = document.createElement('div');
+    wrapper.id = 'qr-capture-wrapper';
+    // FIX: left ko -3000px kiya taaki piche dashboard na dikhe
+    wrapper.style = "position: fixed; top: 0; left: -3000px; width: 1080px; height: 1920px; z-index: -9999; overflow: hidden; background: white;";
+    
+    wrapper.innerHTML = `
+        <div id="qr-card-template" style="width: 1080px; height: 1920px; position: relative; background: white;">
+            <img id="bg-img" src="assets/qr.png" style="width: 1080px; height: 1920px; display: block;">
+            <div id="actual-qr-code" style="position: absolute; top: 665px; left: 190px; width: 700px; height: 700px; background: white; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 30px rgba(0,0,0,0.15);"></div>
+            <div id="qr-bill-info" style="position: absolute; top: 1250px; width: 100%; text-align: center; font-family: 'Arial Black', sans-serif; font-size: 38px; color: #000; text-transform: uppercase; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);"></div>
+        </div>`;
+    
+    document.body.appendChild(wrapper);
+
+    const bgImg = document.getElementById('bg-img');
+    
+    bgImg.onload = async () => {
+        const qrBox = document.getElementById("actual-qr-code");
+        
+        new QRCode(qrBox, {
+            text: upiLink,
+            width: 630, 
+            height: 630,
+            colorDark : "#000000",
+            colorLight : "#ffffff",
+            correctLevel: QRCode.CorrectLevel.H 
+        });
+
+        document.getElementById("qr-bill-info").innerText = `BILL: #${invNo} | TOTAL: ₹${total}`;
+
+        // Rendering delay
+        setTimeout(async () => {
+            try {
+                // Focus on the specific template node
+                const canvas = await html2canvas(document.getElementById('qr-card-template'), {
+                    useCORS: true,
+                    scale: 4, // 4x scale is more than enough for high resolution
+                    width: 1080,
+                    height: 1920,
+                    windowWidth: 1080,
+                    windowHeight: 1920,
+                    scrollX: 0,
+                    scrollY: 0,
+                    x: 0,
+                    y: 0,
+                    backgroundColor: "#ffffff"
+                });
+
+                const link = document.createElement('a');
+                link.href = canvas.toDataURL("image/png", 1.0); 
+                link.download = `JMD_MAX_QR_${invNo}.png`;
+                link.click();
+                
+                showToast("Extreme-HD Downloaded!", "success");
+                wrapper.remove(); 
+            } catch (e) {
+                console.error(e);
+                showToast("Download failed!", "error");
+            }
+        }, 1500); // Thoda extra time taaki QR code fully load ho jaye
+    };
+
+    if (bgImg.complete) bgImg.onload();
+}
+function filterBills() {
+    const searchTerm = document.getElementById('billSearchInput').value.toLowerCase();
+
+	
+    // 1. Pehle Current Filter (Rented/Returned) apply karo
+    let filtered = currentCloudHistory;
+    if (currentFilter !== 'all') {
+        filtered = currentCloudHistory.filter(bill => bill.status === currentFilter);
+    }
+
+    // 2. Phir Search Term apply karo
+    const finalData = filtered.filter(bill => {
+        const name = (bill.customer || "").toLowerCase();
+        const inv = (bill.id || bill.invno || "").toLowerCase();
+        return name.includes(searchTerm) || inv.includes(searchTerm);
+    });
+
+    // 3. Table update karo
+    renderTable(finalData);
+    updateSidebarStats(finalData);
+    // 4. Stats update karo (Taaki dabbo mein total sahi dikhe)
+    // Agar sirf screen wale bills ka total chahiye toh updateSidebarStats(finalData) pass karo
+}
+function toSentenceCase(str) {
+    return str.toLowerCase().split(' ').map(word => {
+        return word.charAt(0).toUpperCase() + word.slice(1);
+    }).join(' ');
+}
+function triggerBillNotification() {
+  console.log("Attempting to show notification...");
+  
+  if (Notification.permission === 'granted') {
+    navigator.serviceWorker.ready.then(registration => {
+      registration.showNotification('JMD Traders Alert', {
+        body: 'Naya Bill Generate Hua Hai! ✅',
+        icon: '/assets/icon.png',
+		badge: '/assets/jmdbadge.png',
+        vibrate: [200, 100, 200],
+        tag: 'bill-save', 
+        renotify: true, // Naye bill par phir se vibrate karega
+        data: { url: 'https://xanimeshhh.github.io/jmdtraders/dashboard.html' }
+      });
+    });
+  } else if (Notification.permission !== 'denied') {
+    Notification.requestPermission().then(permission => {
+      if (permission === 'granted') {
+        triggerBillNotification();
+      }
+    });
+  }
+}
+async function saveBillToHistory() {
+    const dashboardDays = parseInt(document.getElementById('totalDays')?.value || '1', 10) || 1;
+    const address = document.getElementById('custAddress')?.value.trim() || "";
+    const customer = toSentenceCase(document.getElementById('billTo').value.trim());
+    const contact = document.getElementById('custContact').value.trim();
+    const amount = parseFloat(document.getElementById('grandTotal').innerText) || 0;
+
+    if (!customer || customer === "Customer Name") return showToast("Bhai, Name mandatory hai!", "error");
+    if (contact.length < 10) return showToast("Contact sahi se dalo!", "error");
+    if (amount <= 0) return showToast("Khali bill save nahi hota!", "error");
+
+    let totalSecurityDeposit = 0;
+    let savedItems = [];
+
+    document.querySelectorAll('.item-row').forEach(row => {
+        const name = row.querySelector('.i-n').value;
+        if (name) {
+            const qty = parseFloat(row.querySelector('.i-q').value || 1);
+            const singleDep = parseFloat(row.querySelector('.i-dep')?.value || 0);
+            
+            // Total calculation summary ke liye (Multiply yahan karo)
+            totalSecurityDeposit += (singleDep * qty);
+
+            savedItems.push({
+                name: name,
+                qty: qty,
+                rate: row.querySelector('.i-r').value,
+                days: row.querySelector('.i-d')?.value || 1,
+                deposit: singleDep // <--- FIX: Sirf Unit Deposit save karo (e.g. 500)
+            });
+        }
+    });
+
+
+
+    const subTotalVal = parseFloat(document.getElementById('subTotal').innerText) || 0;
+    const discPercent = parseFloat(document.getElementById('overallDisc').value) || 0;
+    const discountAmt = (subTotalVal * discPercent) / 100;
+    const isRentalBill = savedItems.some(item => item.name && item.name.includes("(Rent)"));
+    // Final Bill Object mein Total jayega (Refund ke liye)
+    let finalDepositValue = parseFloat(document.getElementById('depositTotal')?.innerText || 0);
+    if (finalDepositValue <= 0) finalDepositValue = totalSecurityDeposit;
+    const newBill = {
+        id: document.getElementById('invNo').value,
+        customer: customer,
+        number: contact,
+        address: address,
+        subtotal: subTotalVal.toFixed(2),
+        disc: discPercent,
+        disamt: discountAmt.toFixed(2),
+        amount: amount.toFixed(2),
+        items: savedItems,
+        status: isRentalBill ? "Rented" : "Sold",
+        deposit: isRentalBill ? finalDepositValue.toFixed(2) : "0.00",
+        totaldays: isRentalBill ? dashboardDays : 0,
+    };
+
+    // --- Final Save Function with Auto Return Date ---
+    async function executeFinalSave(selectedDate) {
+        document.getElementById('dateConfirmModal').style.display = 'none';
+        newBill.date = selectedDate;
+
+        if (isRentalBill) {
+            let datePart = selectedDate.split(',')[0]; 
+            let [d, m, y] = datePart.split('/').map(Number);
+            let bDate = new Date(y, m - 1, d);
+            bDate.setDate(bDate.getDate() + dashboardDays);
+            newBill.returndate = bDate.toLocaleDateString('en-IN'); // Automatic Calculation
+        } else {
+            newBill.returndate = "";
+        }
+
+        try {
+            showToast("Saving to Cloud...", "info");
+            const response = await fetch(SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify(newBill)
+            });
+            const result = await response.json();
+            
+            if (result.status === "success") {
+                showToast("Data Saved Successfully! ✅", "success");
+				console.log("Calling Notification...");
+                triggerBillNotification();
+                // --- INSTANT REFRESH LOGIC ---
+                // 1. Cloud se naya data wapas kheencho
+                const freshDataResponse = await fetch(SCRIPT_URL);
+                const freshData = await freshDataResponse.json();
+                
+                // 2. Global variable update karo
+                currentCloudHistory = freshData;
+                
+                // 3. Table render karo naye data ke saath
+                renderTable(currentCloudHistory);
+                
+                // 4. Form khali karo
+                resetForm();
+            }
+        } catch (error) {
+            showToast("Sync Error!", "error");
+        }
+    }
+
+    // Modal Trigger Logic
+    if (typeof editingRowNum !== 'undefined' && editingRowNum !== null) {
+        newBill.rowNum = editingRowNum;
+        const billData = currentCloudHistory.find(b => b.rowNum == editingRowNum);
+        const oldDate = billData ? billData.date : new Date().toLocaleString('en-IN');
+        document.getElementById('dateConfirmModal').style.display = 'flex';
+        document.getElementById('keepOldDateBtn').onclick = () => executeFinalSave(oldDate);
+        document.getElementById('useNewDateBtn').onclick = () => executeFinalSave(new Date().toLocaleString('en-IN'));
+    } else {
+        executeFinalSave(new Date().toLocaleString('en-IN'));
+    }
+	
+}
+function sendWhatsAppReminder(index) {
+    const bill = currentCloudHistory[index];
+    if (!bill || !bill.date) {
+        alert("Bill data missing!");
+        return;
+    }
+
+    // 1. Phone Number Fix
+    let cleanNumber = bill.number.toString().replace(/\D/g, ''); 
+    if (cleanNumber.length === 10) cleanNumber = "91" + cleanNumber;
+
+    // 2. Date Parsing (Super Safe Version)
+    // Sabse pehle saare slashes, spaces aur colons ko split karte hain
+    let dateParts = bill.date.replace(',', '').split(/[\/\s:]+/);
+    
+    if (dateParts.length < 3) {
+        alert("Date format incorrect in database!");
+        return;
+    }
+
+    const d = parseInt(dateParts[0]), m = parseInt(dateParts[1]) - 1, y = parseInt(dateParts[2]);
+    const hr = parseInt(dateParts[3] || 0), min = parseInt(dateParts[4] || 0), sec = parseInt(dateParts[5] || 0);
+    
+    const bDateTime = new Date(y, m, d, hr, min, sec);
+    const tDays = parseInt(bill.totaldays || 1);
+    
+    // Return ka exact time calculate karo
+    const returnDateTime = new Date(bDateTime.getTime() + (tDays * 24 * 60 * 60 * 1000));
+    
+    const now = new Date();
+    
+    // Yahan check karo exact status
+    const isLate = now.getTime() > returnDateTime.getTime();
+
+    const timeDisplay = returnDateTime.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true });
+    const dateDisplay = returnDateTime.toLocaleDateString('en-IN');
+
+    let message = `*JMD TRADERS - Rental Reminder* 🚩\n\n`;
+    message += `Jai Shree Ram *${bill.customer}* ji,\n\n`;
+
+    if (isLate) {
+        const diffMs = now.getTime() - returnDateTime.getTime();
+        const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+        if (diffDays >= 3) {
+            // SAKHT MESSAGE (3+ Days Late)
+            message = `*JMD TRADERS - FINAL NOTICE* 🚩\n\n`;
+            message += `Jai Shree Ram *${bill.customer}* ji,\n`;
+            message += `⚠️ *URGENT:* Aapka rental item (Inv: ${bill.id}) aaj *${diffDays} din* se overdue hai.\n`;
+            message += `Kripya karke aaj hi ise shop par jama karwayein, warna per-day rental charges aur security deposit se katauti hogi.\n\n`;
+        } else {
+            // NORMAL LATE (1-2 Days Late)
+            message += `Aapke rental items (Inv: ${bill.id}) ki return date *${dateDisplay}* (${timeDisplay}) nikal chuki hai.\n`;
+            message += `⚠️ *Status:* LATE. Kripya aaj hi return karein taaki extra charges na lagein.\n\n`;
+        }
+    } else if (now.toDateString() === returnDateTime.toDateString()) {
+        // DUE TODAY
+        message += `Friendly reminder: Aapka rental item (Inv: ${bill.id}) aaj *${timeDisplay}* baje tak return hona hai.\n`;
+        message += `Kripya samay par return karein taaki aapka *Security Deposit* bina kisi katauti ke refund kiya ja sake. 🙏\n\n`;
+    } else {
+        // ADVANCE (Coming soon)
+        message += `Reminder: Aapke rental items ki return date *${dateDisplay}* hai.\n`;
+        message += `Kripya ise dhyan mein rakhein. Dhanyawad! 🙏\n\n`;
+    }
+
+    message += `Extension ke liye kripya call ya reply karein: *JMD Traders, Dombivli*`;
+
+    // Final Link Open
+    window.open(`https://wa.me/${cleanNumber}?text=${encodeURIComponent(message)}`, '_blank');
+}
+function triggerDailySummary(message) {
+  if (Notification.permission === 'granted') {
+    navigator.serviceWorker.ready.then(reg => {
+      reg.showNotification('JMD Traders: Morning Report 📊', {
+        body: message + '. Click karke poori list dekhein!',
+        icon: '/assets/icon.png',
+		badge: '/assets/jmdbadge.png',
+        tag: 'daily-summary', // Isse purana summary update ho jayega
+        vibrate: [300, 100, 300],
+        data: { url: './invoice.html' }
+      });
+    });
+  }
+}
+function renderTable(data) {
+    const tbody = document.getElementById('billHistoryBody');
+    let overdueCount = 0;   // Shuru mein zero
+    let upcomingCount = 0;  // Shuru mein zero
+	const dayTotalEl = document.getElementById('dayTotal'); 
+    const dayCountEl = document.getElementById('dayCount'); 
+	const dayDepositEl = document.getElementById('dayDeposit'); // Naya
+    const dayPendingEl = document.getElementById('dayPending'); // Naya
+    if (!tbody) return;
+	data.sort((a, b) => (b.rowNum || 0) - (a.rowNum || 0));
+    let totalAmount = 0;
+    let currentPendingDeposit = 0; // "totalDeposit" ki jagah ye naam rakha hai clearity ke liye
+    let pendingRentCount = 0;
+    let todayBillCount = 0;
+	const now = new Date(); // Aaj ki date comparison ke liye
+	const todayStr = now.toLocaleDateString('en-GB'); // "DD/MM/YYYY"
+
+    tbody.innerHTML = data.map((bill, index) => {
+        // Map ke shuru mein ye line add kar:
+		const originalIndex = currentCloudHistory.indexOf(bill);
+		const amt = parseFloat(bill.amount || bill.total || 0);
+        const invNo = bill.id || bill.invno || '-';
+        const billDateStr = bill.date || ""; 
+        const billDisplayDate = billDateStr.split(',')[0] || '-';
+		
+        // --- OVERDUE LOGIC (Smart Status Version) ---
+        if (billDisplayDate.includes(todayStr)) {
+            totalAmount += amt;
+            todayBillCount++;
+        }
+
+        // Pending Rent aur Deposit (Sirf wahi jo abhi tak "Rented" hain)
+        if (bill.status === "Rented") {
+            currentPendingDeposit += parseFloat(bill.deposit || 0);
+            pendingRentCount++;
+        }
+		
+		let overdueHtml = "";
+        let itemsList = [];
+        try {
+            itemsList = Array.isArray(bill.items) ? bill.items : JSON.parse(bill.items || "[]");
+        } catch(e) { itemsList = []; }
+		
+        const isRental = itemsList.some(item => item.name && item.name.includes("(Rent)"));
+
+        if (isRental && billDateStr) {
+            let bDateRaw = billDateStr.includes(',') ? billDateStr.replace(',', '') : billDateStr;
+            let parts = bDateRaw.split(/[\/\s:]+/); 
+            
+            if (parts.length >= 3) {
+                const d = parseInt(parts[0]), m = parseInt(parts[1]) - 1, y = parseInt(parts[2]);
+                const hr = parseInt(parts[3] || 0), min = parseInt(parts[4] || 0), sec = parseInt(parts[5] || 0);
+                
+                const bDateTime = new Date(y, m, d, hr, min, sec);
+                const tDays = parseInt(bill.totaldays || 1);
+                const returnTime = new Date(bDateTime.getTime() + (tDays * 24 * 60 * 60 * 1000));
+				
+                if (now > returnTime) {
+                    // 1. LATE STATUS (Red)
+                    const diffMs = now - returnTime;
+                    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+                    let label = diffDays > 0 ? `${diffDays} DIN LATE` : "OVERDUE";
+					if (bill.status === "Rented") {
+                    if (now > returnTime) {
+                        overdueCount++; // Ab ye chalega kyunki returnTime define ho chuka hai
+                    } else if (diffDays <= 1) {
+                        upcomingCount++; // Ab ye chalega kyunki diffDays define ho chuka hai
+                    }
+                }
+                    overdueHtml = `
+                        <div style="margin-top:5px; display:inline-block; background:#fff1f0; border:1px solid #ffa39e; color:#cf1322; padding:2px 8px; border-radius:12px; font-size:10px; font-weight:bold;">
+                            ⚠️ ${label}
+                        </div>
+                        <a href="#" onclick="sendWhatsAppReminder(${originalIndex}); return false;" style="color:#25D366; margin-left:5px;"><i class="fa-brands fa-whatsapp"></i></a>`;
+                } else if (now.toDateString() === returnTime.toDateString()) {
+                    // 2. DUE TODAY (Green)
+                    overdueHtml = `
+                        <div style="margin-top:5px; display:inline-block; background:#f6ffed; border:1px solid #b7eb8f; color:#389e0d; padding:2px 8px; border-radius:12px; font-size:10px; font-weight:bold;">
+                            ✅ DUE TODAY
+                        </div>
+                        <a href="#" onclick="sendWhatsAppReminder(${originalIndex}); return false;" style="color:#25D366; margin-left:5px;"><i class="fa-brands fa-whatsapp"></i></a>`;
+                } else {
+                    // 3. UPCOMING / ADVANCE (Blue)
+                    // Sirf tab dikhayega agar return date aane wali hai
+                    overdueHtml = `
+                        <div style="margin-top:5px; display:inline-block; background:#e6f7ff; border:1px solid #91d5ff; color:#096dd9; padding:2px 8px; border-radius:12px; font-size:10px; font-weight:bold;">
+                            🕒 UPCOMING
+                        </div>
+                        <a href="#" onclick="sendWhatsAppReminder(${originalIndex}); return false;" style="color:#25D366; margin-left:5px;"><i class="fa-brands fa-whatsapp"></i></a>`;
+                }
+            }
+        }
+        // --- OVERDUE LOGIC END ---
+		// --- Buttons Logic (Clean Version) ---
+        const isReturned = bill.status === "Returned";
+        let returnBtn = "";
+        let deleteBtn = `<button onclick="deleteBill(${originalIndex})" style="background:#dc3545; color:white; border:none; padding:6px 14px; border-radius:4px; cursor:pointer; font-weight:500;">Del</button>`;
+
+        if (isRental && !isReturned) {
+            // Agar rental hai aur return nahi hua, toh Return button dikhao
+            returnBtn = `<button onclick="openReturnModal(${originalIndex})" style="background:#28a745; color:white; border:none; padding:6px 12px; border-radius:4px; cursor:pointer; font-weight:500;">Return</button>`;
+            // Is case mein 'Del' button ko hide karna hai toh variable khali kar sakte ho
+        }
+
+        // Overdue status ko hide karo agar Returned hai
+        if (isReturned) {
+            overdueHtml = `<div style="margin-top:5px; display:inline-block; background:#e8e8e8; color:#8c8c8c; padding:2px 8px; border-radius:12px; font-size:10px; font-weight:bold; border:1px solid #d9d9d9;">✅ RETURNED</div>`;
+        }
+		// return statement mein jahan buttons hain, wahan ${returnBtn} add kar do
+        return `
+            <tr style="border-bottom: 1px solid #eee;">
+                <td style="padding:12px; text-align:center; vertical-align:middle;">
+                    <button onclick="generateAndDownloadQR('${invNo}', '${amt.toFixed(2)}')" 
+                            style="background:#721422; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer;">
+                        <i class="fa fa-qrcode" style="font-size:24px;"></i>
+                    </button>
+                </td>
+                <td style="padding:12px; vertical-align:middle;">${billDisplayDate}</td>
+                <td style="padding:12px; vertical-align:middle;">
+                    <div style="font-weight:bold; font-size:14px; color:#333;">${invNo}</div>
+                    ${overdueHtml} 
+                </td>
+                <td style="padding:12px; vertical-align:middle; color:#555;">${bill.customer}</td>
+                <td style="text-align:right; font-weight:bold; padding:12px; vertical-align:middle; color:#000;">₹${amt.toFixed(2)}</td>
+                <td style="padding:12px; vertical-align:middle;">
+                    <div style="display:flex; gap:8px; justify-content:flex-end;">
+                        ${returnBtn}
+                        <button onclick="viewBill(${originalIndex})" style="background:#007bff; color:white; border:none; padding:6px 14px; border-radius:4px; cursor:pointer; font-weight:500;">View</button>
+                        ${isReturned ? deleteBtn : (isRental ? '' : deleteBtn)} 
+                    </div>
+                </td>
+            </tr>
+        `;
+    }).join('');
+	if (overdueCount > 0 || upcomingCount > 0) {
+        let summaryMessage = "";
+        if (overdueCount > 0) summaryMessage += `⚠️ ${overdueCount} Overdue Bills `;
+        if (upcomingCount > 0) summaryMessage += `${summaryMessage ? '& ' : ''}🕒 ${upcomingCount} Upcoming Returns`;
+        
+        triggerDailySummary(summaryMessage);
+    }
+    if (dayTotalEl) dayTotalEl.innerText = "₹" + totalAmount.toLocaleString('en-IN');
+    if (dayCountEl) dayCountEl.innerText = todayBillCount;
+    if (dayDepositEl) dayDepositEl.innerText = "₹" + currentPendingDeposit.toLocaleString('en-IN');
+    if (dayPendingEl) dayPendingEl.innerText = pendingRentCount;
+}
+let activeReturnIndex = null;
+function openReturnModal(index) {
+    activeReturnIndex = index;
+    const bill = currentCloudHistory[index];
+    const security = parseFloat(bill.deposit || 0);
+    const now = new Date();
+
+    // 1. PER DAY TOTAL RENT (Sirf Rental items ke liye)
+    let totalPerDayRent = 0;
+    if (bill.items) {
+        const itemsList = typeof bill.items === 'string' ? JSON.parse(bill.items) : bill.items;
+        
+        itemsList.forEach(item => {
+            // Check karo ki name mein "(Rent)" hai ya nahi
+            if (item.name && item.name.includes("(Rent)")) {
+                let rate = parseFloat(item.price || item.rate || 0);
+                let qty = parseFloat(item.qty || 1);
+                totalPerDayRent += (rate * qty);
+            }
+        });
+    }
+
+    // 2. Deadline & Buffer Logic (Wahi same logic)
+    let dateParts = bill.date.replace(',', '').split(/[\/\s:]+/);
+    const bDateTime = new Date(dateParts[2], dateParts[1] - 1, dateParts[0], dateParts[3]||0, dateParts[4]||0);
+    const tDays = parseInt(bill.totaldays || 1);
+    const returnDeadline = new Date(bDateTime.getTime() + (tDays * 24 * 60 * 60 * 1000));
+
+    let fine = 0;
+    let fineDetails = "On Time Return";
+    const bufferMs = 4 * 60 * 60 * 1000; 
+
+    if (now > (returnDeadline.getTime() + bufferMs)) {
+        const diffMs = now - returnDeadline; 
+        const extraDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24)); 
+        
+        if (extraDays > 0) {
+            fine = extraDays * totalPerDayRent; 
+            fineDetails = `${extraDays} Din Late (Rental Rate: ₹${totalPerDayRent}/day)`;
+        }
+    } else if (now > returnDeadline) {
+        fineDetails = "Grace Period (Under 4 hrs Delay)";
+        fine = 0; 
+    }
+
+    const refund = security - fine;
+
+    // 3. Modal UI
+    document.getElementById('modalContent').innerHTML = `
+        <div style="border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 10px;">
+            <p><strong>Customer:</strong> ${bill.customer}</p>
+            <p><strong>Inv No:</strong> ${bill.id}</p>
+        </div>
+        <p>Security Deposit: <b>₹${security.toFixed(2)}</b></p>
+        <p>Rental Value (Per Day): <b>₹${totalPerDayRent.toFixed(2)}</b> <small>(Excludes Sale Items)</small></p>
+        <p>Fine/Penalty: <b style="color:red;">₹${fine.toFixed(2)}</b> <br>
+           <small style="color:#666;">Status: ${fineDetails}</small>
+        </p>
+        <div style="background:#f6ffed; padding:10px; border-radius:4px; margin-top:10px; border: 1px solid #b7eb8f;">
+            <h3 style="margin:0; color:#389e0d;">Net Refund: ₹${refund.toFixed(2)}</h3>
+        </div>
+    `;
+    
+    bill.tempSummary = `Refund: ₹${refund.toFixed(2)} | Fine: ₹${fine.toFixed(2)} (${fineDetails})`;
+    document.getElementById('returnModal').style.display = 'flex';
+}
+function confirmReturnToDB() {
+    if (activeReturnIndex === null) return;
+    
+    const bill = currentCloudHistory[activeReturnIndex];
+    const now = new Date();
+    const returnDateStr = now.toLocaleString('en-IN');
+    const cleanID = (bill.id || bill.invno).toString().trim();
+
+    // Calculations logic (Same as yours)
+    let totalPerDayRent = 0;
+    if (bill.items) {
+        const itemsList = (typeof bill.items === 'string') ? JSON.parse(bill.items) : bill.items;
+        itemsList.forEach(item => {
+            if (item.name && item.name.includes("(Rent)")) {
+                totalPerDayRent += (parseFloat(item.price || item.rate || 0) * parseFloat(item.qty || 1));
+            }
+        });
+    }
+
+    let dateParts = bill.date.replace(',', '').split(/[\/\s:]+/);
+    const bDateTime = new Date(dateParts[2], dateParts[1] - 1, dateParts[0], dateParts[3]||0, dateParts[4]||0);
+    const tDays = parseInt(bill.totaldays || 1);
+    const returnDeadline = new Date(bDateTime.getTime() + (tDays * 24 * 60 * 60 * 1000));
+    const voidDeadline = new Date(returnDeadline.getTime() + (4 * 60 * 60 * 1000));
+
+    let fineAmount = 0, extraDays = 0;
+    if (now > voidDeadline) {
+        const diffMs = now - returnDeadline;
+        extraDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+        fineAmount = extraDays * totalPerDayRent;
+    }
+
+    const finalSummary = `Refund: ₹${(parseFloat(bill.deposit) - fineAmount).toFixed(2)} | Fine: ₹${fineAmount.toFixed(2)} (${extraDays > 0 ? extraDays + ' Days Extra' : 'On Time'})`;
+
+    // 1. UPDATE LOCAL OBJECT (Important for UI)
+    bill.status = "Returned";
+    bill.returndate = returnDateStr;
+    bill.settle_summary = finalSummary; // Yahi key use karo
+    bill.deposit = 0;
+
+    renderTable(currentCloudHistory);
+    document.getElementById('returnModal').style.display = 'none';
+    showToast("Updating JMD Cloud Sheet...", "info");
+
+    // 2. SEND TO CLOUD
+    const updatePayload = {
+        action: "updateStatus",
+        id: cleanID,
+        status: "Returned",
+        returndate: returnDateStr,
+        deposit: 0,
+        summary: finalSummary  // Apps Script iska wait kar raha hai
+    };
+
+    fetch(SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        body: JSON.stringify(updatePayload)
+    }).then(() => {
+        showToast("Sheet Updated Successfully! ✅", "success");
+    }).catch(err => {
+        console.error(err);
+        showToast("Local update done, Sheet failed.", "warning");
+    });
+}
+function resetForm() {
+    document.getElementById('billTo').value = "";
+    document.getElementById('custContact').value = "";
+    if(document.getElementById('overallDisc')) document.getElementById('overallDisc').value = 0;
+    
+    editingRowNum = null;
+
+    // --- BUTTON UI RESET (Icon ke saath) ---
+    const saveBtn = document.getElementById('saveBtn');
+    if (saveBtn) {
+        // class wapas blue karo aur icon ke saath text dalo
+        saveBtn.classList.add('color-blue'); 
+        saveBtn.innerHTML = `
+            <span><i class="fa fa-save"></i></span>
+            <span class="always-show">Save Bill</span>
+            <div class="shine"></div>
+        `;
+        // Inline styles saaf karo jo "Returned" ya "Update" mode ne lagayi thi
+        saveBtn.removeAttribute('style');
+        saveBtn.disabled = false;
+    }
+
+    const container = document.getElementById('itemsContainer');
+    if (container) {
+        container.innerHTML = "";
+        if (typeof addItem === "function") addItem(); 
+    }
+    
+    // Banner saaf karo agar khula ho
+    const banner = document.getElementById('bannerContainer');
+    if (banner) banner.innerHTML = "";
+
+    if (typeof calc === "function") calc();
+}
+async function loadDailySales() {
+    try {
+        // Safe URL separator check
+        const separator = SCRIPT_URL.includes('?') ? '&' : '?';
+        const finalUrl = SCRIPT_URL + separator + "t=" + new Date().getTime();
+
+        const response = await fetch(finalUrl);
+
+        // Agar response 404 ya error hai toh yahi pakad lo
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const history = await response.json();
+        currentCloudHistory = history ? history.reverse() : [];
+        renderTable(currentCloudHistory);updateSidebarStats(currentCloudHistory);
+        
+    } catch (e) {
+        console.error("Cloud load error:", e);
+        // User ko purana stored data dikha do agar fetch fail ho jaye
+        if (typeof currentCloudHistory === 'undefined') currentCloudHistory = [];
+        showToast("History sync fail: " + e.message, "error");
+    }
+}
+function updateNextInvoiceNo(history) {
+    const invField = document.getElementById('invNo');
+    if (!invField) return;
+
+    if (history && history.length > 0) {
+        // 1. Last bill ka ID uthao (Example: JMD01267)
+        const lastInv = history[0].id || history[0].invno || "";
+        
+        try {
+            // 2. Text aur Number alag karo
+            const prefixMatch = lastInv.match(/[a-zA-Z]+/);
+            const numMatch = lastInv.match(/\d+/);
+
+            if (prefixMatch && numMatch) {
+                const prefix = prefixMatch[0]; // "JMD"
+                const num = parseInt(numMatch[0]); // 1267
+                
+                // 3. Naya number generate karo (Next Number)
+                const nextInv = prefix + (num + 1).toString().padStart(5, '0');
+                
+                // 4. Value set karo aur lock karo
+                invField.value = nextInv;
+                invField.readOnly = true;
+            } else {
+                invField.value = "JMD01001"; // Fallback agar format galat ho
+            }
+        } catch (e) {
+            console.error("Invoice parsing error:", e);
+            invField.value = "JMD01001";
+        }
+    } else {
+        invField.value = "JMD01001"; // Starting point agar history khali ho
+    }
+}
+// Step 1: Modal dikhao
+function deleteBill(index) {
+    indexToDelete = index;
+    const modal = document.getElementById('deleteModal');
+    modal.style.display = 'flex'; // Popup show karo
+}
+
+// Step 2: Modal band karo
+function closeDeleteModal() {
+    document.getElementById('deleteModal').style.display = 'none';
+    indexToDelete = null;
+}
+
+document.getElementById('confirmDeleteBtn').onclick = async function() {
+    if (indexToDelete !== null) {
+        const targetBill = currentCloudHistory[indexToDelete];
+        const rowId = targetBill.rowNum;
+
+        if (!rowId) {
+            showToast("Error: Row ID missing!", "error");
+            return closeDeleteModal();
+        }
+
+        closeDeleteModal();
+        showToast("Deleting from Cloud...", "info");
+
+        try {
+            // 1. Pehle Cloud se delete karo
+            await fetch(`${SCRIPT_URL}?action=delete&row=${rowId}`, { mode: 'no-cors' });
+
+            // 2. SABSE JARURI: UI se wo data permanent hatao jo delete hua hai
+            // Hum filter kar rahe hain taaki sirf wahi bachein jo delete nahi huye
+            currentCloudHistory = currentCloudHistory.filter(bill => bill.rowNum !== rowId);
+            
+            // 3. Table ko naye filtered data ke saath refresh karo
+            renderTable(currentCloudHistory);
+            
+            showToast("Permanently Deleted! ✅", "success");
+        } catch (e) {
+            console.error(e);
+            showToast("Sync Error! Refreshing...", "error");
+            loadDailySales(); // Kuch galat hua toh server se fresh data lao
+        } finally {
+            indexToDelete = null;
+        }
+    }
+};// 3. Purana bill editor mein load karne ka function
+let pendingViewIndex = null; // Yaad rakhne ke liye ki konsa bill load karna tha
+
+function viewBill(index) {
+    // SABSE PEHLE YE LINE HONI CHAHIYE
+    const bill = currentCloudHistory[index]; 
+    
+    if (!bill) {
+        showToast("Bhai, bill ka data nahi mil raha!", "error");
+        return;
+    }
+
+    const container = document.getElementById('itemsContainer');
+    const firstRowName = container.querySelector('.i-n')?.value || "";
+
+    // Baki ka logic...
+    if (firstRowName !== "") {
+        pendingViewIndex = index;
+        document.getElementById('viewConfirmModal').style.display = 'flex';
+        
+        document.getElementById('confirmViewBtn').onclick = function() {
+            actuallyLoadBill(pendingViewIndex);
+            closeViewModal();
+        };
+    } else {
+        actuallyLoadBill(index);
+    }
+}
+function closeViewModal() {
+    document.getElementById('viewConfirmModal').style.display = 'none';
+    pendingViewIndex = null;
+}
+function actuallyLoadBill(index) {
+    const bill = currentCloudHistory[index]; // <--- Ye line yahan bhi honi chahiye
+    if (!bill) return;
+
+    editingRowNum = bill.rowNum;
+    document.getElementById('itemsContainer').innerHTML = "";
+ // 2. Load Header Info (Including Address)
+    document.getElementById('invNo').value = bill.id || bill.invno || "";
+    document.getElementById('billTo').value = bill.customer || "Cash";
+    document.getElementById('custContact').value = bill.number || bill.contact || "";
+
+    // --- ADDRESS LOAD LOGIC ---
+    const addrField = document.getElementById('custAddress');
+    if (addrField) {
+        addrField.value = bill.address || ""; // Agar cloud me address hai to fill karo
+    }
+
+    // 3. Items Parsing
+    let items = (typeof bill.items === 'string') ? JSON.parse(bill.items) : bill.items;
+
+    // --- RENTAL UI AUTO-SHOW ---
+    // Check karo ki kya is bill me koi Rental item hai ya Address hai
+    const hasRental = items.some(item => item.name && item.name.includes("(Rent)"));
+    const rentSwitch = document.getElementById('isRentMode');
+    if (hasRental || (bill.address && bill.address !== "")) {
+        if (rentSwitch) rentSwitch.checked = true;
+        document.getElementById('rentalAddressSection').style.display = 'block';
+        document.getElementById('rentFields').style.display = 'block';
+        document.getElementById('rentQuickControls').style.display = 'block';
+    } else {
+        if (rentSwitch) rentSwitch.checked = false;
+        document.getElementById('rentalAddressSection').style.display = 'none';
+        document.getElementById('rentFields').style.display = 'none';
+        document.getElementById('rentQuickControls').style.display = 'none';
+    }
+    // Rental Sync (Days & Deposit)
+    const firstRental = items.find(item => item.name && item.name.includes("(Rent)"));
+    if (firstRental) {
+        if (document.getElementById('totalDays')) document.getElementById('totalDays').value = firstRental.days || 1;
+        if (document.getElementById('globalDeposit')) document.getElementById('globalDeposit').value = firstRental.deposit || 0;
+    }
+
+    items.forEach(item => {
+        addItem(item.name, item.rate, item.qty, item.deposit, true);
+    });
+
+    // 4. Final Refresh
+    setTimeout(() => {
+        updateRentalModeLock();
+        calc();
+        setTimeout(() => {
+            calc();
+            updateSecurityDeposit();
+            refreshRentalButtonLabels();
+        }, 100);
+    }, 600);
+	const isReturned = bill.status === "Returned";
+    
+    // 1. Sabhi Inputs ko readonly/disabled karo
+    const inputs = document.querySelectorAll('#billModal input, #billModal select, #billModal textarea');
+    
+    // 2. Buttons hide karo (Save/Add Item)
+    const actionBtns = document.querySelector('.modal-footer'); // Apna footer class check kar lena
+    if (actionBtns) {
+        actionBtns.style.display = isReturned ? 'none' : 'flex';
+    }
+    const oldBanner = document.getElementById('settleBanner');
+    if (oldBanner) oldBanner.remove();
+    // 2. Agar bill Returned hai, toh Banner dikhao
+    // actuallyLoadBill ke andar jahan Banner banta hai:
+if (isReturned) {
+    // Sheets se aaya hua actual summary data
+    let detailSummary = bill.settle_summary || "Bill Settled & Returned ✅";
+    
+    const hasFine = detailSummary.includes("Fine:") && !detailSummary.includes("Fine: ₹0.00");
+    const bgColor = hasFine ? "#fff1f0" : "#f6ffed";
+    const borderColor = hasFine ? "#ffa39e" : "#b7eb8f";
+    const textColor = hasFine ? "#cf1322" : "#389e0d";
+
+    const banner = document.createElement('div');
+    banner.id = 'settleBanner';
+    banner.style.cssText = `
+        background: ${bgColor}; 
+        border: 1px solid ${borderColor}; 
+        color: ${textColor};
+        padding: 6px 12px; 
+        border-radius: 4px; 
+        margin-top: -10px; /* Gap khatam karne ke liye */
+        margin-bottom: 5px;
+        text-align: center; 
+        font-weight: 800; 
+        font-size: 13px;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    `;
+
+    banner.innerHTML = `<i class="fa-solid ${hasFine ? 'fa-triangle-exclamation' : 'fa-circle-check'}"></i> ${detailSummary}`;
+
+    const container = document.getElementById('bannerContainer');
+    if (container) {
+        container.innerHTML = ""; 
+        container.appendChild(banner);
+    }
+}
+    // 3. EDITING BLOCK LOGIC: Sab inputs ko freeze kar do
+if (isReturned) {
+        // 1. Saare input fields (Days, Deposit, Address etc.) lock karo
+        const allInputs = document.querySelectorAll('input, select, textarea');
+        allInputs.forEach(el => {
+            el.disabled = true;
+            el.style.backgroundColor = "#f0f0f0";
+            el.style.pointerEvents = "none"; 
+        });
+
+        // 2. "+ Add Item" button ko lock karo
+        const addBtn = document.querySelector('.btn-add');
+        if (addBtn) {
+            addBtn.style.display = 'none'; // Seedha gayab
+        }
+
+        // 3. Rental System Buttons (Chaurang, Hawan, Paath) lock karo
+        const liteBtns = document.querySelectorAll('.lite-btn');
+        liteBtns.forEach(btn => {
+            btn.disabled = true;
+            btn.style.opacity = "0.5";
+            btn.style.cursor = "not-allowed";
+            btn.onclick = null; // Click function hi khatam
+        });
+
+        // 4. Pure Rental Container ko click-proof banao
+        const rentalBox = document.querySelector('.jmd-rental-lite');
+        if (rentalBox) {
+            rentalBox.style.pointerEvents = "none"; // Iske andar kuch bhi click nahi hoga
+            rentalBox.style.opacity = "0.8";
+        }
+
+        // 5. Rental Mode Switch (Checkbox) ko lock karo
+        const rentSwitch = document.getElementById('isRentMode');
+        if (rentSwitch) {
+            rentSwitch.disabled = true;
+        }
+
+// 6. Save/Update Button ko View Mode mein badlo
+        const saveBtn = document.getElementById('saveBtn');
+        if (saveBtn) {
+		
+            saveBtn.classList.remove('color-blue'); 
+            saveBtn.innerHTML = `
+                <span><i class="fa fa-arrow-left"></i></span>
+                <span class="always-show">Cancel/Back</span>
+                <div class="shine"></div>
+            `;
+            saveBtn.style.setProperty('flex', '3', 'important');
+            saveBtn.style.setProperty('background-color', '#666', 'important'); 
+            saveBtn.style.setProperty('border', '2px solid #ff4d4d', 'important');
+            saveBtn.style.color = "white";
+            saveBtn.style.display = "flex";
+            saveBtn.style.alignItems = "center";
+            saveBtn.style.justifyContent = "center";
+            saveBtn.style.gap = "8px";
+            saveBtn.style.cursor = "pointer";
+            saveBtn.style.pointerEvents = "auto"; 
+            saveBtn.disabled = false; 
+
+            saveBtn.onclick = (e) => {
+                e.preventDefault();
+                window.location.reload(); 
+            };
+        }
+
+        // 7. Banner (Custom DIV)
+        const container = document.getElementById('bannerContainer');
+        if (container) {
+            container.innerHTML = `<div id="settleBanner" style="background:#f6ffed; border:1px solid #b7eb8f; color:#389e0d; padding:12px; border-radius:8px; margin-bottom:15px; text-align:center; font-weight:bold; width:100%;">
+                <i class="fa-solid fa-circle-check"></i> ${bill.settle_summary || "Bill Settled & Returned ✅"}
+            </div>`;
+        }
+    } 
+    else {
+        // --- RESET / UPDATE MODE (GOLDEN LOOK) ---
+        const allInputs = document.querySelectorAll('input, select, textarea');
+        allInputs.forEach(el => {
+            el.disabled = false;
+            el.style.backgroundColor = ""; 
+            el.style.opacity = "1";
+            el.style.pointerEvents = "auto";
+        });
+
+        const addBtn = document.getElementById('addItemBtn');
+        if (addBtn) addBtn.style.display = 'inline-block';
+
+        const saveBtn = document.getElementById('saveBtn');
+        if (saveBtn) {
+            // 1. Blue class hatao taaki Golden color dikh sake
+            saveBtn.classList.remove('color-blue');
+            
+            // 2. Icon aur "Update Bill" text set karo
+            saveBtn.innerHTML = `
+                <span><i class="fa fa-sync-alt"></i></span>
+                <span class="always-show">Update Bill</span>
+                <div class="shine"></div>
+            `;
+
+            // 3. Golden Style Apply Karo (JMD Rental Style)
+            saveBtn.style.setProperty('flex', '3', 'important'); 
+            saveBtn.style.setProperty('background', 'linear-gradient(135deg, #fbbf24, #d97706)', 'important'); 
+            saveBtn.style.setProperty('border', '2px solid #b45309', 'important');
+            saveBtn.style.color = "#450a0a"; // Dark brown text for contrast on gold
+            saveBtn.style.fontWeight = "bold";
+            saveBtn.style.display = "flex";
+            saveBtn.style.alignItems = "center";
+            saveBtn.style.justifyContent = "center";
+            saveBtn.style.gap = "8px";
+            saveBtn.style.cursor = "pointer";
+            saveBtn.style.pointerEvents = "auto";
+            saveBtn.disabled = false;
+            
+            // 4. Update Function
+            saveBtn.onclick = () => saveBillToHistory();
+        }
+        
+        const container = document.getElementById('bannerContainer');
+        if (container) container.innerHTML = "";
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function resetDailySales() {
+    if(confirm("Full history clear karun?")) {
+        localStorage.removeItem('jmd_bill_history');
+        localStorage.removeItem('jmd_sales_summary');
+        loadDailySales();
+    }
+}
+function calc() {
+    const isRent = document.getElementById('isRentMode')?.checked;
+    const dashboardDays = Math.max(1, parseInt(document.getElementById('totalDays')?.value || '1'));
+    const gDepVal = parseFloat(document.getElementById('globalDeposit')?.value || 0);
+
+    let subtotal = 0;
+    let manualDepTotal = 0; // Backup calculation
+    
+    document.querySelectorAll('.item-row').forEach(row => {
+        const nameEl = row.querySelector('.i-n');
+        const qtyEl = row.querySelector('.i-q');
+        const rateEl = row.querySelector('.i-r');
+        const daysEl = row.querySelector('.i-d');
+        const amtField = row.querySelector('.i-a');
+
+        if (!nameEl || !qtyEl || !rateEl) return; 
+
+        const nameValue = nameEl.value || "";
+        const q = parseFloat(qtyEl.value) || 0;
+        const r = parseFloat(rateEl.value) || 0;
+        
+        if (nameValue.includes("(Rent)")) {
+            const rowDays = parseInt(daysEl?.value) || dashboardDays;
+            if (daysEl && !daysEl.value) daysEl.value = rowDays;
+
+            row.style.backgroundColor = "#fff9db";
+            let amt = q * r * rowDays;
+            if (amtField) amtField.innerText = amt.toFixed(2);
+            subtotal += amt;
+            
+            // Manual backup for view mode
+            manualDepTotal += (gDepVal * q);
+        } else {
+            row.style.backgroundColor = "transparent";
+            let amt = q * r;
+            if (amtField) amtField.innerText = amt.toFixed(2);
+            subtotal += amt;
+        }
+    });
+
+    // Pehle silent box update karo
+    updateSecurityDeposit();
+    
+    // Agar summary gayab hai toh manualDepTotal use karo
+    const currentDepTotal = manualDepTotal; 
+
+    // --- TOTALS UPDATE ---
+    const discPercent = parseFloat(document.getElementById('overallDisc')?.value) || 0;
+    const totalAfterDisc = subtotal - (subtotal * (discPercent / 100));
+    
+    const grandTotal = totalAfterDisc + (isRent ? currentDepTotal : 0);
+
+    document.getElementById('subTotal').innerText = subtotal.toFixed(2);
+    document.getElementById('grandTotal').innerText = grandTotal.toFixed(2);
+    if(document.getElementById('balDue')) document.getElementById('balDue').innerText = grandTotal.toFixed(2);
+
+    // Summary Display Fix
+    const depRow = document.getElementById('depositRow');
+    const depDisplay = document.getElementById('displayDeposit');
+    if (depDisplay) depDisplay.innerText = currentDepTotal.toFixed(2);
+    if (depRow) {
+        depRow.style.display = (isRent && currentDepTotal > 0) ? 'flex' : 'none';
+    }
+
+    if (typeof refreshRentalButtonLabels === 'function') refreshRentalButtonLabels();
+}
+function priceToWords(n) {
+    const a = ['', 'One ', 'Two ', 'Three ', 'Four ', 'Five ', 'Six ', 'Seven ', 'Eight ', 'Nine ', 'Ten ', 'Eleven ', 'Twelve ', 'Thirteen ', 'Fourteen ', 'Fifteen ', 'Sixteen ', 'Seventeen ', 'Eighteen ', 'Nineteen '];
+    const b = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+    if ((n = n.toString()).length > 9) return 'overflow';
+    let n_arr = ('000000000' + n).substr(-9).match(/^(\d{2})(\d{2})(\d{2})(\d{1})(\d{2})$/);
+    if (!n_arr) return ''; 
+    let str = '';
+    str += (n_arr[1] != 0) ? (a[Number(n_arr[1])] || b[n_arr[1][0]] + ' ' + a[n_arr[1][1]]) + 'Crore ' : '';
+    str += (n_arr[2] != 0) ? (a[Number(n_arr[2])] || b[n_arr[2][0]] + ' ' + a[n_arr[2][1]]) + 'Lakh ' : '';
+    str += (n_arr[3] != 0) ? (a[Number(n_arr[3])] || b[n_arr[3][0]] + ' ' + a[n_arr[3][1]]) + 'Thousand ' : '';
+    str += (n_arr[4] != 0) ? (a[Number(n_arr[4])] || b[n_arr[4][0]] + ' ' + a[n_arr[4][1]]) + 'Hundred ' : '';
+    str += (n_arr[5] != 0) ? ((str != '') ? 'and ' : '') + (a[Number(n_arr[5])] || b[n_arr[5][0]] + ' ' + a[n_arr[5][1]]) + 'Rupees Only' : 'Rupees Only';
+    return str;
+}
+async function saveVyaparPDF() {
+    const rows = [];
+    const dashboardDays = parseInt(document.getElementById('totalDays')?.value || '1', 10) || 1;
+
+    document.querySelectorAll('.item-row').forEach((row, index) => {
+        const name = row.querySelector('.i-n').value.trim();
+        if(name !== "") {
+            const qty = parseFloat(row.querySelector('.i-q').value) || 0;
+            const rate = parseFloat(row.querySelector('.i-r').value) || 0;
+            const daysInp = row.querySelector('.i-d');
+            
+            let days = 1;
+            let daysDisplay = "-"; // Normal item ke liye dash dikhega
+
+            // Check if item is Rental
+            if (name.includes("(Rent)")) {
+                days = parseInt(daysInp?.value) || dashboardDays;
+                daysDisplay = days.toString(); 
+            }
+
+            const rowAmount = (qty * rate * days).toFixed(2);
+
+            // Ab hum 6 items bhej rahe hain (Days column ke saath)
+            rows.push([
+                index + 1, 
+                name, 
+                qty, 
+                daysDisplay, 
+                rate.toFixed(2), 
+                rowAmount
+            ]);
+        }
+    });
+	const isSettled = document.getElementById('settleBanner') !== null;
+	// Naya check: Customer details ke liye
+	const customerName = document.getElementById('billTo').value.trim();
+	const customerMobile = document.getElementById('custContact')?.value.trim() || "";
+	if (customerName === "") {
+		return showToast("Bhai, pehle Customer ka Naam toh likho!", "error");
+	}
+	if (customerMobile.length < 10) {
+		return showToast("Bhai, sahi Mobile Number dalo (10 digits)!", "error");
+	}
+	if (rows.length === 0) {
+		return showToast("Bhai, kam se kam ek item toh daalo bill mein!", "error");
+	}
+	let currentLoadedBill = null;
+    if (typeof editingRowNum !== 'undefined' && editingRowNum !== null) {
+        currentLoadedBill = currentCloudHistory.find(b => b.rowNum == editingRowNum);
+    }
+    // 2. Decorations aur Watermark Logic
+    const drawPageDecorations = (pdfInstance) => {
+        const logoImg = document.getElementById('logoImg'); 
+        if (logoImg) {
+            pdfInstance.saveGraphicsState();
+            pdfInstance.setGState(new pdfInstance.GState({ opacity: 0.025 })); 
+            pdfInstance.addImage(logoImg, 'PNG', 25, 68, 160, 160);
+            pdfInstance.restoreGraphicsState();
+        }
+
+        pdfInstance.setFontSize(8);
+        pdfInstance.setFont("helvetica", "normal");
+        pdfInstance.setTextColor(114, 20, 34);
+
+        const currentInvNo = document.getElementById('invNo').value;
+        const softwareTag = `Invoice #${currentInvNo} | Generated by JMDSoftware | Developed by Animesh`;
+        const textWidth = pdfInstance.getTextWidth(softwareTag);
+        const centerX = 105;
+
+        pdfInstance.setDrawColor(114, 20, 34);
+        pdfInstance.setLineWidth(0.2);
+        pdfInstance.line(14, 292, centerX - (textWidth / 2) - 3, 292);
+        pdfInstance.text(softwareTag, centerX, 292, { align: "center" });
+        pdfInstance.line(centerX + (textWidth / 2) + 3, 292, 196, 292);
+    };
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF('p', 'mm', 'a4');
+    const primaryColor = [114, 20, 34];
+
+    // --- 1. CONTACT BAR ---
+    const barY = 8;
+    doc.setFillColor(114, 20, 34); 
+    doc.rect(14, barY, 182, 5, 'F'); 
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(8);
+    doc.setFont("helvetica", "bold");
+    doc.text("Ph: 9867744802 / 7738503902 / 8356068938", 17, barY + 3.5);
+    doc.text("Email: vanimesh2004@gmail.com", 193, barY + 3.5, { align: "right" });
+
+    // --- 2. RELIGIOUS HEADER (Jai Mata Di & Shlok) ---
+    const headerTop = 15;
+    doc.setTextColor(114, 20, 34); 
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "bold");
+    doc.text("Jai Mata Di! 🚩", 105, headerTop - 2, { align: "center" });
+    doc.setFontSize(8);
+    doc.setFont("helvetica", "italic");
+    doc.text('"Sarva Mangala Mangalye, Shive Sarvartha Sadhike, Sharanye Tryambake Gauri, Narayani Namostute"', 105, headerTop + 1, { align: "center" });
+
+    // --- 3. LOGO & SHOP NAME ---
+    try {
+        const logo = document.getElementById('logoImg');
+        if (logo) { doc.addImage(logo, 'PNG', 14, headerTop + 4, 25, 25); }
+    } catch (e) {}
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(22);
+    doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+    doc.text("JMD Traders", 44, headerTop + 12);
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8.5);
+    doc.setTextColor(100);
+    const addr1 = "Branch 1 : Shop no.03, Gajanan Chowk, Lodha Heritage, Desale Pada, Dombivli East";
+    const addr2 = "Branch 2 : Shop no.10, Vastu B, Near Sankat Mochan Hanuman Mandir, Desale Pada, Dombivli East";
+    doc.text(doc.splitTextToSize(addr1, 85), 44, headerTop + 17);
+    doc.text(doc.splitTextToSize(addr2, 85), 44, headerTop + 24);
+
+    // --- 4. INVOICE TITLE & INFO ---
+    doc.setFontSize(14);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+    doc.text("TAX INVOICE", 196, headerTop + 12, { align: "right" });
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "normal");
+    const invNoValue = document.getElementById('invNo').value;
+    doc.setTextColor(50);
+    doc.text(`Invoice No: #${invNoValue}`, 196, headerTop + 18, { align: "right" });
+    doc.text(`Date: ${new Date().toLocaleDateString()}`, 196, headerTop + 23, { align: "right" });
+	
+// PDF function ke andar (Summary section se pehle)
+const depositVal = parseFloat(document.getElementById('displayDeposit')?.innerText || 0);
+    // --- 5. CUSTOMER DETAILS (Aligned Left & Right) ---
+    const isRent = document.getElementById('isRentMode')?.checked;
+    const billToY = 52; 
+    const custName = document.getElementById('billTo').value.trim();
+    const custContact = document.getElementById('custContact')?.value.trim() || ""; 
+    const custAddress = document.getElementById('custAddress')?.value.trim() || "";
+
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(50);
+    doc.text("Bill To :", 14, billToY);
+    doc.text(`${custName} Ji`, 29, billToY);
+
+    if (custContact) {
+        doc.setFont("helvetica", "normal");
+        doc.text(`Contact: ${custContact}`, 196, billToY, { align: "right" });
+    }
+
+    let currentLineY = billToY + 3; 
+
+    // RENTAL ADDRESS CHECK
+    if (isRent && custAddress) {
+        doc.setFontSize(9);
+        doc.setFont("helvetica", "normal");
+        doc.setTextColor(80);
+        doc.text(`Address: ${custAddress}`, 14, billToY + 5);
+        currentLineY = billToY + 8; // Line niche shift ho gayi
+    }
+	doc.setDrawColor(114, 20, 34);
+    doc.setLineWidth(0.4);
+    doc.line(14, currentLineY, 196, currentLineY);
+    // --- 6. TABLE SECTION ---
+    // --- 6. TABLE SECTION ---
+    doc.autoTable({
+        startY: currentLineY + 5,
+        head: [['Sr.', 'Item Description', 'Qty', 'Days', 'Rate', 'Amount']], // 'Days' header add kiya
+        body: rows,
+        didDrawPage: (data) => { 
+            if(typeof drawPageDecorations === 'function') drawPageDecorations(doc); 
+        }, 
+        theme: 'plain',
+        headStyles: { 
+            fillColor: [114, 20, 34], 
+            textColor: [255, 255, 255], 
+            fontStyle: 'bold', 
+            halign: 'center' 
+        },
+        styles: { fontSize: 8.5, cellPadding: 2, lineWidth: 0.1 },
+        columnStyles: { 
+            0: { halign: 'center', cellWidth: 10 },
+            1: { halign: 'left' },                  
+            2: { halign: 'center', cellWidth: 12 }, 
+            3: { halign: 'center', cellWidth: 12 }, // Days center mein
+            4: { halign: 'right', cellWidth: 20 },  
+            5: { halign: 'right', fontStyle: 'bold', cellWidth: 25 } 
+        }
+    });
+
+    // --- 7. SUMMARY & QR ---
+    let finalY = doc.lastAutoTable.finalY;
+    const gTotal = document.getElementById('grandTotal').innerText;
+
+    if (finalY > 225) { 
+        doc.addPage();
+        drawPageDecorations(doc);
+        finalY = 20;
+    }
+	
+    const upiID = "Q060843824@ybl"; 
+    const upiLink = `upi://pay?pa=${upiID}&pn=JMD%20TRADERS&am=${gTotal}&tn=Bill%20No%20${invNoValue}&cu=INR`;
+    const qrDiv = document.createElement("div");
+    new QRCode(qrDiv, { text: upiLink, width: 128, height: 128 });
+if (isRent) {
+    if (finalY > 220) { doc.addPage(); finalY = 20; }
+
+    const isSettled = document.getElementById('settleBanner') !== null;
+    const totalDays = parseInt(document.getElementById('totalDays')?.value) || 1;
+
+    // --- 1. CLEAN DATE PARSING ---
+    const parseCustomDate = (str) => {
+        if (!str) return new Date();
+        let cleanStr = str.replace(/,/g, "").replace(/am/gi, " AM").replace(/pm/gi, " PM");
+        let parts = cleanStr.split(" ")[0].split("/");
+        if (parts.length === 3) {
+            let formatted = `${parts[2]}-${parts[1]}-${parts[0]} ${cleanStr.split(" ")[1] || ""}`;
+            let d = new Date(formatted);
+            return isNaN(d.getTime()) ? new Date() : d;
+        }
+        return new Date(cleanStr);
+    };
+
+    let pDateStr = currentLoadedBill ? currentLoadedBill.date : (document.getElementById('invDate')?.value || new Date().toLocaleString('en-IN'));
+    let rDateStr = (currentLoadedBill && currentLoadedBill.returndate) ? currentLoadedBill.returndate : "";
+
+    let pObj = parseCustomDate(pDateStr);
+    let eObj = new Date(pObj);
+    eObj.setDate(eObj.getDate() + totalDays);
+
+    const formatDT = (d) => {
+        const dPart = `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
+        const tPart = d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+        return `${dPart}, ${tPart}`;
+    };
+
+    let pTime = formatDT(pObj);
+    let expectedTime = formatDT(eObj);
+    let actualTime = rDateStr ? formatDT(parseCustomDate(rDateStr)) : "";
+
+    // --- 2. DRAW BOX ---
+    let boxH = (isSettled && actualTime) ? 30 : 22;
+    doc.setDrawColor(180, 0, 0); 
+    doc.setFillColor(255, 250, 250);
+    doc.roundedRect(14, finalY + 5, 182, boxH, 1, 1, 'FD');
+
+    // Header
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(9);
+    doc.setTextColor(150, 0, 0);
+    doc.text(`RENTAL TRACKING DETAILS (${totalDays} Days)`, 18, finalY + 11);
+
+    // Body - AB SAB KUCH EXACT SAME STYLE MEIN HAI
+    doc.setFontSize(8.5);
+    doc.setTextColor(0);
+    doc.setFont("helvetica", "normal"); // Pure block ke liye common font
+
+    // 1. Pickup
+    doc.text(`Pickup Date: ${pTime}`, 18, finalY + 17);
+    
+    // 2. Expected
+    doc.text(`Expected Return: ${expectedTime}`, 18, finalY + 23);
+
+    // 3. Actual Return (Same Style as Pickup)
+    if (isSettled && actualTime) {
+        // Bina kisi font/color change ke simple text
+        doc.text(`Actual Return: ${actualTime} (Settled)`, 18, finalY + 29);
+    }
+
+    // Security Deposit
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(9);
+    doc.text(`SECURITY DEPOSIT: Rs. ${depositVal.toFixed(2)}`, 130, finalY + 20);
+
+    finalY += (boxH + 10);
+}
+// --- Terms & Conditions Section (Clean & Small) ---
+doc.setFont("helvetica", "bold");
+doc.setFontSize(9);
+doc.setTextColor(40);
+doc.text("TERMS & CONDITIONS:", 14, finalY + 5);
+
+doc.setFont("helvetica", "normal");
+doc.setFontSize(7.5); // Thoda chota font taaki elegant lage
+doc.setTextColor(80);
+
+const tnc = [
+    "• Security deposit is fully refundable only if items are returned in original condition.",
+    "• Any damage, breakage, or missing parts will be charged from the security deposit.",
+    "• Late returns beyond the scheduled time will incur extra daily rent charges.",
+    "• Please present this original bill copy at the time of return for a quick refund.",
+    "• Rental items must be returned to the shop location by the customer."
+];
+
+let tncY = finalY + 11;
+tnc.forEach(line => {
+    doc.text(line, 14, tncY);
+    tncY += 4.5;
+});
+if (isSettled && currentLoadedBill && currentLoadedBill.settle_summary) {
+    const sData = currentLoadedBill.settle_summary; // Sheet ke Column 15 se data aayega
+    
+    doc.setDrawColor(56, 158, 13); // Green border
+    doc.setFillColor(245, 255, 240); // Light green bg
+    doc.roundedRect(14, tncY + 4, 182, 14, 1, 1, 'FD');
+
+    const cleanData = sData.replace(/[₹]/g, "Rs."); 
+
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(56, 158, 13);
+    doc.setFontSize(9);
+    doc.text("SETTLEMENT RECEIPT:", 18, tncY + 10);
+    
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(0);
+    doc.setFontSize(8.5);
+    
+    // Yahan cleanData print karo
+    doc.text(cleanData, 18, tncY + 15);
+    
+    tncY += 20;
+}
+
+// Tera purana status text
+if (isSettled) {
+    doc.setFontSize(10);
+    doc.setTextColor(56, 158, 13);
+    doc.setFont("helvetica", "bold");
+    doc.text("STATUS: THIS BILL IS FULLY SETTLED AND ITEMS ARE RETURNED.", 14, tncY + 5);
+}
+finalY = tncY + 5; // Final Y update for signature or footer
+
+    setTimeout(() => {
+        const qrCanvas = qrDiv.querySelector('canvas');
+        if (qrCanvas) {
+            const rowY = finalY + 8; 
+            const summaryX = 135;
+
+            doc.setFontSize(8.5);
+            doc.setFont("helvetica", "bold");
+            doc.setTextColor(50);
+            const totalInWords = priceToWords(Math.round(parseFloat(gTotal)));
+            doc.text(`Amount in Words: ${totalInWords}`, 14, rowY + 5);
+
+            const subTotalHTML = parseFloat(document.getElementById('subTotal')?.innerText || 0);
+            const discountPercent = parseFloat(document.getElementById('overallDisc')?.value || 0);
+            const discountAmt = (subTotalHTML * discountPercent) / 100;
+			// Footer ya Summary ke pass ye code dalo:
+
+            // PDF function ke andar jahan summary draw kar rahe ho
+const isRent = document.getElementById('isRentMode')?.checked;
+const depositVal = parseFloat(document.getElementById('displayDeposit')?.innerText) || 0;
+
+// Agar rent mode hai toh box ki height badhani hogi (14 se 21 kar denge)
+let boxHeight = (isRent && depositVal > 0) ? 21 : 14; 
+
+doc.setFillColor(114, 20, 34); // Maroon color
+doc.rect(summaryX, rowY, 61, 7, 'F'); 
+doc.setTextColor(255, 255, 255);
+doc.text("Sub Total", summaryX + 2, rowY + 4.5);
+doc.text(`Rs. ${subTotalHTML.toFixed(2)}`, 194, rowY + 4.5, { align: "right" });
+
+const boxNextY = rowY + 7;
+doc.setDrawColor(200);
+doc.rect(summaryX, boxNextY, 61, boxHeight, 'D'); // Dynamic height
+doc.setTextColor(50);
+doc.setFontSize(8);
+doc.setFont("helvetica", "normal");
+
+// 1. Discount Row
+doc.text(`Discount (${discountPercent}%)`, summaryX + 2, boxNextY + 5);
+doc.text(`- Rs. ${discountAmt.toFixed(2)}`, 194, boxNextY + 5, { align: "right" });
+
+let currentY = boxNextY + 7;
+
+// 2. AGAR RENTAL MODE HAI -> Deposit Row add karo
+if (isRent && depositVal > 0) {
+    doc.line(summaryX, currentY, summaryX + 61, currentY); // Separation line
+    doc.text("Refundable Deposit (+)", summaryX + 2, currentY + 5);
+    doc.text(`Rs. ${depositVal.toFixed(2)}`, 194, currentY + 5, { align: "right" });
+    currentY += 7; // Agli row niche shift karo
+}
+
+// 3. Final Total Amount
+doc.line(summaryX, currentY, summaryX + 61, currentY); // Bottom separation line
+doc.setFont("helvetica", "bold");
+doc.text("Total Amount", summaryX + 2, currentY + 4.5);
+doc.text(`Rs. ${parseFloat(gTotal).toFixed(2)}`, 194, currentY + 4.5, { align: "right" });
+
+            const footerY = boxNextY + 22;
+            const qrImageData = qrCanvas.toDataURL("image/png");
+            doc.addImage(qrImageData, 'PNG', 14, footerY, 40, 40); 
+            doc.text("Scan to Pay", 14, footerY + 45);
+			
+            doc.setFontSize(9);
+            doc.text("For, JAI MATA DI POOJA BHANDAR", 196, footerY + 10, { align: "right" });
+            doc.line(150, footerY + 28, 196, footerY + 28); 
+            doc.text("Authorized Signatory", 196, footerY + 33, { align: "right" });
+			
+            doc.setFontSize(8);
+            doc.setFont("helvetica", "normal");
+            doc.text("Terms: Goods once sold will not be taken back. Jai Mata Di!", 14, 285);
+            
+            doc.save(`${invNoValue}_${custName}.pdf`);
+        }
+    }, 400);
+}
+
+async function loadSheetData() {
+    const url = "https://script.google.com/macros/s/AKfycbxMtvcEaaIL2Zc_wKpgSA649gKDIMK_P6xfg_eu0mvrRTUVetlogSsntvL81nFCn0zUNA/exec?action=getInventory"; 
+    try {
+        const response = await fetch(url);
+        myItems = await response.json();
+        
+        // --- YE LINE ADD KARO ---
+        if (myItems && myItems.length > 0) {
+            syncFastBilling(myItems); // Inventory aate hi buttons bana do
+        }
+        // ------------------------
+
+        console.log("Data Loaded!");
+    } catch (e) {
+        console.error(e);
+        showToast("Sheet se data nahi aaya!", "error");
+    }
+}
+window.onload = async () => { 
+    await loadDailySales();
+    loadSheetData();
+
+    // 1. Aaj ki date set karo
+    const invDate = document.getElementById('invDate');
+    if(invDate) invDate.valueAsDate = new Date();
+
+    // 2. Next Invoice No update karo
+    if (typeof currentCloudHistory !== 'undefined') {
+        updateNextInvoiceNo(currentCloudHistory);
+    }
+
+    // 3. Khali row add karo agar zaroorat ho
+    const container = document.getElementById('itemsContainer');
+    if (container && container.children.length === 0) {
+        addItem(); 
+    }
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+    const totalDaysEl = document.getElementById('totalDays');
+    const globalDepEl = document.getElementById('globalDeposit');
+
+    // Jab user main Days ya Deposit badle, toh bill ki saari rows update honi chahiye
+    const syncHook = () => {
+        if (typeof syncAllRentalRows === 'function') syncAllRentalRows();
+    };
+
+    if (totalDaysEl) totalDaysEl.addEventListener('input', syncHook);
+    if (globalDepEl) globalDepEl.addEventListener('input', syncHook);
+});
+function updateSecurityDeposit() {
+    const isRent = document.getElementById('isRentMode')?.checked;
+    const gDepInput = document.getElementById('globalDeposit');
+    const displayBox = document.getElementById('totalSecDepositDisplay'); 
+    const summaryDeposit = document.getElementById('displayDeposit');    
+
+    if (!isRent) {
+        if (displayBox) displayBox.value = "₹ 0.00 (0 Qty)";
+        if (summaryDeposit) summaryDeposit.innerText = "0.00";
+        return 0;
+    }
+
+    const gDep = parseFloat(gDepInput?.value || 0);
+    let totalRentalQty = 0;
+    
+    // Sabhi item-rows ko ghumo aur sirf (Rent) walo ki Qty gino
+    document.querySelectorAll('.item-row').forEach(row => {
+        const nameInp = row.querySelector('.i-n');
+        const qtyInp = row.querySelector('.i-q');
+        
+        if (nameInp && nameInp.value.includes("(Rent)")) {
+            totalRentalQty += parseFloat(qtyInp?.value || 0);
+        }
+    });
+
+    const finalDepositAmt = gDep * totalRentalQty;
+
+    // UI Updates (Top Box)
+    if (displayBox) {
+        displayBox.value = `₹ ${finalDepositAmt.toFixed(2)} (${totalRentalQty} Qty)`;
+    }
+    
+    // UI Updates (Bottom Summary)
+    if (summaryDeposit) {
+        summaryDeposit.innerText = finalDepositAmt.toFixed(2);
+    }
+
+    return finalDepositAmt; // Yeh value calc() ko wapas jayegi
+}
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      // Versioning se naya notification code turant load hoga
+      navigator.serviceWorker.register('./sw.js?v=2.0')
+        .then(reg => {
+          console.log('JMD App Ready!');
+          
+          // Permission mangne ka logic
+          if (Notification.permission === 'default') {
+            Notification.requestPermission().then(permission => {
+              if (permission === 'granted') {
+                console.log('Notification allowed!');
+              }
+            });
+          }
+        })
+        .catch(err => console.log('Registration failed:', err));
+    });
+  }
+
+
+  // Ek naya function add kar de jo cache clear karne mein help karega agar kabhi app fase toh
+  function refreshApp() {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(registrations => {
+        for (let registration of registrations) {
+          registration.unregister();
+        }
+        window.location.reload();
+      });
+    }
+  }
+  
+</script>
+</body>
+</html>
