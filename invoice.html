@@ -1557,30 +1557,33 @@ function showLoader(event, url) {
 }
 
 window.addEventListener('load', () => {
+    // 1. Loader hide karo
     const loader = document.getElementById('logo-fill-loader');
     if (loader) loader.style.display = 'none';
     
-    // 1. Current Path lo aur trailing slashes hatao
-    let path = window.location.pathname.split("/").pop();
-    
-    // 2. Agar path khali hai (root) toh default 'index.html' set karo
-    if (path === "" || path === "/") {
-        path = "index.html";
-    }
-
+    // 2. AUTO-ACTIVE LOGIC (Netlify Friendly)
+    const currentPath = window.location.pathname.toLowerCase();
     const navItems = document.querySelectorAll('.nav-item');
 
     navItems.forEach(item => {
-        const itemHref = item.getAttribute('href');
-        
-        // 3. Strict Equality Check
-        // Isse Invoice aur Sales ke beech ka confusion khatam ho jayega
-        if (path === itemHref) {
+        const href = item.getAttribute('href').toLowerCase();
+        // File ka naam nikaalo (e.g., 'invoice.html' -> 'invoice')
+        const fileName = href.split('.')[0];
+
+        // Agar URL mein file ka naam hai, toh active class laga do
+        // Example: URL '/invoice' mein 'invoice' mil jayega
+        if (currentPath.includes(fileName) && fileName !== "") {
             item.classList.add('active');
         } else {
             item.classList.remove('active');
         }
     });
+
+    // 3. Fallback: Agar root par ho (/) toh Home/Dashboard ko active karo
+    if (currentPath === "/" || currentPath === "") {
+        const homeLink = document.querySelector('a[href*="home.html"]');
+        if (homeLink) homeLink.classList.add('active');
+    }
 });
 	
 function autoFillPrice(input) {
