@@ -1552,22 +1552,27 @@ window.addEventListener('load', () => {
     const loader = document.getElementById('logo-fill-loader');
     if (loader) loader.style.display = 'none';
     
-    // AUTO-ACTIVE LOGIC
-    let currentPath = window.location.pathname.split("/").pop();
-    
-    // Agar path khali hai toh iska matlab index.html khula hai
-    if (currentPath === "") currentPath = "index.html"; 
-
+    // SMART AUTO-ACTIVE LOGIC
+    // window.location.href check karega ki pure URL mein file ka naam hai ya nahi
+    const currentURL = window.location.href.toLowerCase();
     const navItems = document.querySelectorAll('.nav-item');
 
     navItems.forEach(item => {
-        const itemHref = item.getAttribute('href');
-        if (currentPath === itemHref) {
+        const itemHref = item.getAttribute('href').toLowerCase();
+        
+        // Agar URL mein file ka naam mil gaya, toh active class add karo
+        if (currentURL.includes(itemHref)) {
             item.classList.add('active');
         } else {
             item.classList.remove('active');
         }
     });
+
+    // Special Case: Agar home page khula hai (sirf domain name)
+    if (window.location.pathname === "/" || window.location.pathname === "") {
+        const homeLink = document.querySelector('a[href="index.html"]');
+        if (homeLink) homeLink.classList.add('active');
+    }
 });
 	
 function autoFillPrice(input) {
