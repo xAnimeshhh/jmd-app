@@ -196,48 +196,51 @@ body { padding-bottom: 80px; }
     </a>
 </nav>
   <script>
-    function showLoader(event, url) {
-    event.preventDefault();
-    
-    const loader = document.getElementById('logo-fill-loader');
-    if (loader) {
-        loader.style.display = 'flex';
-    }
+async function injectNavbar() {
+    const placeholder = document.getElementById('navbar-placeholder');
+    if (!placeholder) return;
 
-    const isSamePage = window.location.href.includes(url);
+    try {
+        const response = await fetch('nav.html');
+        const navHTML = await response.text();
+        placeholder.innerHTML = navHTML;
 
-    // Agar same page hai toh thoda lamba animation dikhao fir refresh karo
-    if (isSamePage) {
-        setTimeout(() => {
-            window.location.reload();
-        }, 1500); 
-    } else {
-        setTimeout(() => {
-            window.location.href = url;
-        }, 600);
+        // Navbar load hone ke baad active class setup karo
+        updateActiveNav();
+    } catch (err) {
+        console.error("Nav load failed:", err);
     }
 }
 
-window.addEventListener('load', () => {
-    const loader = document.getElementById('logo-fill-loader');
-    if (loader) loader.style.display = 'none';
-    
-    // AUTO-ACTIVE LOGIC
-    let currentPath = window.location.pathname.split("/").pop();
-    
-    // Agar path khali hai toh iska matlab index.html khula hai
-    if (currentPath === "") currentPath = "index.html"; 
-
+function updateActiveNav() {
+    const currentPath = window.location.pathname.toLowerCase();
     const navItems = document.querySelectorAll('.nav-item');
 
     navItems.forEach(item => {
-        const itemHref = item.getAttribute('href');
-        if (currentPath === itemHref) {
+        const href = item.getAttribute('href').toLowerCase();
+        
+        // Agar URL mein link ka naam hai (Netlify friendly logic)
+        if (currentPath.includes(href) || (currentPath === "/" && href === "dashboard.html")) {
             item.classList.add('active');
         } else {
             item.classList.remove('active');
         }
     });
-});
+}
+
+// Loader Function (Global)
+function showLoader(event, url) {
+    event.preventDefault();
+    const loader = document.getElementById('logo-fill-loader');
+    if (loader) loader.style.display = 'flex';
+
+    const isSamePage = window.location.href.includes(url);
+    setTimeout(() => {
+        window.location.href = url;
+    }, isSamePage ? 1500 : 600);
+}
+
+// Initialize
+document.addEventListener('DOMContentLoaded', injectNavbar);
   </script>
 </body>
