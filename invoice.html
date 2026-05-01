@@ -902,6 +902,14 @@ body { padding-bottom: 80px; }
 .nav-item.active span {
     color: #800020;
 }
+.nav-item.active .icon-pill {
+    background: #ffebf0 !important;
+    color: #800020 !important;
+}
+.nav-item.active span {
+    color: #800020 !important;
+    font-weight: 800 !important;
+}
 		
 </style>
 </head>
@@ -1549,35 +1557,40 @@ function showLoader(event, url) {
 }
 
 window.addEventListener('load', () => {
-    // 1. Loader ko hide karo
+    // 1. Loader hide karo
     const loader = document.getElementById('logo-fill-loader');
     if (loader) loader.style.display = 'none';
     
-    // 2. AUTO-ACTIVE LOGIC (Cleaned Up)
-    // URL se sirf file ka naam nikaalo (e.g., invoice.html)
-    const currentPath = window.location.pathname.split("/").pop().toLowerCase();
+    // 2. AUTO-ACTIVE LOGIC
+    const currentURL = window.location.href.toLowerCase();
     const navItems = document.querySelectorAll('.nav-item');
 
-    let matched = false;
-
     navItems.forEach(item => {
-        const itemHref = item.getAttribute('href').toLowerCase();
-        
-        // Exact Match check: Agar file name ekdum sahi hai
-        if (currentPath === itemHref) {
-            item.classList.add('active');
-            matched = true;
+        const href = item.getAttribute('href').toLowerCase();
+        // File ka naam bina .html ke (e.g., 'invoice')
+        const fileName = href.replace('.html', '');
+
+        // Logic: Agar URL mein file ka naam hai 
+        // Aur ye ensure karna ki 'index' tabhi active ho jab sach mein home par ho
+        if (currentURL.includes(fileName)) {
+            // Agar index.html hai, toh check karo ki URL ka end wahi hai ya path khali hai
+            if (fileName === 'index' || fileName === 'dashboard') {
+                 if (window.location.pathname === "/" || currentURL.includes(fileName)) {
+                     item.classList.add('active');
+                 }
+            } else {
+                item.classList.add('active');
+            }
         } else {
             item.classList.remove('active');
         }
     });
 
-    // 3. Fallback: Agar match nahi mila toh 'Home' ya 'Index' ko active karo
-    // Ye tab kaam aayega jab tu direct domain kholta hai (/)
-    if (!matched || currentPath === "" || currentPath === "index.html") {
-        navItems.forEach(item => item.classList.remove('active')); // Reset all
-        const homeLink = document.querySelector('a[href="index.html"]');
-        if (homeLink) homeLink.classList.add('active');
+    // 3. Double Check: Agar abhi bhi kuch active nahi hai (Root URL case)
+    const activeExists = document.querySelector('.nav-item.active');
+    if (!activeExists) {
+        // Apne default home page ka link yaha set kar do
+        document.querySelector('a[href*="dashboard.html"]')?.classList.add('active');
     }
 });
 	
