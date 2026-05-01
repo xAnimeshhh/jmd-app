@@ -1549,27 +1549,33 @@ function showLoader(event, url) {
 }
 
 window.addEventListener('load', () => {
+    // 1. Loader ko hide karo
     const loader = document.getElementById('logo-fill-loader');
     if (loader) loader.style.display = 'none';
     
-    // SMART AUTO-ACTIVE LOGIC
-    // window.location.href check karega ki pure URL mein file ka naam hai ya nahi
-    const currentURL = window.location.href.toLowerCase();
+    // 2. AUTO-ACTIVE LOGIC (Cleaned Up)
+    // URL se sirf file ka naam nikaalo (e.g., invoice.html)
+    const currentPath = window.location.pathname.split("/").pop().toLowerCase();
     const navItems = document.querySelectorAll('.nav-item');
+
+    let matched = false;
 
     navItems.forEach(item => {
         const itemHref = item.getAttribute('href').toLowerCase();
         
-        // Agar URL mein file ka naam mil gaya, toh active class add karo
-        if (currentURL.includes(itemHref)) {
+        // Exact Match check: Agar file name ekdum sahi hai
+        if (currentPath === itemHref) {
             item.classList.add('active');
+            matched = true;
         } else {
             item.classList.remove('active');
         }
     });
 
-    // Special Case: Agar home page khula hai (sirf domain name)
-    if (window.location.pathname === "/" || window.location.pathname === "") {
+    // 3. Fallback: Agar match nahi mila toh 'Home' ya 'Index' ko active karo
+    // Ye tab kaam aayega jab tu direct domain kholta hai (/)
+    if (!matched || currentPath === "" || currentPath === "index.html") {
+        navItems.forEach(item => item.classList.remove('active')); // Reset all
         const homeLink = document.querySelector('a[href="index.html"]');
         if (homeLink) homeLink.classList.add('active');
     }
