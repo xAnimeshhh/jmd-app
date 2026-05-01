@@ -943,6 +943,13 @@ body { padding-bottom: 80px; }
 .btn-table-wp:hover {
     transform: scale(1.1);
     background: #1ebe5d;
+}.nav-item.active .icon-pill {
+    background: #ffebf0 !important;
+    color: #800020 !important;
+}
+.nav-item.active span {
+    color: #800020 !important;
+    font-weight: 800 !important;
 }
 </style>
 </head>
@@ -1266,25 +1273,33 @@ function showLoader(event, url) {
 }
 
 window.addEventListener('load', () => {
+    // 1. Loader hide karo
     const loader = document.getElementById('logo-fill-loader');
     if (loader) loader.style.display = 'none';
     
-    // AUTO-ACTIVE LOGIC
-    let currentPath = window.location.pathname.split("/").pop();
-    
-    // Agar path khali hai toh iska matlab index.html khula hai
-    if (currentPath === "") currentPath = "index.html"; 
-
+    // 2. AUTO-ACTIVE LOGIC (Netlify Friendly)
+    const currentPath = window.location.pathname.toLowerCase();
     const navItems = document.querySelectorAll('.nav-item');
 
     navItems.forEach(item => {
-        const itemHref = item.getAttribute('href');
-        if (currentPath === itemHref) {
+        const href = item.getAttribute('href').toLowerCase();
+        // File ka naam nikaalo (e.g., 'invoice.html' -> 'invoice')
+        const fileName = href.split('.')[0];
+
+        // Agar URL mein file ka naam hai, toh active class laga do
+        // Example: URL '/invoice' mein 'invoice' mil jayega
+        if (currentPath.includes(fileName) && fileName !== "") {
             item.classList.add('active');
         } else {
             item.classList.remove('active');
         }
     });
+
+    // 3. Fallback: Agar root par ho (/) toh Home/Dashboard ko active karo
+    if (currentPath === "/" || currentPath === "") {
+        const homeLink = document.querySelector('a[href*="home.html"]');
+        if (homeLink) homeLink.classList.add('active');
+    }
 });
 	function showShop(shop) {
     if (window.innerWidth <= 768) {
