@@ -755,6 +755,154 @@ input[type="text"] {
         display: none !important;
     }
 }
+
+/*pura nav niche*/
+  :root {
+    --wine: #800020;
+    --nav-bg: #f8f9fa; /* Page se alag light grey background */
+    --pill-active: #ffebf0; /* Active icon ka background */
+}
+.app-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 70px;
+    background: var(--nav-bg);
+    display: flex;
+    align-items: center;
+    border-top: 1px solid #ddd;
+    box-shadow: 0 -4px 10px rgba(0,0,0,0.05);
+    z-index: 10000;
+}
+.nav-item {
+    flex: 1;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #555;
+    transition: 0.3s;
+}
+/* Pill Shape Logic */
+.icon-pill {
+    padding: 4px 20px;
+    border-radius: 20px;
+    margin-bottom: 4px;
+    transition: 0.3s;
+    font-size: 18px;
+}
+/* Active State - Page Change par automatically differentiate karega */
+.nav-item.active .icon-pill {
+    background: var(--pill-active);
+    color: var(--wine);
+}
+.nav-item.active span {
+    color: var(--wine);
+    font-weight: 800;
+}
+/* Loading Spinner Animation */
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+body { padding-bottom: 80px; }
+.logo-wrapper {
+    position: relative;
+    width: 150px; /* Size thoda bada kiya hai clear dikhne ke liye */
+    height: 150px;
+    margin-bottom: 20px;
+}
+.logo-base {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    opacity: 0.8; /* Grey waala thoda sa soft dikhega */
+}
+.logo-anim {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 2;
+    /* Niche se upar clipping ka logic */
+    clip-path: inset(100% 0 0 0); 
+    animation: customFill 2.5s ease-in-out infinite;
+}
+@keyframes customFill {
+    0% {
+        clip-path: inset(100% 0 0 0);
+    }
+    60% {
+        clip-path: inset(0% 0 0 0);
+    }
+    80% {
+        clip-path: inset(0% 0 0 0);
+        opacity: 1;
+    }
+    100% {
+        clip-path: inset(0% 0 0 0);
+        opacity: 0; /* Smooth fade out transition */
+    }
+}
+.loading-text {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 800;
+    font-size: 14px;
+    color: #800020; /* Wine Color */
+    letter-spacing: 1.5px;
+    text-align: center;
+    animation: textPulse 1.5s infinite;
+}
+@keyframes textPulse {
+    0%, 100% { opacity: 0.4; transform: scale(0.98); }
+    50% { opacity: 1; transform: scale(1); }
+}.app-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 60px; /* Pehle 70px tha, ab 60px hai */
+    background: #f8f9fa;
+    display: flex;
+    align-items: center;
+    border-top: 1px solid #ddd;
+    box-shadow: 0 -3px 8px rgba(0,0,0,0.05);
+    z-index: 10000;
+}
+.nav-item {
+    flex: 1;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #64748b;
+    transition: 0.3s;
+}
+.icon-pill {
+    padding: 2px 16px; /* Padding kam ki hai */
+    border-radius: 15px;
+    margin-bottom: 2px;
+    transition: 0.2s;
+    font-size: 16px; /* Icon size chhota kiya */
+}
+.nav-item span {
+    font-size: 9px; /* Font size chhota kiya */
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+/* Active State */
+.nav-item.active .icon-pill {
+    background: #ffebf0; /* Soft Wine tint */
+    color: #800020;
+}
+.nav-item.active span {
+    color: #800020;
+}
+		
 </style>
 </head>
         
@@ -958,7 +1106,39 @@ input[type="text"] {
         <div class="shine"></div>
     </button>
 </div>
-</div><div id="toastr"></div><div id="navbar-placeholder"></div>
+</div><div id="toastr"></div>
+  <div id="logo-fill-loader" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:#ffffff; z-index:20000; flex-direction:column; align-items:center; justify-content:center;">
+    <div class="logo-wrapper">
+        <img src="assets/grey.webp" class="logo-base">
+        <img src="assets/logo.webp" class="logo-anim">
+    </div>
+</div>
+<nav class="app-nav">
+    <a href="home.html" class="nav-item" onclick="showLoader(event, 'home.html')">
+        <div class="icon-pill"><i class="fa-solid fa-house-chimney"></i></div>
+        <span>Home</span>
+    </a>
+
+    <a href="invoice.html" class="nav-item " onclick="showLoader(event, 'invoice.html')">
+        <div class="icon-pill"><i class="fa-solid fa-file-invoice-dollar"></i></div>
+        <span>Invoice</span>
+    </a>
+
+    <a href="index.html" class="nav-item" onclick="showLoader(event, 'index.html')">
+        <div class="icon-pill"><i class="fa-solid fa-chart-line"></i></div>
+        <span>Sales</span>
+    </a>
+
+    <a href="dashboard.html" class="nav-item" onclick="showLoader(event, 'dashboard.html')">
+        <div class="icon-pill"><i class="fa-solid fa-bar-chart"></i></div>
+        <span>Dashboard</span>
+    </a>
+
+    <a href="graphics.html" class="nav-item" onclick="showLoader(event, 'graphics.html')">
+        <div class="icon-pill"><i class="fa-solid fa-crown"></i></div>
+        <span>Graphics</span>
+    </a>
+</nav>
 <div class="history-card">
             <h3 style="color:var(--wine); font-size:16px; border-bottom:2px solid var(--wine); margin-bottom:15px;">
 			RECENT TRANSACTIONS
@@ -1346,6 +1526,50 @@ function updateRentalModeLock() {
         // Yahan hide karne ki zaroorat nahi, wo toggleRentUI handles karega
     }
 }
+function showLoader(event, url) {
+    event.preventDefault();
+    
+    const loader = document.getElementById('logo-fill-loader');
+    if (loader) {
+        loader.style.display = 'flex';
+    }
+
+    const isSamePage = window.location.href.includes(url);
+
+    // Agar same page hai toh thoda lamba animation dikhao fir refresh karo
+    if (isSamePage) {
+        setTimeout(() => {
+            window.location.reload();
+        }, 1500); 
+    } else {
+        setTimeout(() => {
+            window.location.href = url;
+        }, 600);
+    }
+}
+
+window.addEventListener('load', () => {
+    const loader = document.getElementById('logo-fill-loader');
+    if (loader) loader.style.display = 'none';
+    
+    // AUTO-ACTIVE LOGIC
+    let currentPath = window.location.pathname.split("/").pop();
+    
+    // Agar path khali hai toh iska matlab index.html khula hai
+    if (currentPath === "") currentPath = "index.html"; 
+
+    const navItems = document.querySelectorAll('.nav-item');
+
+    navItems.forEach(item => {
+        const itemHref = item.getAttribute('href');
+        if (currentPath === itemHref) {
+            item.classList.add('active');
+        } else {
+            item.classList.remove('active');
+        }
+    });
+});
+	
 function autoFillPrice(input) {
     const val = input.value.toLowerCase();
     const suggestBox = document.getElementById('customSuggest');
