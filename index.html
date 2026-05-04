@@ -32,7 +32,7 @@
 body { 
     font-family: 'Segoe UI', sans-serif; 
     /* Ye background ab tere login page se match karega */
-    background: radial-gradient(circle at center, #4a0e0e 0%, #0d0d0d 100%);
+    background: radial-gradient(circle at center, #a50e5a 0%, #160000 100%);
     background-attachment: fixed;
     color: var(--text); 
     margin: 0; 
@@ -41,7 +41,7 @@ body {
 
 .app-container { max-width: 1200px; margin: auto; }
 
-.header { text-align: center; padding: 10px 0; border-bottom: 2px solid var(--primary); margin-bottom: 15px; }
+.header { text-align: center; padding: 10px 0; border-bottom: 2px solid var(--primary); margin-bottom: 15px; box-shadow: 0 2px 10px rgba(128, 0, 64, 0.3); }
 
 .header h1 { margin: 0; color: var(--primary); font-size: 1.3rem; letter-spacing: 1px; }
 
@@ -377,6 +377,33 @@ body {
         .btn-save { background: var(--primary); color: #000; font-weight: 900; font-size: 0.8rem}
         .btn-whatsapp { background: #25D366; color: white;font-weight: 900; font-size: 0.8rem }
         .btn-sync { background: #333; color: white; font-weight: 900; font-size: 0.8rem}
+/* Delete button ke jaisa hi size aur shape, par solid gold color */
+.btn-pencil { 
+    background: var(--primary, #ffd700); /* Solid background */
+    color: #000; /* Icon ka color dark rakha hai taaki yellow pe dikhe */
+    border: 1px solid var(--primary, #ffd700); 
+    padding: 4px 8px; 
+    border-radius: 4px; 
+    font-size: 0.65rem; 
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.3s;
+}
+
+/* Hover karne par thoda dark hoga */
+.btn-pencil:hover {
+    opacity: 0.8;
+}
+
+/* Mobile ke liye size adjustment (jaisa tune btn-del ke liye kiya hai) */
+@media (max-width: 600px) {
+    .btn-pencil { 
+        padding: 3px 6px; 
+        font-size: 0.65rem; 
+    }
+}
 /* Buttons ko barabar size mein set karne ke liye */
 .button-row {
     display: flex;
@@ -505,26 +532,27 @@ body {
 }
 
 /* Mobile View: Premium Non-Sticky Tabs */
+/* Mobile View: Premium Segmented Control */
 @media (max-width: 768px) {
     .mobile-tab-wrapper {
         display: flex;
         justify-content: center;
-        padding: 15px 0;
-        top: 0;
-        z-index: 1000;
-        background: rgba(18, 18, 18, 0.8);
-        backdrop-filter: blur(10px);
+        padding: 5px 0;
+        background: transparent;
     }
 
     .segmented-control {
         display: flex;
         position: relative;
         width: 92%;
-        background: #252525;
+        background: rgba(30, 32, 37, 0.7); /* Translucent dark */
+        backdrop-filter: blur(12px); /* Glass effect */
         padding: 5px;
-        border-radius: 14px;
-        border: 1px solid #333;
-        box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        border-radius: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.05); /* Very thin light border */
+        box-shadow: 
+            0 15px 35px rgba(0,0,0,0.4), 
+            inset 0 0 0 1px rgba(255,255,255,0.05);
     }
 
     .segmented-control input { display: none; }
@@ -534,40 +562,50 @@ body {
         text-align: center;
         padding: 12px 0;
         font-size: 0.85rem;
-        font-weight: 800;
-        color: #777;
+        font-weight: 700;
+        color: rgba(255, 255, 255, 0.4); /* Muted text */
         cursor: pointer;
         z-index: 2;
-        transition: color 0.3s ease;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+        letter-spacing: 0.3px;
     }
 
     .tab-selection {
         position: absolute;
         width: calc(50% - 5px);
         height: calc(100% - 10px);
-        background: #FFDE21;
-        border-radius: 10px;
+        /* Premium Gold Gradient */
+        background: linear-gradient(145deg, #ffd700, #ffb800); 
+        border-radius: 12px;
         top: 5px;
         left: 5px;
-        transition: transform 0.35s cubic-bezier(0.65, 0, 0.35, 1);
+        transition: transform 0.5s cubic-bezier(0.19, 1, 0.22, 1);
         z-index: 1;
-		box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        /* Outer glow for the "Active" tab */
+        box-shadow: 0 8px 20px rgba(255, 215, 0, 0.25);
     }
 
-    /* Logic for Selection */
+    /* Selection Logic */
     #tab-s1:checked ~ .tab-selection { transform: translateX(0); }
     #tab-s2:checked ~ .tab-selection { transform: translateX(100%); }
-    #tab-s1:checked ~ label[for="tab-s1"], 
-    #tab-s2:checked ~ label[for="tab-s2"] { color: #000; }
 
+    /* Text Style when Selected */
+    #tab-s1:checked ~ label[for="tab-s1"], 
+    #tab-s2:checked ~ label[for="tab-s2"] { 
+        color: #000;
+        transform: scale(1.02); /* Slight pop out */
+    }
+
+    /* Animation for Shop Cards */
     .shop-card {
-        animation: slideUp 0.4s ease-out;
+        animation: fadeInScale 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
     }
 }
 
+@keyframes fadeInScale {
+    from { opacity: 0; transform: scale(0.98) translateY(10px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+}
 @keyframes slideUp {
     from { opacity: 0; transform: translateY(15px); }
     to { opacity: 1; transform: translateY(0); }
@@ -576,12 +614,12 @@ body {
     background-color: #800000 !important;
 }
         .history-card { background: var(--card); border-radius: 12px; overflow-x: auto; border: 1px solid #333; }
-        .history-card table { width: auto; min-width: 640px; }
+        .history-card table { width: 100%; table-layout: fixed;}
         table { width: auto; border-collapse: collapse; font-size: 0.8rem; min-width: 640px; font-weight: 900; }
-        th { text-align: left; padding: 12px; background: #25262b; color: var(--primary); }
-        td { padding: 12px; border-bottom: 1px solid #2a2b30; vertical-align: top; }
+        th { text-align: left; padding: 10px 5px; background: #25262b; color: var(--primary); }
+        td { padding: 10px 5px; border-bottom: 1px solid #2a2b30; vertical-align: top; }
         .btn-del { background: none; color: var(--error); border: 1px solid var(--error); padding: 4px 8px; border-radius: 4px; font-size: 0.65rem; }
-        
+       
         .app-footer { text-align: center; margin-top: 40px; padding: 20px 0; border-top: 1px solid #222; opacity: 0.8; }
         .footer-text { font-style: italic; font-size: 0.8rem; color: #aaa; letter-spacing: 0.5px; font-weight: 900; }
         .breakdown-box { font-size: 0.65rem; color: #888; margin-top: 5px; border-top: 1px solid #333; padding-top: 5px; line-height: 1.4; }
@@ -868,6 +906,101 @@ body { padding-bottom: 80px; }
     color: #800020 !important;
     font-weight: 800 !important;
 }
+#paginationContainer {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 10px;
+}
+
+#paginationContainer button {
+    background: #222;
+    color: #ccc;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+#paginationContainer button:hover {
+    background: #444;
+}
+
+#paginationContainer .active-page {
+    background: #ffd700;
+    color: #000;
+    font-weight: bold;
+}
+.finance-row {
+    margin-top: 6px;
+    font-size: 10px;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}.finance-row span {
+    background: #1c1f26;
+    padding: 3px 8px;
+    border-radius: 6px;
+}.chart-card-new { 
+    background: linear-gradient(145deg, #1e2025, #15171c);
+    padding: 14px;    
+    height: 260px;
+    max-width: 650px;
+    border-radius: 16px;    
+     margin: 0 auto 12px auto;   /* center align */
+    
+    border: 1px solid #2a2d33; 
+    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    position: relative;
+}
+.chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.chart-title {
+    font-size: 13px;
+    color: #aaa;
+}
+
+/* TOGGLE CONTAINER */
+.chart-toggle {
+    display: flex;
+    background: #111;
+    padding: 3px;
+    border-radius: 999px;
+    gap: 2px;
+}
+
+/* BUTTON */
+.chart-toggle button {
+    padding: 5px 12px;
+    font-size: 11px;
+    border-radius: 999px;
+    border: none;
+    background: transparent;
+    color: #777;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+/* ACTIVE */
+.chart-toggle button.active {
+    background: #f1c40f;
+    color: #000;
+    font-weight: 600;
+    box-shadow: 0 2px 10px rgba(241, 196, 15, 0.4);
+}
+
+/* HOVER */
+.chart-toggle button:hover {
+    color: #fff;
+}
+
 </style>
 </head>
 <body>
@@ -907,11 +1040,30 @@ body { padding-bottom: 80px; }
             <div class="summary-box"><h4>Cash Savings (40%)</h4><span id="monCash" style="color:var(--secondary)">₹0</span></div>
             <div class="summary-box"><h4>Bank Savings (40%)</h4><span id="monBank" style="color:var(--info)">₹0</span></div>
             <div class="summary-box" style="grid-column: span 2; border-color: var(--error);">
-                <h4>Monthly Expenses</h4><span id="monExp" style="color:var(--error)">₹0</span>
-            </div>
+    <h4>Monthly Expenses</h4>
+    
+    <span id="monExp" style="color:var(--error)">₹0</span>
+
+<div class="finance-row">
+    <span id="profitBox"></span>
+    <span id="monCashFlow">₹0</span>
+</div>
+</div>
         </div>
-        <div class="chart-card"><canvas id="salesChart" height="120"></canvas></div>
+        <div class="chart-card-new">
+    <div class="chart-header">
+        <span class="chart-title">Performance</span>
+        <div class="chart-toggle">
+            <button onclick="setChartMode('7')" id="btn7" class="active">7D</button>
+            <button onclick="setChartMode('30')" id="btn30">30D</button>
+            <button onclick="setChartMode('all')" id="btnAll">Full</button>
+        </div>
     </div>
+    <!-- 👈 Is wrapper ko height de do -->
+    <div style="height: 220px; position: relative;">
+        <canvas id="salesChart"></canvas>
+    </div>
+</div></div>
 
     <div class="shop-card" style="border-left-color: #00ccff; padding: 10px 15px; margin-bottom: 10px;">
     <div style="display: flex; align-items: center; gap: 15px;">
@@ -1074,6 +1226,8 @@ body { padding-bottom: 80px; }
                 <tbody id="historyBody"></tbody>
             </table>
         </div>
+        <div id="paginationContainer" style="display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 10px;">
+        </div>
     </div>
 
     <div class="app-footer">
@@ -1214,31 +1368,35 @@ window.addEventListener('load', () => {
 }
 // 1. Data load hote hi list update karo (Pehle jaisa kaam karega)
 function updateMonthDropdown(data) {
-    // Unique months extract karo (0-11)
-    const monthsInHistory = [...new Set(data.map(entry => new Date(entry.date).getMonth()))].sort((a, b) => a - b);
-    
-    // "all" ko list ke start mein rakho
+    const monthsInHistory = [
+        ...new Set(
+            data
+                .map(entry => {
+                    const d = new Date(entry.date);
+                    return isNaN(d) ? null : d.getMonth();
+                })
+                .filter(m => m !== null)
+        )
+    ].sort((a, b) => a - b);
+
     availableMonths = ["all", ...monthsInHistory];
 
-    // Current selection display update karo
-    const currentVal = document.getElementById('monthFilter').value;
+    let currentVal = document.getElementById('monthFilter').value;
+    if (!currentVal || currentVal === "undefined") currentVal = "all";
+
+    document.getElementById('monthFilter').value = currentVal;
     updateLabel(currentVal);
-	// Dashboard ke liye bhi same months use karo
-	dashAvailableMonths = ["all", ...monthsInHistory];
 
-		// current month find karo
-		const currentMonth = new Date().getMonth();
+    // Dashboard months
+    dashAvailableMonths = ["all", ...monthsInHistory];
 
-		// agar current month list me hai to usko select karo
-		const foundIndex = dashAvailableMonths.indexOf(currentMonth);
+    // ❌ DON'T RESET EVERY TIME
+    if (typeof currentDashIndex === "undefined") {
+        currentDashIndex = 0; // default Full
+    }
 
-		// agar mila to usko set karo warna "all"
-		currentDashIndex = foundIndex !== -1 ? foundIndex : 0;
-
-		// label update
-		updateDashLabel(dashAvailableMonths[currentDashIndex]);
+    updateDashLabel(dashAvailableMonths[currentDashIndex]);
 }
-
 // 2. Arrows click karne par kya hoga
 function changeMonth(direction) {
     if (availableMonths.length <= 1) return; // Sirf 'all' hai toh kuch mat karo
@@ -1263,14 +1421,23 @@ function changeMonth(direction) {
     // Refresh the table
     renderApp();
 }
-
 // 3. Label text update karne ke liye
 function updateLabel(val) {
     const display = document.getElementById('monthDisplay');
-    if (val === "all") {
+
+    if (!display) return;
+
+    if (val === "all" || val === undefined || val === null) {
         display.innerText = "Full";
+        return;
+    }
+
+    const monthIndex = Number(val);
+
+    if (isNaN(monthIndex) || !monthNames[monthIndex]) {
+        display.innerText = "Full"; // fallback
     } else {
-        display.innerText = monthNames[parseInt(val)];
+        display.innerText = monthNames[monthIndex];
     }
 }
 function changeDashMonth(direction) {
@@ -1286,16 +1453,22 @@ function changeDashMonth(direction) {
 
     updateDashboardOnly(); // Sirf dashboard update hoga
 }
-
 function updateDashLabel(val) {
     const display = document.getElementById('dashMonthDisplay');
     if (!display) return;
 
     if (val === "all") {
         display.innerText = "Full";
-    } else {
-        display.innerText = monthNames[parseInt(val)];
-    }
+        return;
+    } 
+    
+        const monthIndex = Number(val);
+
+        if (val === "all" || isNaN(monthIndex) || !monthNames[monthIndex]) {
+            display.innerText = "Full";
+        } else {
+            display.innerText = monthNames[monthIndex];
+        }
 }
 async function fetchSheetData() {
     showToast("Syncing... 🔄", "info");
@@ -1661,10 +1834,14 @@ function validateForm() {
     if (type === 'info') icon = "ℹ️ ";
 
     toast.className = '';
-    toast.classList.add('toast-' + type);
-    
-    // Ek hi line mein Title aur Message
-    toast.innerHTML = `<strong>${type.toUpperCase()}:</strong> ${icon}${message}`;
+    if (type.startsWith('linear-gradient')) {
+        toast.style.background = type;
+        toast.style.color = 'white';
+        toast.innerHTML = `${icon}${message}`;
+    } else {
+        toast.classList.add('toast-' + type);
+        toast.innerHTML = `<strong>${type.toUpperCase()}:</strong> ${icon}${message}`;
+    }
     
     toast.style.display = 'block';
     toast.style.opacity = '1';
@@ -1919,9 +2096,22 @@ function updateDashboardOnly() {
     const selectedMonth = dashAvailableMonths[currentDashIndex];
 
     const filtered = history.filter(h => {
-        const d = new Date(h.date);
-        return selectedMonth === "all" || d.getMonth() == selectedMonth;
-    });
+    if (!h.date) return false;
+
+    const d = new Date(h.date);
+    if (isNaN(d)) return false;
+
+    // ❌ REMOVE ZERO ENTRIES
+    const isAllZero =
+        !h.ts_all &&
+        !h.s1_op && !h.s2_op &&
+        !h.s1_cl && !h.s2_cl &&
+        !h.s1_gp && !h.s2_gp;
+
+    if (isAllZero) return false;
+
+    return selectedMonth === "all" || d.getMonth() == selectedMonth;
+});
 
     const totals = filtered.reduce((acc, curr) => ({
         sale: acc.sale + Number(curr.ts_all || 0),
@@ -1932,7 +2122,50 @@ function updateDashboardOnly() {
         exp: acc.exp + Number(curr.t_exp || 0) + Number(curr.jeb || 0),
         short: acc.short + Number(curr.n_out || 0)
     }), { sale: 0, cash: 0, bank: 0, net: 0, exp: 0, short: 0 , netBank: 0});
+    const profit = totals.sale - totals.exp;
 
+// 💡 simple version (same as profit)
+const cashFlow = totals.sale - totals.exp;
+
+// agar future me proper chahiye:
+// const cashFlow = totals.cashIn - totals.cashOut;
+
+const profitEl = document.getElementById('profitBox');
+const flowEl = document.getElementById('monCashFlow');
+
+
+// 🔥 PROFIT
+if (profitEl) {
+    if (profit > 0) {
+        profitEl.innerHTML = `<i class="fa-solid fa-arrow-trend-up"></i> ₹${profit.toLocaleString()}`;
+        profitEl.style.color = "#00ff88";
+    } 
+    else if (profit < 0) {
+        profitEl.innerHTML = `<i class="fa-solid fa-arrow-trend-down"></i> ₹${Math.abs(profit).toLocaleString()}`;
+        profitEl.style.color = "#ff4d4d";
+    } 
+    else {
+        profitEl.innerHTML = `<i class="fa-solid fa-minus"></i> ₹0`;
+        profitEl.style.color = "#aaa";
+    }
+}
+
+
+// 🔥 CASH FLOW
+if (flowEl) {
+    if (cashFlow > 0) {
+        flowEl.innerHTML = `<i class="fa-solid fa-wallet"></i> ₹${cashFlow.toLocaleString()}`;
+        flowEl.style.color = "#00d9ff";
+    } 
+    else if (cashFlow < 0) {
+        flowEl.innerHTML = `<i class="fa-solid fa-money-bill-wave"></i> ₹${Math.abs(cashFlow).toLocaleString()}`;
+        flowEl.style.color = "#ff4d4d";
+    } 
+    else {
+        flowEl.innerHTML = `<i class="fa-solid fa-equals"></i> ₹0`;
+        flowEl.style.color = "#aaa";
+    }
+}
     document.getElementById('monSale').innerText = "₹" + totals.sale.toLocaleString();
     document.getElementById('monNet').innerText = "₹" + totals.net.toLocaleString();
     document.getElementById('monCash').innerText = "₹" + totals.cash.toLocaleString();
@@ -1948,31 +2181,68 @@ function updateDashboardOnly() {
 
     updateChartWithData(filtered);
 }
+function setChartMode(mode) {
+    chartMode = mode;
+
+    // active button highlight
+    document.querySelectorAll('.chart-toggle button').forEach(btn => btn.classList.remove('active'));
+
+    if (mode === "7") document.getElementById('btn7').classList.add('active');
+    if (mode === "30") document.getElementById('btn30').classList.add('active');
+    if (mode === "all") document.getElementById('btnAll').classList.add('active');
+
+    updateDashboardOnly(); // chart refresh
+}
+let chartMode = "7"; // default
 function updateChartWithData(data) {
     const ctx = document.getElementById('salesChart').getContext('2d');
 
-    const last7 = [...data]
-        .sort((a, b) => new Date(a.date) - new Date(b.date))
-        .slice(-7);
+    const sorted = [...data].sort((a, b) => new Date(a.date) - new Date(b.date));
+
+    let chartData;
+
+    if (chartMode === "7") {
+        chartData = sorted.slice(-7);
+    } else if (chartMode === "30") {
+        chartData = sorted.slice(-30);
+    } else {
+        chartData = sorted;
+    }
+
+    if (chartData.length === 0) return;
+
+    // 🔥 Month text generate
+    const monthText = getMonthNameFromData(chartData);
 
     if (myChart) myChart.destroy();
 
     myChart = new Chart(ctx, {
         type: 'line',
         data: {
-            labels: last7.map(h => h.date.split('-').reverse().slice(0, 2).join('/')),
+            // ✅ ONLY DAY (21,22...)
+            labels: chartData.map(h => {
+                const d = new Date(h.date);
+                return d.getDate();
+            }),
+
             datasets: [
                 {
-                    label: 'Daily Sale', 
-                    data: last7.map(h => Number(h.ts_all || 0)),
+                    label: 'Sale',
+                    data: chartData.map(h => {
+                        const val = Number(h.ts_all || 0);
+                        return val === 0 ? null : val;
+                    }),
                     borderColor: '#f1c40f',
                     backgroundColor: 'rgba(241, 196, 15, 0.1)',
                     tension: 0.3,
                     fill: true
                 },
                 {
-                    label: 'Daily Expense',
-                    data: last7.map(h => Number(h.t_exp || 0) + Number(h.jeb || 0)),
+                    label: 'Expense',
+                    data: chartData.map(h => {
+                        const val = Number(h.t_exp || 0) + Number(h.jeb || 0);
+                        return val === 0 ? null : val;
+                    }),
                     borderColor: '#e74c3c',
                     backgroundColor: 'rgba(231, 76, 60, 0.1)',
                     tension: 0.3,
@@ -1980,110 +2250,299 @@ function updateChartWithData(data) {
                 }
             ]
         },
-        options: { 
-            responsive: true, 
-            maintainAspectRatio: false, 
-            plugins: { 
-                legend: { 
-                    labels: { color: '#888', font: { size: 10 } } 
-                } 
-            }, 
-            scales: { 
-                y: { 
-                    grid: { color: '#222' }, 
-                    ticks: { color: '#888' } 
-                }, 
-                x: { 
-                    grid: { display: false }, 
-                    ticks: { color: '#888' } 
-                } 
-            } 
+
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+interaction: {
+    mode: 'index',
+    intersect: false
+},
+            plugins: {
+    tooltip: {
+        callbacks: {
+            label: function(ctx) {
+                return ctx.dataset.label + ": ₹" + ctx.raw;
+            },
+
+            afterBody: function(tooltipItems) {
+                const index = tooltipItems[0].dataIndex;
+
+                // Sale & Expense nikaal
+                const sale = Number(chartData[index].ts_all || 0);
+                const exp = Number(chartData[index].t_exp || 0) + Number(chartData[index].jeb || 0);
+
+                const profit = sale - exp;
+
+                const status = profit >= 0 ? "Profit" : "Loss";
+
+                return `${status}: ₹${profit}`;
+            }
+        }
+    }
+,
+                // ✅ MONTH CENTER BOTTOM
+                title: {
+                    display: true,
+                    text: monthText,
+                    position: 'bottom',
+                    color: '#aaa',
+                    font: { size: 11 }
+                }
+            },
+
+            scales: {
+                x: {
+                    grid: { display: false },
+                    ticks: {
+                        color: '#888',
+                        font: { size: 10 }
+                    }
+                },
+                y: {
+                    grid: { color: '#222' },
+                    ticks: {
+                        color: '#888',
+                        font: { size: 10 },
+                        callback: function(val) {
+                            return val >= 1000 ? (val / 1000 + 'k') : val;
+                        }
+                    }
+                }
+            }
         }
     });
 }
-
-
+let currentPage = 1;
+const rowsPerPage = 10;
+let filteredDataGlobal = [];
 function renderApp() {
     updateMonthDropdown(history);
-	const searchTerm = document.getElementById('searchBox').value.toLowerCase();
-    const selectedMonth = document.getElementById('monthFilter').value;
 
-    const filtered = history.filter(h => {
+    const searchTerm = document.getElementById('searchBox').value.toLowerCase();
+    const selectedMonth = document.getElementById('monthFilter').value || "all";
+
+    filteredDataGlobal = history.filter(h => {
+        if (!h.date) return false; // ❌ no date = skip
+
         const d = new Date(h.date);
-        const matchesSearch = h.date.includes(searchTerm) || (h.ts_all && h.ts_all.toString().includes(searchTerm));
-        const matchesMonth = selectedMonth === "all" || d.getMonth() == selectedMonth;
+        if (isNaN(d)) return false; // ❌ invalid date skip
+
+        // ❌ FULL EMPTY ENTRY REMOVE
+        const isAllZero =
+            !h.ts_all &&
+            !h.s1_op && !h.s2_op &&
+            !h.s1_cl && !h.s2_cl &&
+            !h.s1_gp && !h.s2_gp;
+
+        if (isAllZero) return false;
+
+        const matchesSearch =
+            h.date.includes(searchTerm) ||
+            (h.ts_all && h.ts_all.toString().includes(searchTerm));
+
+        const matchesMonth =
+            selectedMonth === "all" ||
+            d.getMonth() === Number(selectedMonth);
+
         return matchesSearch && matchesMonth;
     });
 
-    const totals = filtered.reduce((acc, curr) => ({
-    sale: acc.sale + Number(curr.ts_all || 0),
-    cash: acc.cash + Number(curr.c_sav || 0),
-    bank: acc.bank + Number(curr.b_sav || 0),
-    net: acc.net + Number(curr.n_bal || 0),
-    netBank: acc.netBank + Number(curr.n_bank || 0),
-    // Monthly Exp = Total Exp (Shop+Gpay) + Jeb Out
-    exp: acc.exp + Number(curr.t_exp || 0) + Number(curr.jeb || 0),
-    short: acc.short + Number(curr.n_out || 0) 
-	}), { sale: 0, cash: 0, bank: 0, net: 0, exp: 0, short: 0,  netBank: 0 });
+    // ---------- TOTALS ----------
+    const totals = filteredDataGlobal.reduce((acc, curr) => ({
+        sale: acc.sale + Number(curr.ts_all || 0),
+        cash: acc.cash + Number(curr.c_sav || 0),
+        bank: acc.bank + Number(curr.b_sav || 0),
+        net: acc.net + Number(curr.n_bal || 0),
+        netBank: acc.netBank + Number(curr.n_bank || 0),
+        exp: acc.exp + Number(curr.t_exp || 0) + Number(curr.jeb || 0),
+        short: acc.short + Number(curr.n_out || 0)
+    }), { sale: 0, cash: 0, bank: 0, net: 0, exp: 0, short: 0, netBank: 0 });
+    const profit = totals.sale - totals.exp;
 
+// 💡 simple version (same as profit)
+const cashFlow = totals.sale - totals.exp;
+
+// agar future me proper chahiye:
+// const cashFlow = totals.cashIn - totals.cashOut;
+
+const profitEl = document.getElementById('profitBox');
+const flowEl = document.getElementById('monCashFlow');
+
+
+// 🔥 PROFIT
+if (profitEl) {
+    if (profit > 0) {
+        profitEl.innerHTML = `<i class="fa-solid fa-arrow-trend-up"></i> ₹${profit.toLocaleString()}`;
+        profitEl.style.color = "#00ff88";
+    } 
+    else if (profit < 0) {
+        profitEl.innerHTML = `<i class="fa-solid fa-arrow-trend-down"></i> ₹${Math.abs(profit).toLocaleString()}`;
+        profitEl.style.color = "#ff4d4d";
+    } 
+    else {
+        profitEl.innerHTML = `<i class="fa-solid fa-minus"></i> ₹0`;
+        profitEl.style.color = "#aaa";
+    }
+}
+
+
+// 🔥 CASH FLOW
+if (flowEl) {
+    if (cashFlow > 0) {
+        flowEl.innerHTML = `<i class="fa-solid fa-wallet"></i> ₹${cashFlow.toLocaleString()}`;
+        flowEl.style.color = "#00d9ff";
+    } 
+    else if (cashFlow < 0) {
+        flowEl.innerHTML = `<i class="fa-solid fa-money-bill-wave"></i> ₹${Math.abs(cashFlow).toLocaleString()}`;
+        flowEl.style.color = "#ff4d4d";
+    } 
+    else {
+        flowEl.innerHTML = `<i class="fa-solid fa-equals"></i> ₹0`;
+        flowEl.style.color = "#aaa";
+    }
+}
     document.getElementById('monSale').innerText = "₹" + totals.sale.toLocaleString();
     document.getElementById('monNet').innerText = "₹" + totals.net.toLocaleString();
     document.getElementById('monCash').innerText = "₹" + totals.cash.toLocaleString();
     document.getElementById('monBank').innerText = "₹" + totals.bank.toLocaleString();
     document.getElementById('monExp').innerText = "₹" + totals.exp.toLocaleString();
-	if(document.getElementById('monBankNet')) {
-    document.getElementById('monBankNet').innerText = "₹" + totals.netBank.toLocaleString();
-	}
-    // Agar tune HTML mein 'monAdj' id banayi hai toh ye bhi dikhega
-    if(document.getElementById('monAdj')) {
+
+    if (document.getElementById('monBankNet')) {
+        document.getElementById('monBankNet').innerText = "₹" + totals.netBank.toLocaleString();
+    }
+
+    if (document.getElementById('monAdj')) {
         document.getElementById('monAdj').innerText = "₹" + totals.short.toLocaleString();
     }
 
+    // ---------- SORT ----------
+    const sortedData = [...filteredDataGlobal].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    // ---------- PAGINATION ----------
+    const totalPages = Math.ceil(sortedData.length / rowsPerPage);
+
+    if (currentPage > totalPages) currentPage = 1;
+
+    const start = (currentPage - 1) * rowsPerPage;
+    const paginatedData = sortedData.slice(start, start + rowsPerPage);
+
     const body = document.getElementById('historyBody');
-    body.innerHTML = filtered
-        .sort((a, b) => new Date(b.date) - new Date(a.date))
-        .map(h => {
-            const s = Number(h.ts_all || h.sale || 0);
-            const n = Number(h.n_bal || h.netCash || 0);
-			const b = Number(h.n_bank || 0);
-            const a = Number(h.n_out || h.adj || 0);
-            const jo = Number(h.jeb || h.jebOut || 0);
-            const ex = Number(h.t_exp || h.totalExp || 0);
-			const gpex = Number(h.gpay_ex || 0);
-            return `
-            <tr><td>
-			<button class="btn-table-wp" onclick="shareExistingRow('${h.date}')">
-    			<i class="fab fa-whatsapp"></i>
-			</button></td>
-                <td>${h.date.split('-').reverse().slice(0,2).join('/')}</td>
-                <td style="color:#ffd700">₹${s.toLocaleString()}</td>
-                <td>
-                    <span style="color:#00ff88">C: ${Number(h.c_sav || h.cash || 0).toLocaleString()}</span><br>
-                    <span style="color:#00d9ff">B: ${Number(h.b_sav || h.bank || 0).toLocaleString()}</span>
-                </td>
-                <td>
-                    <b style="color:${n < 0 ? '#ff4d4d' : '#ffd700'}">₹${n.toLocaleString()}</b>
-                    <div style="font-size:11px; color:#aaa; margin-top:4px; line-height:1.4;">
-                        40% Adj : ₹${a.toLocaleString()}<br>
-                        Exp (H) : ₹${jo.toLocaleString()}
-                    </div>
-                </td>
-				<td>
-                    <b style="color:${n < 0 ? '#ff4d4d' : '#ffd700'}">₹${b.toLocaleString()}</b>
-					<div style="font-size:11px; color:#aaa; margin-top:4px; line-height:1.4;">
-        Exp (G) : ₹${gpex.toLocaleString()}
-    </div>
-                </td>
-                <td style="color:#ff4d4d">
-                    Exp: ${ex.toLocaleString()}<br>
-                    Out : ${jo.toLocaleString()}
-                </td>
-                <td>
-                    <button class="btn-del" onclick="askDelete('${h.date}')">x</button>
-                    <button class="btn-sync" style="padding:4px 8px; font-size:0.65rem;" onclick="editEntry('${h.date}')">✎</button>
-                </td>
-            </tr>`;
-        }).join('');
+
+    body.innerHTML = paginatedData.map(h => {
+        const s = Number(h.ts_all || 0);
+        const n = Number(h.n_bal || 0);
+        const b = Number(h.n_bank || 0);
+        const a = Number(h.n_out || 0);
+        const jo = Number(h.jeb || 0);
+        const ex = Number(h.t_exp || 0);
+        const gpex = Number(h.gpay_ex || 0);
+
+        return `
+        <tr>
+            <td>
+                <button class="btn-table-wp" onclick="shareExistingRow('${h.date}')">
+                    <i class="fab fa-whatsapp"></i>
+                </button>
+            </td>
+
+            <td>${h.date.split('-').reverse().slice(0,2).join('/')}</td>
+
+            <td style="color:#ffd700">₹${s.toLocaleString()}</td>
+
+            <td>
+                <span style="color:#00ff88">C: ${Number(h.c_sav || 0).toLocaleString()}</span><br>
+                <span style="color:#00d9ff">B: ${Number(h.b_sav || 0).toLocaleString()}</span>
+            </td>
+
+            <td>
+                <b style="color:${n < 0 ? '#ff4d4d' : '#ffd700'}">₹${n.toLocaleString()}</b>
+                <div style="font-size:11px; color:#aaa;">
+                    40% Adj : ₹${a.toLocaleString()}<br>
+                    Exp (H) : ₹${jo.toLocaleString()}
+                </div>
+            </td>
+
+            <td>
+                <b style="color:${b < 0 ? '#ff4d4d' : '#ffd700'}">₹${b.toLocaleString()}</b>
+                <div style="font-size:11px; color:#aaa;">
+                    Exp (G) : ₹${gpex.toLocaleString()}
+                </div>
+            </td>
+
+            <td style="color:#ff4d4d">
+                Exp: ${ex.toLocaleString()}<br>
+                Out : ${jo.toLocaleString()}
+            </td>
+
+            <td>
+                <button class="btn-del" onclick="askDelete('${h.date}')">x</button>
+                <button class="btn-pencil" onclick="editEntry('${h.date}')">✎</button>
+            </td>
+        </tr>`;
+    }).join('');
+
+    renderPagination(totalPages);// ✅ ADD THIS
+}
+function renderPagination(totalPages) {
+    const container = document.getElementById('paginationContainer');
+    if (!container) return;
+
+    if (totalPages <= 1) {
+        container.innerHTML = "";
+        return;
+    }
+
+    let html = "";
+
+    // Prev
+    html += `<button onclick="changePage(-1)" ${currentPage === 1 ? 'disabled' : ''}>‹</button>`;
+
+    // Smart pages (max 5 visible)
+    let start = Math.max(1, currentPage - 2);
+    let end = Math.min(totalPages, start + 4);
+
+    for (let i = start; i <= end; i++) {
+        html += `
+            <button 
+                onclick="goToPage(${i})"
+                class="${i === currentPage ? 'active-page' : ''}">
+                ${i}
+            </button>
+        `;
+    }
+
+    // Next
+    html += `<button onclick="changePage(1)" ${currentPage === totalPages ? 'disabled' : ''}>›</button>`;
+
+    container.innerHTML = html;
+}
+function changePage(direction) {
+    const totalPages = Math.ceil(filteredDataGlobal.length / rowsPerPage);
+
+    currentPage += direction;
+
+    if (currentPage < 1) currentPage = 1;
+    if (currentPage > totalPages) currentPage = totalPages;
+
+    renderApp();
+}
+function getMonthNameFromData(data) {
+    if (!data.length) return "";
+
+    const months = [...new Set(data.map(h => new Date(h.date).getMonth()))];
+
+    // single month
+    if (months.length === 1) {
+        const d = new Date(data[0].date);
+        return monthNames[d.getMonth()] + " " + d.getFullYear();
+    }
+
+    return "Last " + chartData.length + " Days";
+}
+function goToPage(page) {
+    currentPage = page;
+    renderApp();
 }
 let dateToDelete = null; // Ye yaad rakhega konsi date udaani hai
 function shareExistingRow(date) {
@@ -2327,7 +2786,21 @@ document.addEventListener('DOMContentLoaded', async () => {
 	setTimeout(updateDashboardOnly, 400);    
 	console.log("JMD App Ready! Opening Cash & Dash Updated.");
 });
+// document.addEventListener('contextmenu', (e) => {
+//     e.preventDefault();
+//     showToast("Bhai, yahan right click allow nahi hai! 🍷", "info");
+// });
+// document.addEventListener('keydown', (e) => {
+//     if (e.key === "F12") {
+//         e.preventDefault();
+//         return false;
+//     }
 
+//     if (e.ctrlKey && (e.shiftKey && (e.key === 'I' || e.key === 'J') || e.key === 'u' || e.key === 's')) {
+//         e.preventDefault();
+//         return false;
+//     }
+// });
 window.addEventListener('load', updateLiveDash);
 </script>
 </body>
