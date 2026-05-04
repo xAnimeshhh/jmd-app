@@ -26,7 +26,7 @@ function createAppLockOverlay() {
         <div class="lock-container">
             <div class="lock-header">
                 <div class="logo-circle">
-                    <img src="assets/logo.webp" style="width: 50px;">
+                    <img src="assets/logo.webp" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
                 </div>
                 <h2 style="color: #ffd700; margin: 10px 0; letter-spacing: 2px;">JMD TRADERS</h2>
                 <p style="color: #aaa; font-size: 12px; text-transform: uppercase;">Secure Access</p>
@@ -40,6 +40,9 @@ function createAppLockOverlay() {
                 <button onclick="pressNum('0')">0</button>
                 <button onclick="clearPin()"><i class="fa-solid fa-backspace"></i></button>
             </div>
+            <div class="hint" style="font-size: 12px; color: rgba(255, 204, 51, 0.7); text-align: center; margin-top: 20px; letter-spacing: 1px;">
+                Hint: Mummy
+            </div>
             <div id="fast-toast"></div>
         </div>
     `;
@@ -49,15 +52,30 @@ function createAppLockOverlay() {
     style.innerHTML = `
         #app-lock-screen { 
             position:fixed; top:0; left:0; width:100%; height:100%; 
-            background: radial-gradient(circle, #4a000e 0%, #1a0005 100%); 
+            background: radial-gradient(circle at center, #800040 0%, #1a0008 100%); 
             z-index: 1000000; display:flex; align-items:center; justify-content:center; 
             font-family: sans-serif; color:white; backdrop-filter: blur(10px);
         }
         .lock-container { width:300px; text-align:center; }
         .logo-circle {
-            width: 70px; height: 70px; background: #4a000e; border-radius: 50%; 
-            margin: 0 auto; border: 2px solid #ffd700; display: flex; 
-            align-items: center; justify-content: center; box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+            position: relative;
+            width: 95px; height: 95px; margin: 0 auto 20px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            background: #25000c; box-shadow: 0 0 25px rgba(255, 204, 51, 0.2);
+        }
+        .logo-circle::before {
+            content: '';
+            position: absolute;
+            top: -3px; left: -3px; right: -3px; bottom: -3px;
+            border-radius: 50%;
+            background: conic-gradient(from 0deg, #ffcc33, #b38728, #aa771c, #ffcc33);
+            animation: rotate 3s linear infinite;
+            z-index: -1;
+        }
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
         .pin-display { display:flex; justify-content:center; gap:15px; margin:30px 0; }
         .dot { width:14px; height:14px; border:2px solid rgba(255,215,0,0.3); border-radius:50%; }
@@ -99,10 +117,12 @@ function updateDots() {
     dots.forEach((dot, i) => i < enteredPin.length ? dot.classList.add('filled') : dot.classList.remove('filled'));
 }
 
-function showToast(msg, color) {
+function showAuthToast(msg, color) {
     const t = document.getElementById('fast-toast');
+    if (!t) return;
     t.innerText = msg;
     t.style.background = color;
+    t.style.color = 'white';
     t.style.display = 'block';
     setTimeout(() => t.style.display = 'none', 1500);
 }
@@ -110,15 +130,18 @@ function showToast(msg, color) {
 function checkPin() {
     if (enteredPin === masterPin) {
         sessionStorage.setItem('jmd_sessionActive', 'true');
-        showToast("ACCESS GRANTED ✅", "linear-gradient(to right, #11998e, #38ef7d)");
+        showAuthToast("ACCESS GRANTED ✅", "linear-gradient(to right, #11998e, #38ef7d)");
         setTimeout(() => {
             const overlay = document.getElementById('app-lock-screen');
             overlay.style.opacity = '0';
             overlay.style.transition = '0.3s';
-            setTimeout(() => overlay.remove(), 300);
+            setTimeout(() => {
+                overlay.remove();
+                document.documentElement.style.display = 'block'; // Ensure page is visible
+            }, 300);
         }, 300);
     } else {
-        showToast("WRONG PIN ❌", "linear-gradient(to right, #cb2d3e, #ef473a)");
+        showAuthToast("WRONG PIN ❌", "linear-gradient(to right, #cb2d3e, #ef473a)");
         enteredPin = "";
         setTimeout(updateDots, 200);
     }
