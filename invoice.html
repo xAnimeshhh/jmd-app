@@ -1723,18 +1723,31 @@ function cycleStatsMode() {
     const modes = ['today', 'weekly', 'monthly', 'yearly'];
     currentStatsMode = modes[(modes.indexOf(currentStatsMode) + 1) % modes.length];
     document.getElementById('statsToggleBtn').innerText = currentStatsMode;
-    updateSidebarStats(currentCloudHistory);
-	let nextIndex = (modes.indexOf(currentStatsMode) + 1) % modes.length;
-    currentStatsMode = modes[nextIndex];
-    
-    // UI update
-    document.getElementById('statsToggleBtn').innerText = currentStatsMode;
     document.getElementById('labelSales').innerText = `SALES (${currentStatsMode.toUpperCase()})`;
     
     // Global data available honi chahiye (currentCloudHistory)
     if (typeof currentCloudHistory !== 'undefined') {
         updateSidebarStats(currentCloudHistory);
     }
+}
+function parseIndianDateString(dateInput) {
+    if (!dateInput) return null;
+    const raw = dateInput.toString().trim().replace(/^'+/, '');
+    if (!raw) return null;
+    const dateOnly = raw.split(',')[0].trim();
+    const parts = dateOnly.split(/[\/\s:-]+/).filter(Boolean);
+
+    if (parts.length >= 3) {
+        const day = parseInt(parts[0], 10);
+        const month = parseInt(parts[1], 10);
+        const year = parseInt(parts[2], 10);
+        if (day >= 1 && day <= 31 && month >= 1 && month <= 12 && year >= 1000) {
+            return new Date(year, month - 1, day);
+        }
+    }
+
+    const parsed = new Date(raw);
+    return isNaN(parsed.getTime()) ? null : parsed;
 }
 function updateSidebarStats(data) {
     const now = new Date();
@@ -1745,14 +1758,13 @@ function updateSidebarStats(data) {
     data.forEach(bill => {
         if (!bill.date) return;
 
-        // 1. Date Parsing
-        let bDateParts = bill.date.split(',')[0].split('/'); // [26, 4, 2026]
-        let bDate = new Date(bDateParts[2], bDateParts[1] - 1, bDateParts[0]);
-        
+        const bDate = parseIndianDateString(bill.date);
+        if (!bDate) return;
+
         // 2. Time Match Check (Today, Weekly, Monthly, Yearly)
         let isTimeMatch = false;
         if (currentStatsMode === 'today') {
-            isTimeMatch = (bill.date.split(',')[0].trim() === todayStr);
+            isTimeMatch = (bDate.getDate() === now.getDate() && bDate.getMonth() === now.getMonth() && bDate.getFullYear() === now.getFullYear());
         } else if (currentStatsMode === 'weekly') {
             let diff = (now - bDate) / (1000 * 60 * 60 * 24);
             isTimeMatch = diff <= 7;
@@ -1791,8 +1803,10 @@ function applyQuickFilter() {
     if (isChecked) {
         const onlyRented = currentCloudHistory.filter(b => b.status === "Rented");
         renderTable(onlyRented);
+        updateSidebarStats(onlyRented);
     } else {
         renderTable(currentCloudHistory);
+        updateSidebarStats(currentCloudHistory);
     }
 }
 function showToast(message, type = 'success') {
@@ -1805,10 +1819,14 @@ function showToast(message, type = 'success') {
     if (type === 'info') icon = "ℹ️ ";
 
     toast.className = '';
-    toast.classList.add('toast-' + type);
-    
-    // Ek hi line mein Title aur Message
-    toast.innerHTML = `<strong>${type.toUpperCase()}:</strong> ${icon}${message}`;
+    if (type.startsWith('linear-gradient')) {
+        toast.style.background = type;
+        toast.style.color = 'white';
+        toast.innerHTML = `${icon}${message}`;
+    } else {
+        toast.classList.add('toast-' + type);
+        toast.innerHTML = `<strong>${type.toUpperCase()}:</strong> ${icon}${message}`;
+    }
     
     toast.style.display = 'block';
     toast.style.opacity = '1';
@@ -2281,10 +2299,11 @@ async function saveBillToHistory() {
     async function executeFinalSave(selectedDate) {
     document.getElementById('dateConfirmModal').style.display = 'none';
 
-    newBill.date = selectedDate;
+    const savedDate = selectedDate.toString().trim().replace(/^'+/, '');
+    newBill.date = savedDate;
 
     if (isRentalBill) {
-        let cleanDate = selectedDate.replace(/^'/, "");
+        let cleanDate = savedDate;
         let datePart = cleanDate.split(',')[0];
 
         let [d, m, y] = datePart.split('/').map(Number);
@@ -2441,11 +2460,13 @@ function renderTable(data) {
 		const originalIndex = currentCloudHistory.indexOf(bill);
 		const amt = parseFloat(bill.amount || bill.total || 0);
         const invNo = bill.id || bill.invno || '-';
-        const billDateStr = bill.date || ""; 
-        const billDisplayDate = billDateStr.split(',')[0] || '-';
-		
-        // --- OVERDUE LOGIC (Smart Status Version) ---
-        if (billDisplayDate.includes(todayStr)) {
+        const rawBillDate = (bill.date || "").toString().trim();
+        const cleanedBillDate = rawBillDate.replace(/^'+/, '');
+        const billDateStr = cleanedBillDate;
+        const billDateObj = parseIndianDateString(billDateStr);
+        const billDisplayDate = billDateObj ? billDateObj.toLocaleDateString('en-IN') : billDateStr.split(',')[0] || '-';
+
+        if (billDateObj && billDateObj.toDateString() === now.toDateString()) {
             totalAmount += amt;
             todayBillCount++;
         }
@@ -2585,10 +2606,6 @@ function renderTable(data) {
         
         triggerDailySummary(summaryMessage);
     }
-    if (dayTotalEl) dayTotalEl.innerText = "₹" + totalAmount.toLocaleString('en-IN');
-    if (dayCountEl) dayCountEl.innerText = todayBillCount;
-    if (dayDepositEl) dayDepositEl.innerText = "₹" + currentPendingDeposit.toLocaleString('en-IN');
-    if (dayPendingEl) dayPendingEl.innerText = pendingRentCount;
 }
 let activeReturnIndex = null;
 function openReturnModal(index) {
@@ -2701,6 +2718,7 @@ function confirmReturnToDB() {
     bill.deposit = 0;
 
     renderTable(currentCloudHistory);
+    updateSidebarStats(currentCloudHistory);
     document.getElementById('returnModal').style.display = 'none';
     showToast("Updating JMD Cloud Sheet...", "info");
 
@@ -2852,6 +2870,7 @@ document.getElementById('confirmDeleteBtn').onclick = async function() {
             
             // 3. Table ko naye filtered data ke saath refresh karo
             renderTable(currentCloudHistory);
+            updateSidebarStats(currentCloudHistory);
             
             showToast("Permanently Deleted! ✅", "success");
         } catch (e) {
