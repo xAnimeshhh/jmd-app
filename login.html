@@ -143,6 +143,8 @@
         const p = document.getElementById('password').value;
 
         if(u === "JMD" && p === "1707") {
+            localStorage.setItem('jmd_isLoggedIn', 'true');
+            sessionStorage.setItem('jmd_sessionActive', 'true');
             showToast("Authenticated! Redirecting...", "success");
             setTimeout(() => {
                 window.location.href = "invoice.html"; // Yahan apna agla page ka link daal
