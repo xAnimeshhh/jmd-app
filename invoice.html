@@ -11,7 +11,7 @@
     <!-- ✅ LOGO -->
     <link rel="icon" href="assets/logo.webp">
     <link rel="apple-touch-icon" href="assets/logo.webp">
-
+<script src="auth.js"></script>
     <!-- ✅ PWA FIX -->
     <link rel="manifest" href="manifest.json">
 
@@ -21,7 +21,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-
+	<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <!-- ✅ ICONS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
@@ -113,7 +114,7 @@ input { padding: 10px; border: 1px solid #e2e8f0; border-radius: 6px; width: 100
 
     /* 2. White Card (invoice-card) ko edges tak phailao */
     .invoice-card, .history-card, .side-box {
-        border-radius: 12px /* Mobile par rounded corners ki jagah full width */
+        border-radius: 12px; /* Mobile par rounded corners ki jagah full width */
         margin: 0 0 10px 0 !important; /* Sirf niche 10px ka gap rakha hai */
         width: 100% !important;
         box-shadow: none !important; /* Gaps hatane par shadow ajeeb lag sakti hai */
@@ -406,23 +407,23 @@ label { font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: upper
 
 #toastr {
     position: fixed;
-    bottom: 15px; /* Thoda aur niche corner mein */
+    bottom: 15px;
     left: 50%;
     transform: translateX(-50%);
-    padding:10px 20px; /* Padding kam kar di */
+    padding: 10px 20px;
     border-radius: 4px;
-    font-size: 0.85rem; /* Font size chhota kiya */
+    font-size: 0.85rem;
     font-weight: 700;
-    z-index: 10000;
+    z-index: 99999;
     display: none;
-    width: max-content; /* Jitna bada text, utni width */
-    min-width: 280px;   /* Itna toh rahega hi */
-    max-width: 90%;    /* Mobile par screen se bahar na jaye */
-    text-align: center; /* Center mein text zyada clean lagta hai */
+    width: max-content;
+    min-width: 280px;
+    max-width: 90%;
+    text-align: center;
     box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-    transition: opacity 0.3s ease;
-    border-left: 4px solid; /* Patli side patti */
-	white-space: nowrap;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    border-left: 4px solid;
+    white-space: nowrap;
 }
 
 /* Success - Slim Green */
@@ -965,12 +966,7 @@ body { padding-bottom: 80px; }
     </div>
     </div>
 </div>
-<div id="hidden-qr-design" style="position: absolute; left: -9999px; top : -9999px">
-    <div id="qr-card-template" style="width: 1080px; height: 1920px; position: relative;">
-		<img src="assets/qr.png" style="width:100%; height:100%;">
-        <div id="actual-qr-code" style="position: absolute; top: 765px; left: 290px; width: 500px; height: 500px; background: white; display: flex; align-items: center; justify-content: center;"></div>
-  </div>
-</div>
+
 
 <div class="main-container">
 <div class="invoice-card">
@@ -1014,7 +1010,7 @@ body { padding-bottom: 80px; }
 
     <div id="rentalAddressSection" style="display: none; margin-top: 10px;">
         <div class="field">
-            <label style="color: #450a0a; font-weight: bold;">Delivery/Site Address</label>
+            <label style="color: #450a0a; font-weight: bold;">Delivery/Site Address <span style="color: red;">*</span></label>
             <input type="text" id="custAddress" placeholder="Enter complete delivery address..." 
                    style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #fbbf24; background: #fffdf0; font-weight: bold;">
         </div>
@@ -1227,6 +1223,68 @@ body { padding-bottom: 80px; }
         </div>
     </div>
 </div>
+<!-- 🔥 HIDDEN QR TEMPLATE -->
+<!-- 🔥 HIDDEN QR TEMPLATE (Perfectly Centered) -->
+<div id="qr-capture-wrapper" style="position:fixed; left:-9999px; top:0; width:1080px; height:1920px;">
+    <div id="qr-card-template" style="width:1080px; height:1920px; position:relative; background:#fff;">
+        <img id="bg-img" src="assets/qr.png" style="width:100%; height:100%;">
+
+        <!-- QR BOX: Size 620px (thoda kam) and repositioned for perfect center -->
+        <div id="qr-box" style="
+            position:absolute;
+            top:690px; 
+            left:230px; 
+            width:620px; 
+            height:620px;
+            background:#fff;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            overflow:hidden;">
+        </div>
+    </div>
+</div>
+
+<!-- 🔥 MODAL (Scrollable + Premium UI) -->
+<div id="qrModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:10000; justify-content:center; align-items:center; padding:10px; box-sizing:border-box;">
+    <div style="background:#fff; border-radius:12px; width:100%; max-width:400px; max-height:95vh; display:flex; flex-direction:column; overflow:hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+        
+        <!-- Header Section -->
+        <div style="background:#721422; padding:15px; color:white; flex-shrink:0;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                <span style="font-size:11px; opacity:0.8; letter-spacing:1px;">PAYMENT PREVIEW</span>
+                <span id="modalInvDate" style="font-size:11px; font-weight:bold;"></span>
+            </div>
+            <div id="modalClientName" style="font-size:16px; font-weight:bold; text-transform:uppercase; margin-bottom:5px; border-bottom:1px solid rgba(255,255,255,0.2); padding-bottom:5px;"></div>
+            <div style="display:flex; justify-content:space-between; align-items:flex-end;">
+                <div>
+                    <div style="font-size:10px; opacity:0.8;">INVOICE NO</div>
+                    <div id="modalInvNo" style="font-weight:bold; font-size:13px;"></div>
+                </div>
+                <div style="text-align:right;">
+                    <div style="font-size:10px; opacity:0.8;">PAYABLE AMOUNT</div>
+                    <div id="modalAmount" style="font-size:22px; font-weight:900;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scrollable Content Area -->
+        <div style="flex-grow:1; overflow-y:auto; background:#f4f4f4; padding:15px; text-align:center;">
+            <p id="qrLoadingText" style="margin-top:50px; color:#666; font-size:14px;">⏳ Finalizing HD Design...</p>
+            <img id="qrPreviewImg" style="width:100%; border-radius:6px; display:none; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+        </div>
+
+        <!-- Buttons Section -->
+        <div style="padding:15px; display:flex; gap:10px; background:white; border-top:1px solid #eee; flex-shrink:0;">
+            <button onclick="downloadQR()" style="flex:1.5; background:#28a745; color:white; padding:14px; border:none; border-radius:6px; font-weight:bold; cursor:pointer; font-size:14px;">
+                <i class="fa fa-download"></i> SAVE IMAGE
+            </button>
+            <button onclick="closeQRModal()" style="flex:1; background:#6c757d; color:white; padding:14px; border:none; border-radius:6px; font-weight:bold; cursor:pointer; font-size:14px;">
+                CLOSE
+            </button>
+        </div>
+    </div>
+</div>
 <div id="returnModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:9999; justify-content:center; align-items:center;">
     <div style="background:white; padding:20px; border-radius:8px; width:90%; max-width:400px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
         <h3 style="margin-top:0; color:#721422; border-bottom:2px solid #eee; padding-bottom:10px;">🚩 JMD - Return Entry</h3>
@@ -1303,7 +1361,7 @@ function addItem(name = '', rate = 0, qty = 1, deposit = 0, skipCalc = false) {
     if(!skipCalc) calc();
 }
 let myItems = [];
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw9uig1LhdLqvGNjPulepOqcumcWPUC8ZT3IsghUxKUYUvFdclH2XqlOEGCzXAyjgBz0w/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx_935xS-FvSNl1-1n0FqKuXqpHwkjBXqHVOvocr6EDSKVm0OCIcSQUUHn2ENZyPtGW4Q/exec";
 document.getElementById('isRentMode').parentElement.addEventListener('click', function(e) {
     const sw = document.getElementById('isRentMode');
     if (sw.disabled) {
@@ -1754,11 +1812,13 @@ function showToast(message, type = 'success') {
     
     toast.style.display = 'block';
     toast.style.opacity = '1';
+    toast.style.transform = 'translateX(-50%) translateY(0)';
 
     setTimeout(() => {
         toast.style.opacity = '0';
+        toast.style.transform = 'translateX(-50%) translateY(10px)';
         setTimeout(() => { toast.style.display = 'none'; }, 300);
-    }, 3000);
+    }, 4500);
 }
 function selectItem(name, price) {
     const activeInput = document.activeElement; 
@@ -1902,6 +1962,87 @@ function closeQuickModal() {
     document.getElementById('quickItemModal').style.display = 'none';
 }
 
+let finalQRImage = "";
+// 🔥 WAIT FOR QR RENDER (NO TIMEOUT JUGAAD)
+function waitForQR(qrBox) {
+    return new Promise(resolve => {
+        const check = () => {
+            if (qrBox.querySelector("img") || qrBox.querySelector("canvas")) {
+                resolve();
+            } else {
+                requestAnimationFrame(check);
+            }
+        };
+        check();
+    });
+}
+// 🔥 MAIN FUNCTION (PREVIEW)
+async function openQRPreview(invNo, total, customer, date) {
+    const modal = document.getElementById('qrModal');
+    const previewImg = document.getElementById('qrPreviewImg');
+    const loadingText = document.getElementById('qrLoadingText');
+
+    // UI Details Mapping
+    document.getElementById('modalInvNo').innerText = `#${invNo}`;
+    // Simple date format fix
+    const displayDate = date.includes('T') ? date.split('T')[0] : date;
+    document.getElementById('modalInvDate').innerText = displayDate;
+    document.getElementById('modalClientName').innerText = customer;
+    document.getElementById('modalAmount').innerText = `₹${total}`;
+
+    modal.style.display = 'flex';
+    previewImg.style.display = 'none';
+    loadingText.style.display = 'block';
+
+    const upiLink = `upi://pay?pa=Q060843824@ybl&pn=JMD%20TRADERS&am=${total}&tn=Bill%20${invNo}&cu=INR`;
+
+    try {
+        const bgImg = document.getElementById("bg-img");
+        await new Promise(res => { if (bgImg.complete) res(); else bgImg.onload = res; });
+
+        const qrBox = document.getElementById("qr-box");
+        qrBox.innerHTML = ""; 
+
+        // 🔥 Size reduced to 620 to leave space for maroon border
+        new QRCode(qrBox, {
+            text: upiLink,
+            width: 620,
+            height: 620,
+            colorDark: "#000000",
+            colorLight: "#ffffff",
+            correctLevel: QRCode.CorrectLevel.H
+        });
+
+        await waitForQR(qrBox);
+
+        const canvas = await html2canvas(document.getElementById('qr-card-template'), {
+            scale: 2,
+            useCORS: true,
+            backgroundColor: "#ffffff"
+        });
+
+        finalQRImage = canvas.toDataURL("image/png");
+        previewImg.src = finalQRImage;
+        previewImg.style.display = 'block';
+        loadingText.style.display = 'none';
+
+    } catch (err) {
+        console.error(err);
+        alert("QR Failed! Check Console.");
+    }
+}
+function downloadQR() {
+    if (!finalQRImage) return alert("QR ready nahi hai!");
+
+    const link = document.createElement('a');
+    link.href = finalQRImage;
+    link.download = "JMD_QR.png";
+    link.click();
+}
+// 🔥 CLOSE
+function closeQRModal() {
+    document.getElementById('qrModal').style.display = 'none';
+}
 // Google Sheet mein save karne ke liye
 async function saveNewItemToDB() {
     let rawName = document.getElementById('new_item_name').value.trim();
@@ -1957,7 +2098,11 @@ async function generateAndDownloadQR(invNo, total) {
     wrapper.style = "position: fixed; top: 0; left: -3000px; width: 1080px; height: 1920px; z-index: -9999; overflow: hidden; background: white;";
     
     wrapper.innerHTML = `
-        <div id="qr-card-template" style="width: 1080px; height: 1920px; position: relative; background: white;">
+        <div id="qr-card-template" style="
+    opacity: 0;
+    position: fixed;
+    left: 0;
+    top: 0; width: 1080px; height: 1920px; position: relative; background: white;">
             <img id="bg-img" src="assets/qr.png" style="width: 1080px; height: 1920px; display: block;">
             <div id="actual-qr-code" style="position: absolute; top: 665px; left: 190px; width: 700px; height: 700px; background: white; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 30px rgba(0,0,0,0.15);"></div>
             <div id="qr-bill-info" style="position: absolute; top: 1250px; width: 100%; text-align: center; font-family: 'Arial Black', sans-serif; font-size: 38px; color: #000; text-transform: uppercase; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);"></div>
@@ -2105,16 +2250,25 @@ async function saveBillToHistory() {
     const discPercent = parseFloat(document.getElementById('overallDisc').value) || 0;
     const discountAmt = (subTotalVal * discPercent) / 100;
     const isRentalBill = savedItems.some(item => item.name && item.name.includes("(Rent)"));
+    
+    // Address mandatory for rental bills only
+    if (isRentalBill && !address) {
+        return showToast("Bhai, Rental bill ke liye address zaroori hai!", "error");
+    }
     // Final Bill Object mein Total jayega (Refund ke liye)
     let finalDepositValue = parseFloat(document.getElementById('depositTotal')?.innerText || 0);
     if (finalDepositValue <= 0) finalDepositValue = totalSecurityDeposit;
+
+    const formattedDate = "" + getIndianDateTime();
+
     const newBill = {
+        date: formattedDate, // 👈 FORCE STRING
+        disc: parseFloat(document.getElementById('overallDisc').value) || 0,
         id: document.getElementById('invNo').value,
         customer: customer,
         number: contact,
         address: address,
         subtotal: subTotalVal.toFixed(2),
-        disc: discPercent,
         disamt: discountAmt.toFixed(2),
         amount: amount.toFixed(2),
         items: savedItems,
@@ -2125,62 +2279,61 @@ async function saveBillToHistory() {
 
     // --- Final Save Function with Auto Return Date ---
     async function executeFinalSave(selectedDate) {
-        document.getElementById('dateConfirmModal').style.display = 'none';
-        newBill.date = selectedDate;
+    document.getElementById('dateConfirmModal').style.display = 'none';
 
-        if (isRentalBill) {
-            let datePart = selectedDate.split(',')[0]; 
-            let [d, m, y] = datePart.split('/').map(Number);
-            let bDate = new Date(y, m - 1, d);
-            bDate.setDate(bDate.getDate() + dashboardDays);
-            newBill.returndate = bDate.toLocaleDateString('en-IN'); // Automatic Calculation
-        } else {
-            newBill.returndate = "";
-        }
+    newBill.date = selectedDate;
 
-        try {
-            showToast("Saving to Cloud...", "info");
-            const response = await fetch(SCRIPT_URL, {
-                method: 'POST',
-                body: JSON.stringify(newBill)
-            });
-            const result = await response.json();
-            
-            if (result.status === "success") {
-                showToast("Data Saved Successfully! ✅", "success");
-				console.log("Calling Notification...");
-                triggerBillNotification();
-                // --- INSTANT REFRESH LOGIC ---
-                // 1. Cloud se naya data wapas kheencho
-                const freshDataResponse = await fetch(SCRIPT_URL);
-                const freshData = await freshDataResponse.json();
-                
-                // 2. Global variable update karo
-                currentCloudHistory = freshData;
-                
-                // 3. Table render karo naye data ke saath
-                renderTable(currentCloudHistory);
-                
-                // 4. Form khali karo
-                resetForm();
-            }
-        } catch (error) {
-            showToast("Sync Error!", "error");
-        }
+    if (isRentalBill) {
+        let cleanDate = selectedDate.replace(/^'/, "");
+        let datePart = cleanDate.split(',')[0];
+
+        let [d, m, y] = datePart.split('/').map(Number);
+        let bDate = new Date(y, m - 1, d);
+
+        bDate.setDate(bDate.getDate() + dashboardDays);
+
+        newBill.returndate = bDate.toLocaleDateString('en-IN');
+    } else {
+        newBill.returndate = "";
     }
 
-    // Modal Trigger Logic
+    try {
+        showToast("Saving to Cloud...", "info");
+
+        const response = await fetch(SCRIPT_URL, {
+            method: 'POST',
+            body: JSON.stringify(newBill)
+        });
+
+        const result = await response.json();
+
+        if (result.status === "success") {
+            showToast("Data Saved Successfully! ✅", "success");
+
+            const freshDataResponse = await fetch(SCRIPT_URL);
+            currentCloudHistory = await freshDataResponse.json();
+
+            renderTable(currentCloudHistory);
+            resetForm();
+
+            if (window.editingRowNum) window.editingRowNum = null;
+        }
+
+    } catch (error) {
+        showToast("Sync Error!", "error");
+    }
+}
+
     if (typeof editingRowNum !== 'undefined' && editingRowNum !== null) {
         newBill.rowNum = editingRowNum;
         const billData = currentCloudHistory.find(b => b.rowNum == editingRowNum);
-        const oldDate = billData ? billData.date : new Date().toLocaleString('en-IN');
+        const oldDate = billData ? billData.date : "'" + getIndianDateTime();        
         document.getElementById('dateConfirmModal').style.display = 'flex';
         document.getElementById('keepOldDateBtn').onclick = () => executeFinalSave(oldDate);
-        document.getElementById('useNewDateBtn').onclick = () => executeFinalSave(new Date().toLocaleString('en-IN'));
+        document.getElementById('useNewDateBtn').onclick = () => executeFinalSave(formattedDate);
     } else {
-        executeFinalSave(new Date().toLocaleString('en-IN'));
+        executeFinalSave(formattedDate);
     }
-	
 }
 function sendWhatsAppReminder(index) {
     const bill = currentCloudHistory[index];
@@ -2312,52 +2465,77 @@ function renderTable(data) {
         const isRental = itemsList.some(item => item.name && item.name.includes("(Rent)"));
 
         if (isRental && billDateStr) {
-            let bDateRaw = billDateStr.includes(',') ? billDateStr.replace(',', '') : billDateStr;
-            let parts = bDateRaw.split(/[\/\s:]+/); 
-            
-            if (parts.length >= 3) {
-                const d = parseInt(parts[0]), m = parseInt(parts[1]) - 1, y = parseInt(parts[2]);
-                const hr = parseInt(parts[3] || 0), min = parseInt(parts[4] || 0), sec = parseInt(parts[5] || 0);
-                
-                const bDateTime = new Date(y, m, d, hr, min, sec);
-                const tDays = parseInt(bill.totaldays || 1);
-                const returnTime = new Date(bDateTime.getTime() + (tDays * 24 * 60 * 60 * 1000));
-				
-                if (now > returnTime) {
-                    // 1. LATE STATUS (Red)
-                    const diffMs = now - returnTime;
-                    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-                    let label = diffDays > 0 ? `${diffDays} DIN LATE` : "OVERDUE";
-					if (bill.status === "Rented") {
-                    if (now > returnTime) {
-                        overdueCount++; // Ab ye chalega kyunki returnTime define ho chuka hai
-                    } else if (diffDays <= 1) {
-                        upcomingCount++; // Ab ye chalega kyunki diffDays define ho chuka hai
-                    }
-                }
-                    overdueHtml = `
-                        <div style="margin-top:5px; display:inline-block; background:#fff1f0; border:1px solid #ffa39e; color:#cf1322; padding:2px 8px; border-radius:12px; font-size:10px; font-weight:bold;">
-                            ⚠️ ${label}
-                        </div>
-                        <a href="#" onclick="sendWhatsAppReminder(${originalIndex}); return false;" style="color:#25D366; margin-left:5px;"><i class="fa-brands fa-whatsapp"></i></a>`;
-                } else if (now.toDateString() === returnTime.toDateString()) {
-                    // 2. DUE TODAY (Green)
-                    overdueHtml = `
-                        <div style="margin-top:5px; display:inline-block; background:#f6ffed; border:1px solid #b7eb8f; color:#389e0d; padding:2px 8px; border-radius:12px; font-size:10px; font-weight:bold;">
-                            ✅ DUE TODAY
-                        </div>
-                        <a href="#" onclick="sendWhatsAppReminder(${originalIndex}); return false;" style="color:#25D366; margin-left:5px;"><i class="fa-brands fa-whatsapp"></i></a>`;
-                } else {
-                    // 3. UPCOMING / ADVANCE (Blue)
-                    // Sirf tab dikhayega agar return date aane wali hai
-                    overdueHtml = `
-                        <div style="margin-top:5px; display:inline-block; background:#e6f7ff; border:1px solid #91d5ff; color:#096dd9; padding:2px 8px; border-radius:12px; font-size:10px; font-weight:bold;">
-                            🕒 UPCOMING
-                        </div>
-                        <a href="#" onclick="sendWhatsAppReminder(${originalIndex}); return false;" style="color:#25D366; margin-left:5px;"><i class="fa-brands fa-whatsapp"></i></a>`;
-                }
-            }
+    let bDateTime;
+
+    // AUTO FORMAT HANDLE
+    if (billDateStr.includes('T')) {
+        bDateTime = new Date(billDateStr);
+    } else {
+        let parts = billDateStr.split(/[\/,\s:]+/);
+        if (parts.length >= 3) {
+            const d = parseInt(parts[0]);
+            const m = parseInt(parts[1]) - 1;
+            const y = parseInt(parts[2]);
+            const hr = parseInt(parts[3] || 0);
+            const min = parseInt(parts[4] || 0);
+            const sec = parseInt(parts[5] || 0);
+
+            bDateTime = new Date(y, m, d, hr, min, sec);
         }
+    }
+
+    // ❗ SAFE FIX (return hata diya)
+    if (!bDateTime || isNaN(bDateTime.getTime())) {
+        bDateTime = null;
+    }
+
+    if (bDateTime) {
+        const tDays = parseInt(bill.totaldays || 1);
+        const returnTime = new Date(bDateTime.getTime() + (tDays * 86400000));
+
+        if (now > returnTime) {
+            const diffMs = now - returnTime;
+            const diffDays = Math.floor(diffMs / 86400000);
+            let label = diffDays > 0 ? `${diffDays} DIN LATE` : "OVERDUE";
+
+            if (bill.status === "Rented") {
+                overdueCount++;
+            }
+
+            overdueHtml = `
+                <div style="margin-top:5px; display:inline-block; background:#fff1f0; border:1px solid #ffa39e; color:#cf1322; padding:2px 8px; border-radius:12px; font-size:10px; font-weight:bold;">
+                    ⚠️ ${label}
+                </div>
+                <a href="#" onclick="sendWhatsAppReminder(${originalIndex}); return false;" style="color:#25D366; margin-left:5px;">
+                    <i class="fa-brands fa-whatsapp"></i>
+                </a>`;
+        } else if (now.toDateString() === returnTime.toDateString()) {
+
+            overdueHtml = `
+                <div style="margin-top:5px; display:inline-block; background:#f6ffed; border:1px solid #b7eb8f; color:#389e0d; padding:2px 8px; border-radius:12px; font-size:10px; font-weight:bold;">
+                    ✅ DUE TODAY
+                </div>
+                <a href="#" onclick="sendWhatsAppReminder(${originalIndex}); return false;" style="color:#25D366; margin-left:5px;">
+                    <i class="fa-brands fa-whatsapp"></i>
+                </a>`;
+        } else {
+
+            const diffMs = returnTime - now;
+            const diffDays = Math.ceil(diffMs / 86400000);
+            if (diffDays <= 1 && bill.status === "Rented") {
+                upcomingCount++;
+            }
+
+            overdueHtml = `
+                <div style="margin-top:5px; display:inline-block; background:#e6f7ff; border:1px solid #91d5ff; color:#096dd9; padding:2px 8px; border-radius:12px; font-size:10px; font-weight:bold;">
+                    🕒 UPCOMING
+                </div>
+                <a href="#" onclick="sendWhatsAppReminder(${originalIndex}); return false;" style="color:#25D366; margin-left:5px;">
+                    <i class="fa-brands fa-whatsapp"></i>
+                </a>`;
+        }
+    }
+}
         // --- OVERDUE LOGIC END ---
 		// --- Buttons Logic (Clean Version) ---
         const isReturned = bill.status === "Returned";
@@ -2378,10 +2556,10 @@ function renderTable(data) {
         return `
             <tr style="border-bottom: 1px solid #eee;">
                 <td style="padding:12px; text-align:center; vertical-align:middle;">
-                    <button onclick="generateAndDownloadQR('${invNo}', '${amt.toFixed(2)}')" 
-                            style="background:#721422; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer;">
-                        <i class="fa fa-qrcode" style="font-size:24px;"></i>
-                    </button>
+					<button onclick="openQRPreview('${invNo}', '${amt.toFixed(2)}', '${bill.customer}', '${billDisplayDate}')" 
+							style="background:#721422; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer;">
+						<i class="fa fa-qrcode" style="font-size:24px;"></i>
+					</button>
                 </td>
                 <td style="padding:12px; vertical-align:middle;">${billDisplayDate}</td>
                 <td style="padding:12px; vertical-align:middle;">
@@ -2442,7 +2620,7 @@ function openReturnModal(index) {
 
     let fine = 0;
     let fineDetails = "On Time Return";
-    const bufferMs = 4 * 60 * 60 * 1000; 
+    const bufferMs = 2 * 60 * 60 * 1000; 
 
     if (now > (returnDeadline.getTime() + bufferMs)) {
         const diffMs = now - returnDeadline; 
@@ -2453,7 +2631,7 @@ function openReturnModal(index) {
             fineDetails = `${extraDays} Din Late (Rental Rate: ₹${totalPerDayRent}/day)`;
         }
     } else if (now > returnDeadline) {
-        fineDetails = "Grace Period (Under 4 hrs Delay)";
+        fineDetails = "Grace Period (Under 2 hrs Delay)";
         fine = 0; 
     }
 
@@ -2483,12 +2661,16 @@ function confirmReturnToDB() {
     
     const bill = currentCloudHistory[activeReturnIndex];
     const now = new Date();
-    const returnDateStr = now.toLocaleString('en-IN');
+    
+    // Format return date consistently: DD/MM/YYYY, HH:MM AM/PM
+    const dPart = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`;
+    const tPart = now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true });
+    const returnDateStr = `${dPart}, ${tPart}`;
     const cleanID = (bill.id || bill.invno).toString().trim();
 
     // Calculations logic (Same as yours)
     let totalPerDayRent = 0;
-    if (bill.items) {
+    if (bill.items) { 
         const itemsList = (typeof bill.items === 'string') ? JSON.parse(bill.items) : bill.items;
         itemsList.forEach(item => {
             if (item.name && item.name.includes("(Rent)")) {
@@ -2501,7 +2683,7 @@ function confirmReturnToDB() {
     const bDateTime = new Date(dateParts[2], dateParts[1] - 1, dateParts[0], dateParts[3]||0, dateParts[4]||0);
     const tDays = parseInt(bill.totaldays || 1);
     const returnDeadline = new Date(bDateTime.getTime() + (tDays * 24 * 60 * 60 * 1000));
-    const voidDeadline = new Date(returnDeadline.getTime() + (4 * 60 * 60 * 1000));
+    const voidDeadline = new Date(returnDeadline.getTime() + (2 * 60 * 60 * 1000));
 
     let fineAmount = 0, extraDays = 0;
     if (now > voidDeadline) {
@@ -2641,7 +2823,6 @@ function deleteBill(index) {
     const modal = document.getElementById('deleteModal');
     modal.style.display = 'flex'; // Popup show karo
 }
-
 // Step 2: Modal band karo
 function closeDeleteModal() {
     document.getElementById('deleteModal').style.display = 'none';
@@ -2713,6 +2894,18 @@ function closeViewModal() {
     document.getElementById('viewConfirmModal').style.display = 'none';
     pendingViewIndex = null;
 }
+function getIndianDateTime() {
+    const now = new Date();
+    return now.toLocaleString('en-IN', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: true
+    });
+}
 function actuallyLoadBill(index) {
     const bill = currentCloudHistory[index]; // <--- Ye line yahan bhi honi chahiye
     if (!bill) return;
@@ -2720,10 +2913,19 @@ function actuallyLoadBill(index) {
     editingRowNum = bill.rowNum;
     document.getElementById('itemsContainer').innerHTML = "";
  // 2. Load Header Info (Including Address)
-    document.getElementById('invNo').value = bill.id || bill.invno || "";
-    document.getElementById('billTo').value = bill.customer || "Cash";
-    document.getElementById('custContact').value = bill.number || bill.contact || "";
+document.getElementById('invNo').value = bill.id || bill.invno || "";
+document.getElementById('billTo').value = bill.customer || "Cash";
+document.getElementById('custContact').value = bill.number || bill.contact || "";
 
+// FIX: Discount field load karo
+const discountPercentValue = (bill.disc !== undefined && bill.disc !== null)
+        ? bill.disc
+        : ((bill.subtotal && bill.disamt)
+            ? ((parseFloat(bill.disamt) / parseFloat(bill.subtotal)) * 100).toFixed(2)
+            : 0);
+if (document.getElementById('overallDisc')) {
+        document.getElementById('overallDisc').value = discountPercentValue;
+    }
     // --- ADDRESS LOAD LOGIC ---
     const addrField = document.getElementById('custAddress');
     if (addrField) {
@@ -2731,8 +2933,14 @@ function actuallyLoadBill(index) {
     }
 
     // 3. Items Parsing
-    let items = (typeof bill.items === 'string') ? JSON.parse(bill.items) : bill.items;
-
+    let items = [];
+try {
+    items = (typeof bill.items === 'string') 
+        ? JSON.parse(bill.items) 
+        : bill.items;
+} catch (e) {
+    items = [];
+}
     // --- RENTAL UI AUTO-SHOW ---
     // Check karo ki kya is bill me koi Rental item hai ya Address hai
     const hasRental = items.some(item => item.name && item.name.includes("(Rent)"));
@@ -2756,13 +2964,22 @@ function actuallyLoadBill(index) {
     }
 
     items.forEach(item => {
-        addItem(item.name, item.rate, item.qty, item.deposit, true);
+addItem(item.name, item.rate, item.qty, item.deposit, true, item.days);
     });
 
     // 4. Final Refresh
     setTimeout(() => {
-        updateRentalModeLock();
+            const discField = document.getElementById('overallDisc');
+    const discountValue = (bill.disc !== undefined && bill.disc !== null)
+            ? bill.disc
+            : ((bill.subtotal && bill.disamt)
+                ? ((parseFloat(bill.disamt) / parseFloat(bill.subtotal)) * 100).toFixed(2)
+                : 0);
+    if (discField) {
+        discField.value = discountValue;
+    }
         calc();
+        updateRentalModeLock();
         setTimeout(() => {
             calc();
             updateSecurityDeposit();
@@ -2942,21 +3159,16 @@ if (isReturned) {
     }
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
-function resetDailySales() {
-    if(confirm("Full history clear karun?")) {
-        localStorage.removeItem('jmd_bill_history');
-        localStorage.removeItem('jmd_sales_summary');
-        loadDailySales();
-    }
-}
 function calc() {
+    const safeNum = (val) => parseFloat(val) || 0;
+
     const isRent = document.getElementById('isRentMode')?.checked;
     const dashboardDays = Math.max(1, parseInt(document.getElementById('totalDays')?.value || '1'));
-    const gDepVal = parseFloat(document.getElementById('globalDeposit')?.value || 0);
+    const gDepVal = safeNum(document.getElementById('globalDeposit')?.value);
 
     let subtotal = 0;
-    let manualDepTotal = 0; // Backup calculation
-    
+    let manualDepTotal = 0;
+
     document.querySelectorAll('.item-row').forEach(row => {
         const nameEl = row.querySelector('.i-n');
         const qtyEl = row.querySelector('.i-q');
@@ -2964,56 +3176,62 @@ function calc() {
         const daysEl = row.querySelector('.i-d');
         const amtField = row.querySelector('.i-a');
 
-        if (!nameEl || !qtyEl || !rateEl) return; 
+        if (!nameEl || !qtyEl || !rateEl) return;
 
         const nameValue = nameEl.value || "";
-        const q = parseFloat(qtyEl.value) || 0;
-        const r = parseFloat(rateEl.value) || 0;
-        
+        const q = safeNum(qtyEl.value);
+        const r = safeNum(rateEl.value);
+
         if (nameValue.includes("(Rent)")) {
             const rowDays = parseInt(daysEl?.value) || dashboardDays;
             if (daysEl && !daysEl.value) daysEl.value = rowDays;
 
             row.style.backgroundColor = "#fff9db";
             let amt = q * r * rowDays;
+
             if (amtField) amtField.innerText = amt.toFixed(2);
             subtotal += amt;
-            
-            // Manual backup for view mode
+
             manualDepTotal += (gDepVal * q);
         } else {
             row.style.backgroundColor = "transparent";
             let amt = q * r;
+
             if (amtField) amtField.innerText = amt.toFixed(2);
             subtotal += amt;
         }
     });
 
-    // Pehle silent box update karo
     updateSecurityDeposit();
-    
-    // Agar summary gayab hai toh manualDepTotal use karo
-    const currentDepTotal = manualDepTotal; 
 
-    // --- TOTALS UPDATE ---
-    const discPercent = parseFloat(document.getElementById('overallDisc')?.value) || 0;
-    const totalAfterDisc = subtotal - (subtotal * (discPercent / 100));
-    
+    const currentDepTotal = manualDepTotal;
+
+    const discPercent = safeNum(document.getElementById('overallDisc')?.value);
+
+    // ✅ FIXED LINE
+    const discountAmt = (subtotal * discPercent) / 100;
+    const totalAfterDisc = subtotal - discountAmt;
+
     const grandTotal = totalAfterDisc + (isRent ? currentDepTotal : 0);
 
     document.getElementById('subTotal').innerText = subtotal.toFixed(2);
     document.getElementById('grandTotal').innerText = grandTotal.toFixed(2);
-    if(document.getElementById('balDue')) document.getElementById('balDue').innerText = grandTotal.toFixed(2);
 
-    // Summary Display Fix
+    if (document.getElementById('balDue')) {
+        document.getElementById('balDue').innerText = grandTotal.toFixed(2);
+    }
+
     const depRow = document.getElementById('depositRow');
     const depDisplay = document.getElementById('displayDeposit');
+
     if (depDisplay) depDisplay.innerText = currentDepTotal.toFixed(2);
     if (depRow) {
         depRow.style.display = (isRent && currentDepTotal > 0) ? 'flex' : 'none';
     }
 
-    if (typeof refreshRentalButtonLabels === 'function') refreshRentalButtonLabels();
+    if (typeof refreshRentalButtonLabels === 'function') {
+        refreshRentalButtonLabels();
+    }
 }
 function priceToWords(n) {
     const a = ['', 'One ', 'Two ', 'Three ', 'Four ', 'Five ', 'Six ', 'Seven ', 'Eight ', 'Nine ', 'Ten ', 'Eleven ', 'Twelve ', 'Thirteen ', 'Fourteen ', 'Fifteen ', 'Sixteen ', 'Seventeen ', 'Eighteen ', 'Nineteen '];
@@ -3246,7 +3464,8 @@ if (isRent) {
         let cleanStr = str.replace(/,/g, "").replace(/am/gi, " AM").replace(/pm/gi, " PM");
         let parts = cleanStr.split(" ")[0].split("/");
         if (parts.length === 3) {
-            let formatted = `${parts[2]}-${parts[1]}-${parts[0]} ${cleanStr.split(" ")[1] || ""}`;
+            const timePart = cleanStr.split(" ").slice(1).join(" ").trim();
+            let formatted = `${parts[2]}-${parts[1]}-${parts[0]} ${timePart}`.trim();
             let d = new Date(formatted);
             return isNaN(d.getTime()) ? new Date() : d;
         }
@@ -3306,63 +3525,73 @@ if (isRent) {
 
     finalY += (boxH + 10);
 }
-// --- Terms & Conditions Section (Clean & Small) ---
-doc.setFont("helvetica", "bold");
-doc.setFontSize(9);
-doc.setTextColor(40);
-doc.text("TERMS & CONDITIONS:", 14, finalY + 5);
+// --- 1. TERMS & CONDITIONS LOGIC ---
+const isRentModeChecked = document.getElementById('isRentMode')?.checked;
 
-doc.setFont("helvetica", "normal");
-doc.setFontSize(7.5); // Thoda chota font taaki elegant lage
-doc.setTextColor(80);
+if (isRentModeChecked) {
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(9);
+    doc.text("TERMS & CONDITIONS (RENTAL):", 14, finalY + 5);
 
-const tnc = [
-    "• Security deposit is fully refundable only if items are returned in original condition.",
-    "• Any damage, breakage, or missing parts will be charged from the security deposit.",
-    "• Late returns beyond the scheduled time will incur extra daily rent charges.",
-    "• Please present this original bill copy at the time of return for a quick refund.",
-    "• Rental items must be returned to the shop location by the customer."
-];
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(7.5);
+    doc.setTextColor(80);
 
-let tncY = finalY + 11;
-tnc.forEach(line => {
-    doc.text(line, 14, tncY);
-    tncY += 4.5;
-});
+    const tnc = [
+        "• Security deposit is fully refundable only if items are returned in original condition.",
+        "• Any damage, breakage, or missing parts will be charged from the security deposit.",
+        "• Late returns beyond the scheduled time will incur extra daily rent charges.",
+        "• Please present this original bill copy at the time of return for a quick refund.",
+        "• Rental items must be returned to the shop location by the customer."
+    ];
+
+    let currentTncY = finalY + 11;
+    tnc.forEach(line => { 
+        doc.text(line, 14, currentTncY); 
+        currentTncY += 4.5; 
+    });
+    finalY = currentTncY; // finalY update kiya
+} else {
+    finalY += 15; // normal bill ke liye space
+}
+
+// --- 2. SETTLEMENT RECEIPT (If Bill is Returned) ---
+// Yahan 'tncY' ki jagah 'finalY' use kiya hai taaki crash na ho
 if (isSettled && currentLoadedBill && currentLoadedBill.settle_summary) {
-    const sData = currentLoadedBill.settle_summary; // Sheet ke Column 15 se data aayega
+    const sData = currentLoadedBill.settle_summary;
     
-    doc.setDrawColor(56, 158, 13); // Green border
-    doc.setFillColor(245, 255, 240); // Light green bg
-    doc.roundedRect(14, tncY + 4, 182, 14, 1, 1, 'FD');
+    doc.setDrawColor(56, 158, 13); 
+    doc.setFillColor(245, 255, 240); 
+    doc.roundedRect(14, finalY + 2, 182, 14, 1, 1, 'FD');
 
     const cleanData = sData.replace(/[₹]/g, "Rs."); 
 
     doc.setFont("helvetica", "bold");
     doc.setTextColor(56, 158, 13);
     doc.setFontSize(9);
-    doc.text("SETTLEMENT RECEIPT:", 18, tncY + 10);
+    doc.text("SETTLEMENT RECEIPT:", 18, finalY + 8);
     
     doc.setFont("helvetica", "normal");
     doc.setTextColor(0);
     doc.setFontSize(8.5);
+    doc.text(cleanData, 18, finalY + 13);
     
-    // Yahan cleanData print karo
-    doc.text(cleanData, 18, tncY + 15);
-    
-    tncY += 20;
+    finalY += 20;
 }
 
-// Tera purana status text
+// --- 3. STATUS BAR ---
 if (isSettled) {
     doc.setFontSize(10);
     doc.setTextColor(56, 158, 13);
     doc.setFont("helvetica", "bold");
-    doc.text("STATUS: THIS BILL IS FULLY SETTLED AND ITEMS ARE RETURNED.", 14, tncY + 5);
+    doc.text("STATUS: THIS BILL IS FULLY SETTLED AND ITEMS ARE RETURNED.", 14, finalY + 5);
+    finalY += 10;
 }
-finalY = tncY + 5; // Final Y update for signature or footer
 
-    setTimeout(() => {
+// Final update for QR and Summary placement
+const updatedFinalY = finalY; 
+
+setTimeout(() => {
         const qrCanvas = qrDiv.querySelector('canvas');
         if (qrCanvas) {
             const rowY = finalY + 8; 
@@ -3546,8 +3775,6 @@ if ('serviceWorker' in navigator) {
         .catch(err => console.log('Registration failed:', err));
     });
   }
-
-
   // Ek naya function add kar de jo cache clear karne mein help karega agar kabhi app fase toh
   function refreshApp() {
     if ('serviceWorker' in navigator) {
