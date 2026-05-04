@@ -10,14 +10,14 @@
 <!-- ✅ LOCAL LOGO -->
 <link rel="icon" href="assets/logo.webp">
 <link rel="apple-touch-icon" href="assets/logo.webp">
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<link rel="manifest" href="manifest.json">
+<!-- <link rel="manifest" href="manifest.json"> -->
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1"></script>
-	
+<script src="auth.js"></script>
     <style>
         :root { 
     --bg: #1a0202; /* Wine match */
@@ -66,15 +66,16 @@ body {
 /* Purana customDialog wala CSS hata sakte ho, ye naya toaster style hai */
 .confirm-toast {
     position: fixed;
-    top: -100px; /* Shuruat mein screen ke upar chhupa rahega */
+    top: -220px; /* Shuruat mein screen ke upar poori tarah chhupa rahega */
     left: 50%;
     transform: translateX(-50%);
+    opacity: 0;
     background: #1a1b1f;
     border: 1px solid var(--error);
     padding: 15px 20px;
     border-radius: 12px;
     z-index: 10000;
-    transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transition: top 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
     box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     display: flex;
     flex-direction: column;
@@ -125,7 +126,7 @@ body {
     border: 1px solid #bee5eb;
     border-left: 4px solid #17a2b8;
 }
-.confirm-toast.show { top: 20px; } /* Jab 'show' class lagegi toh niche aayega */
+.confirm-toast.show { top: 20px; opacity: 1; } /* Jab 'show' class lagegi toh niche aayega */
 .btn-table-wp {
     background-color: #25D366; /* WhatsApp Green */
     border: none;
@@ -362,7 +363,6 @@ body {
 }
         .top-bar { margin-bottom: 15px; background: var(--card); padding: 12px; border-radius: 12px; display: flex; flex-direction: column; gap: 8px; border: 1px solid #333; }
         input[type="date"] { background: #2c2c2c; border: 1px solid #444; color: white; padding: 10px; border-radius: 8px; font-size: 1rem; width: 100%; box-sizing: border-box; }
-        #dateAlert { color: var(--error); font-size: 0.8rem; font-weight: 900; display: none; text-align: center; background: rgba(231, 76, 60, 0.1); padding: 5px; border-radius: 4px; }
 
         .shops-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px; }
         .shop-card { background: var(--card); padding: 15px; border-radius: 12px; border-left: 4px solid var(--primary); }
@@ -575,8 +575,9 @@ body {
 .btn-cancel:hover {
     background-color: #800000 !important;
 }
-        .history-card { background: var(--card); border-radius: 12px; overflow: hidden; border: 1px solid #333; }
-        table { width: 100%; border-collapse: collapse; font-size: 0.8rem; min-width: 600px; font-weight: 900; }
+        .history-card { background: var(--card); border-radius: 12px; overflow-x: auto; border: 1px solid #333; }
+        .history-card table { width: auto; min-width: 640px; }
+        table { width: auto; border-collapse: collapse; font-size: 0.8rem; min-width: 640px; font-weight: 900; }
         th { text-align: left; padding: 12px; background: #25262b; color: var(--primary); }
         td { padding: 12px; border-bottom: 1px solid #2a2b30; vertical-align: top; }
         .btn-del { background: none; color: var(--error); border: 1px solid var(--error); padding: 4px 8px; border-radius: 4px; font-size: 0.65rem; }
@@ -585,96 +586,12 @@ body {
         .footer-text { font-style: italic; font-size: 0.8rem; color: #aaa; letter-spacing: 0.5px; font-weight: 900; }
         .breakdown-box { font-size: 0.65rem; color: #888; margin-top: 5px; border-top: 1px solid #333; padding-top: 5px; line-height: 1.4; }
 
-        @media (max-width: 600px) { .actions { grid-template-columns: 1fr; } }
-#loginPage {
-        height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        /* Background gradient with a subtle pulse */
-        background: radial-gradient(circle at center, #4a0e0e 0%, #1a0202 100%);
-        font-family: 'Segoe UI', sans-serif;
-        overflow: hidden;
-    }
-
-    .login-box {
-        background: rgba(43, 5, 5, 0.7);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        padding: 40px;
-        border-radius: 35px;
-        border: 1px solid rgba(241, 196, 15, 0.4); 
-        width: 100%;
-        max-width: 340px;
-        text-align: center;
-        box-shadow: 0 40px 80px rgba(0,0,0,0.8), 0 0 30px rgba(241, 196, 15, 0.15);
-        position: relative;
-        overflow: hidden; /* Shine ko box ke andar rakhne ke liye */
-    }
-
-    /* ✨ FIXED SHINE (Shaing) */
-    .login-box::after {
-        content: '';
-        position: absolute;
-        top: -150%; left: -150%; width: 300%; height: 300%;
-        background: linear-gradient(45deg, transparent, rgba(255, 215, 0, 0.08), transparent);
-        transform: rotate(45deg);
-        animation: shineFlow 6s infinite linear;
-        
-        /* 🛡️ CRITICAL FIX: Taaki ye clicks ko block na kare */
-        pointer-events: none; 
-        z-index: 10;
-    }
-
-    @keyframes shineFlow {
-        0% { transform: translate(-30%, -30%) rotate(45deg); }
-        100% { transform: translate(30%, 30%) rotate(45deg); }
-    }
-
-    /* Logo Container */
-    .logo-container {
-        width: 100px; height: 100px; margin: 0 auto 25px;
-        background: #4e0707; border-radius: 50%;
-        display: flex; align-items: center; justify-content: center;
-        border: 2px solid #f1c40f; box-shadow: 0 0 25px rgba(241, 196, 15, 0.5);
-        overflow: hidden;
-        position: relative;
-        z-index: 20; /* Z-index high rakha hai taaki hamesha upar dikhe */
-    }
-
-    .logo-container img { width: 90%; height: 90%; object-fit: contain; }
-
-    .input-field {
-        width: 100%; padding: 15px; margin-bottom: 15px;
-        border-radius: 15px; border: 1px solid rgba(241, 196, 15, 0.2);
-        background: rgba(0, 0, 0, 0.5); color: white; outline: none; box-sizing: border-box;
-        position: relative; z-index: 20; /* Taaki click hamesha ho sake */
-        font-size: 16px;
-    }
-
-    #adminUser { text-transform: uppercase; letter-spacing: 2px; font-weight: bold; }
-
-    .pass-wrapper { position: relative; z-index: 20; }
-    .eye-btn { position: absolute; right: 15px; top: 15px; cursor: pointer; color: #f1c40f; opacity: 0.7; font-size: 18px; }
-
-    .login-btn {
-        width: 100%; padding: 16px;
-        background: linear-gradient(135deg, #f1c40f 0%, #b8860b 100%);
-        border: none; border-radius: 15px; font-weight: 900;
-        cursor: pointer; color: #2b0505; font-size: 16px; text-transform: uppercase;
-        position: relative; z-index: 25;
-        box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-        transition: transform 0.2s;
-    }
-
-    .login-btn:active { transform: scale(0.97); }
-
-    /* Shake Effect for error */
-    @keyframes shakeEffect {
-        0%, 100% { transform: translateX(0); }
-        25% { transform: translateX(-10px); }
-        75% { transform: translateX(10px); }
-    }
+        @media (max-width: 600px) {
+            .actions { grid-template-columns: 1fr; }
+            .history-card table, table { width: auto; min-width: 640px; font-size: 0.75rem; }
+            th, td { padding: 8px; }
+            .btn-del { padding: 3px 6px; font-size: 0.65rem; }
+        }
 /* GRID */
 .summary-grid { 
     display: grid; 
@@ -954,30 +871,7 @@ body { padding-bottom: 80px; }
 </style>
 </head>
 <body>
-  <div id="loginPage">
-        <div class="login-box" id="loginCard">
-            <div class="logo-container">
-                <img src="assets/logo.webp" alt="JMD Logo">
-            </div>
-
-            <h2 style="color: #f1c40f; letter-spacing: 3px; margin: 0;">JMD TRADERS</h2>
-            <p style="color: rgba(241, 196, 15, 0.6); font-size: 10px; margin-bottom: 30px;">SECURE ACCESS</p>
-
-            <input type="text" id="adminUser" class="input-field" placeholder="USER ID" oninput="this.value = this.value.toUpperCase()">
-            
-            <div class="pass-wrapper">
-                <input type="password" id="adminPass" class="input-field" placeholder="PASSCODE">
-                <span class="eye-btn" onclick="togglePass()">👁️</span>
-            </div>
-
-            <button onclick="handleLogin()" class="login-btn">Log In 🔑</button>
-
-            <p id="errorMsg" style="color: #ff4d4d; margin-top: 20px; font-size: 13px; display: none; font-weight: bold;">
-                🚫 Invalid ID or Password!
-            </p>
-        </div>
-    </div>
-  <div id="mainApp" style="display: none;">
+  <div id="mainApp">
 <div class="app-container">
     <div class="header"><h1>JMD TRADERS</h1></div>
 
@@ -1024,7 +918,7 @@ body { padding-bottom: 80px; }
         <h3 style="color: #00ccff; font-weight: 900; text-transform: uppercase; margin: 0; font-size: 0.9rem; white-space: nowrap;">
             Select Date :
         </h3>
-        <input type="date" id="entryDate" onchange="autoFillOpeningCash()"
+        <input type="date" id="entryDate" onchange="validateForm(); autoFillOpeningCash()"
                style="flex-grow: 1; font-weight: 900; font-size: 1rem; padding: 5px; border: 1px solid #444; background: #1a1b1f; color: white; border-radius: 6px; text-align: center; outline: none;">
     </div>
 </div>
@@ -1198,47 +1092,50 @@ body { padding-bottom: 80px; }
 </div>
 <div id="toastr"></div>
 </div>
+<!-- 🔥 JMD STYLE SHOP CLOSED MODAL (MOBILE OPTIMIZED) -->
+<!-- 🔥 JMD PREMIUM MODAL: NO SALE ACTIVITY -->
+<div id="emptyEntryModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:10000; justify-content:center; align-items:center; padding:20px; box-sizing:border-box;">
+    
+    <div style="background:#fff; border-radius:12px; width:100%; max-width:340px; display:flex; flex-direction:column; overflow:hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+        
+        <!-- Header: Wine Red JMD Branding -->
+        <div style="background:#721422; padding:15px; color:white; text-align:center;">
+            <div style="font-size:10px; opacity:0.8; letter-spacing:2px; margin-bottom:4px;">JMD TRADERS</div>
+            <div style="font-size:16px; font-weight:bold; text-transform:uppercase;">
+                <i class="fas fa-exclamation-circle"></i> No Sale Activity?
+            </div>
+        </div>
+
+        <!-- Content Area -->
+        <div style="padding:25px; background:#fdfdfd; text-align:center;">
+            <div style="background:#fff5f5; width:70px; height:70px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px; border: 1px solid #ffebeb;">
+                <i class="fas fa-store-slash" style="font-size:32px; color:#721422;"></i>
+            </div>
+            <h4 style="margin:0 0 10px 0; color:#333; font-size:16px;">Bhai, aaj sale zero hai?</h4>
+            <p style="font-size:13px; color:#64748b; line-height:1.6; margin:0;">
+                Agar aaj shop band thi ya koi transaction nahi hua, toh <b>Confirm</b> karein. Closing balance opening ke barabar set ho jayega.
+            </p>
+        </div>
+
+        <!-- Action Buttons -->
+        <div style="padding:15px; display:flex; gap:10px; background:white; border-top:1px solid #eee;">
+            <button onclick="forceSaveEmptyEntry()" style="flex:1.5; background:#28a745; color:white; padding:12px; border:none; border-radius:8px; font-weight:bold; cursor:pointer; font-size:14px; display:flex; align-items:center; justify-content:center; gap:8px; transition: 0.3s;">
+                <i class="fas fa-check-double"></i> CONFIRM
+            </button>
+            <button onclick="closeEmptyModal()" style="flex:1; background:#6c757d; color:white; padding:12px; border:none; border-radius:8px; font-weight:bold; cursor:pointer; font-size:14px; transition: 0.3s;">
+                RE-CHECK
+            </button>
+        </div>
+    </div>
 </div>
 <script>
-function togglePass() {
-            const p = document.getElementById('adminPass');
-            p.type = p.type === "password" ? "text" : "password";
-        }
-
-        function handleLogin() {
-            const u = document.getElementById('adminUser').value.trim().toUpperCase();
-            const p = document.getElementById('adminPass').value.trim();
-            const err = document.getElementById('errorMsg');
-            const card = document.getElementById('loginCard');
-
-            const sU = "Sk1E"; 
-            const sP = "MTcwNw==";
-
-            if (btoa(u) === sU && btoa(p) === sP) {
-                document.getElementById('loginPage').style.display = 'none';
-                document.getElementById('mainApp').style.display = 'block';
-                sessionStorage.setItem('jmd_session_active', 'true'); 
-            } else {
-                err.style.display = 'block';
-                card.style.animation = "shakeEffect 0.4s ease-in-out";
-                setTimeout(() => { card.style.animation = ""; }, 400);
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            if (sessionStorage.getItem('jmd_session_active') === 'true') {
-                document.getElementById('loginPage').style.display = 'none';
-                document.getElementById('mainApp').style.display = 'block';
-            }
-        });
-		
 const dateIn = document.getElementById('entryDate');
     const today = new Date().toISOString().split('T')[0];
     dateIn.value = today;
     dateIn.max = today; 
 	let history = JSON.parse(localStorage.getItem('jmd_traders_v5')) || [];
     let myChart;
-	const FINAL_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyeBTkmzTLR7Ra-LcjFuqzKoAD5XiHVDdYj93Ho1VYR_2xQaBNULubfS4UwrPB_3abVWw/exec';
+	const FINAL_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzb0VUvXGR_BLw-ge7t_i2jMMK8C7wD5Ma0adqn200lSE_y1e2V2jg1J1c765MhS9WHsg/exec';
     function toggleAnalytics() {
         const section = document.getElementById('analyticsSection');
         const icon = document.getElementById('toggleIcon');
@@ -1421,7 +1318,8 @@ async function fetchSheetData() {
         console.error("Fetch Error:", error);
         showToast("Offline mode: Purana data load hua.", "info");
     }
-}function quickAdd(itemText) {
+}
+function quickAdd(itemText) {
     const box = document.getElementById('exp_details');
     let currentVal = box.value.trim();
     
@@ -1544,10 +1442,6 @@ async function deleteEntry(date) {
     }
 }
 function cancelEdit() {
-    // 1. Alert box aur highlights saaf karo
-    const alertBox = document.getElementById('dateAlert');
-    if (alertBox) alertBox.style.display = 'none';
-
     // 2. Form reset function call karo jo humne banaya tha
     resetForm(); 
 
@@ -1571,8 +1465,7 @@ function formatDate(dateStr) {
         year: 'numeric'
     });
 }
-// App load hote hi data fetch karo
-window.onload = fetchSheetData;
+
     function autoFillOpeningCash() {
     const selectedDate = document.getElementById('entryDate').value;
     if (!selectedDate) return;
@@ -1602,8 +1495,6 @@ window.onload = fetchSheetData;
         s1Open.value = "";
         s2Open.value = "";
     }
-    
-    if (typeof validateForm === "function") validateForm();
 }
     function getFormattedDate(dateStr) {
         if (!dateStr) return "";
@@ -1709,9 +1600,8 @@ window.onload = fetchSheetData;
     window.open(`https://wa.me/?text=${msg}`, '_blank');
 } 
 
-   function validateForm() {
+function validateForm() {
     const selected = document.getElementById('entryDate').value;
-    const alertBox = document.getElementById('dateAlert');
     const saveBtn = document.getElementById('saveBtn');
     
     if (!selected) return;
@@ -1720,45 +1610,45 @@ window.onload = fetchSheetData;
     const todayStr = new Date().toISOString().split('T')[0];
     const isFuture = selected > todayStr;
 
+    // --- CHECK IF FORM IS EMPTY (Reset ke baad ka panga fix) ---
+    const s1_hm = parseFloat(document.getElementById('s1_home').value) || 0;
+    const s2_hm = parseFloat(document.getElementById('s2_home').value) || 0;
+    // Agar sales fields 0 hain aur hum edit nahi kar rahe, toh validation bypass karo
+    const isFormReset = (s1_hm === 0 && s2_hm === 0);
+
     // --- RESET DEFAULT STYLE ---
     saveBtn.style.border = "none";
     saveBtn.style.filter = "none";
     saveBtn.style.cursor = "pointer";
+    saveBtn.style.opacity = "1";
 
     if (isFuture) {
-        alertBox.innerText = "⚠️ Future date allowed nahi hai!";
-        alertBox.style.display = 'block';
-        alertBox.style.color = "#ff4d4d";
-        
         saveBtn.disabled = true;
         saveBtn.innerText = "SAVE DATA";
         saveBtn.style.filter = "grayscale(1) brightness(0.7)";
         saveBtn.style.cursor = "not-allowed";
     } 
-    else if (exists && !isEditing) { 
-        // Case: Date mili par Edit mode ON nahi hai
-        alertBox.innerText = "⚠️ Entry exists! Edit (✎) button use karein.";
-        alertBox.style.display = 'block';
-        alertBox.style.color = "#ffd700";
-        
+    else if (exists && !isEditing && !isFormReset) { 
+        // Agar data hai aur form khali NAHI hai, tabhi block karo
+        showToast("⚠️ Entry exists! Edit (✎) button use karein.", "error");
         saveBtn.disabled = true;
-        saveBtn.innerText = "SAVE DATA"; // Yahan Save hi rahega
-        saveBtn.style.border = "2px solid #ffd700"; // Yellow border
+        saveBtn.style.border = "2px solid #ffd700";
         saveBtn.style.filter = "grayscale(1) brightness(0.8)";
         saveBtn.style.cursor = "not-allowed";
     } 
     else {
-        // Case: Nayi entry YA Edit mode ON hai
+        // Nayi entry YA Edit mode YA Reset ke baad wala state
         saveBtn.disabled = false;
         saveBtn.style.filter = "none";
-        saveBtn.style.border = "none";
-
+        
         if (isEditing) {
-            saveBtn.innerText = "UPDATE DATA"; // <--- AB YE PAKKA CHALU HOGA
-            saveBtn.style.backgroundColor = "#C8E5EE"; // Orange for Update
+            saveBtn.innerHTML = '<i class="fas fa-edit"></i> UPDATE DATA';
+            saveBtn.style.backgroundColor = "#C8E5EE"; 
+            saveBtn.style.color = "#000";
         } else {
-            saveBtn.innerText = "SAVE DATA";
-            saveBtn.style.backgroundColor = ""; // Default Green/Blue
+            saveBtn.innerHTML = '<i class="fas fa-save"></i> SAVE DATA';
+            saveBtn.style.backgroundColor = ""; // Default CSS wala color
+            saveBtn.style.color = "";
         }
     }
 }
@@ -1790,8 +1680,9 @@ window.onload = fetchSheetData;
 // showToast("Sync Done!", "success");      // Green
 // showToast("Error Found!", "error");     // Red
 	
-	let isEditing = false; // Track karne ke liye ki edit mode on hai ya nahi
-
+let isEditing = false; // Track karne ke liye ki edit mode on hai ya nahi
+let allowEmptySave = false;
+let isModalOpen = false;
 function editEntry(date) {
     const h = history.find(entry => entry.date === date);
     if (h) {
@@ -1825,11 +1716,66 @@ window.scrollTo({ top: 0, behavior: 'smooth' });
 	window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 }
+function showEmptyEntryModal() {
+    isModalOpen = true;
+    document.getElementById('emptyEntryModal').style.display = 'flex';
+}
+function closeEmptyModal() {
+    isModalOpen = false;
+    document.getElementById('emptyEntryModal').style.display = 'none';
+}
+function forceSaveEmptyEntry() {
+    allowEmptySave = true;
+    isModalOpen = false;
+
+    // Opening values uthao taaki closing me wahi ja sake
+    const s1_open = parseFloat(document.getElementById('s1_open').value) || 0;
+    const s2_open = parseFloat(document.getElementById('s2_open').value) || 0;
+
+    // Shop closed: Sab zero, par Closing = Opening
+    const fieldsToZero = [
+        's1_home', 's1_exp', 's1_gpay', 
+        's2_home', 's2_exp', 's2_gpay', 
+        'jeb_pay_out', 'gpay_exp'
+    ];
+    fieldsToZero.forEach(id => document.getElementById(id).value = 0);
+
+    document.getElementById('s1_close').value = s1_open;
+    document.getElementById('s2_close').value = s2_open;
+    document.getElementById('exp_details').value = "SHOP CLOSED";
+
+    closeEmptyModal();
+    showToast("🏪 Shop Closed Entry Prepared", "info");
+
+    // Ek hi baar call karo system stable rakhne ke liye
+    setTimeout(() => {
+        saveEntry();
+        // Reset flags after save logic completes
+        setTimeout(() => { allowEmptySave = false; }, 500);
+    }, 200);
+}
+function showSmartSuggestion(data) {
+    let msg = "";
+
+    if (data.n_out > 0) {
+        msg = `⚠️ ₹${data.n_out} ka shortage hai`;
+    } 
+    else if (data.n_bal > 2000) {
+        msg = `💰 Extra cash hai ₹${data.n_bal} (Good day!)`;
+    } 
+    else {
+        msg = "✅ Sab balance me hai";
+    }
+
+    showToast(msg, "info");
+}
 async function saveEntry() {
-    const v = (id) => parseFloat(document.getElementById(id).value) || 0;
+  
+    const v = (id) => parseFloat(document.getElementById(id).value) || 0;
     const t = (id) => document.getElementById(id).value;
     const selectedDate = t('entryDate');
     if (!selectedDate) return showToast("Please select a date!", "info");
+
 
     // --- SAFETY CHECK ---
     const dateExists = history.some(h => h.date === selectedDate);
@@ -1838,7 +1784,23 @@ async function saveEntry() {
     if (!isEditing && dateExists) {
         showToast("⚠️ ERROR: Is date ki entry pehle se hai!", "error");
         return; 
-    }// 1. Basic Inputs (S1 & S2)
+    }
+    if (isModalOpen && !allowEmptySave) return;
+        // --- EMPTY ENTRY VALIDATION ---
+    const isS1Empty = (
+    !v('s1_home') && !v('s1_exp') && !v('s1_gpay')
+    );
+
+    const isS2Empty = (
+        !v('s2_home') && !v('s2_exp') && !v('s2_gpay')
+    );
+
+    // 🔥 REAL CONDITION: sale hi nahi hua
+    if (isS1Empty && isS2Empty && !allowEmptySave) {
+        showEmptyEntryModal();
+        return; // 🚫 STOP YAHI
+    } // 🚫 HARD STOP
+// 1. Basic Inputs (S1 & S2)
     const s1 = { op: v('s1_open'), hm: v('s1_home'), cl: v('s1_close'), ex: v('s1_exp'), gp: v('s1_gpay') };
     const s2 = { op: v('s2_open'), hm: v('s2_home'), cl: v('s2_close'), ex: v('s2_exp'), gp: v('s2_gpay') };
     const jebOut = v('jeb_pay_out');
@@ -1900,52 +1862,58 @@ async function saveEntry() {
     renderApp();
     
     showToast("Syncing with Google Sheets... ⏳", "info");
+    try {
+        saveBtn.disabled = true; // Click karte hi disable
+        saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+        saveBtn.style.opacity = "0.5";
 
-    try {
-        await fetch(FINAL_SCRIPT_URL, {
-            method: 'POST',
-            mode: 'no-cors', 
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(fullData)
-        });
-        
-        showToast("Data Sent Successfully! ✅", "success");
+        const response = await fetch(FINAL_SCRIPT_URL, {
+            method: 'POST',
+            mode: 'no-cors', 
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(fullData)
+        });
+        
+        showToast("Data Sent Successfully! ✅", "success");
         if (typeof fetchSheetData === "function") setTimeout(fetchSheetData, 2000); 
-		resetForm();
-    } catch (e) { 
-        showToast("Network Error! Saved Locally.", "info"); 
-		resetForm();
-    }
+        resetForm(); // Iske andar button enable ka logic hai
+        
+    } catch (e) { 
+        showToast("Network Error! Saved Locally.", "info");
+        resetForm(); // Error aaye tab bhi form clear aur button enable karo
+    } finally {
+        // Double safety: Har haal mein button wapas active hoga
+        saveBtn.disabled = false;
+        saveBtn.style.opacity = "1";
+        saveBtn.innerHTML = '<i class="fas fa-save"></i> SAVE DATA';
+    }
 	validateForm();
+    showSmartSuggestion(fullData);
 }
 function resetForm() {
-    // 1. Saare inputs (Number, Text, Textarea) khali karo
+    // 1. Saare inputs khali karo
     const inputs = document.querySelectorAll('input[type="number"], input[type="text"], textarea');
     inputs.forEach(input => input.value = "");
 
-    // 2. Date field ko unlock aur reset karo
+    // 2. Date reset (Aaj ki date)
     const dateInput = document.getElementById('entryDate');
     dateInput.readOnly = false;
     dateInput.style.background = "";
-    // Optionally: Aaj ki date set kardo
     dateInput.value = new Date().toISOString().split('T')[0];
 
-    // 3. Button ko wapas "SAVE DATA" mode mein lao
+    // 3. Save Button Restore (Disable hatane ke liye)
     const saveBtn = document.getElementById('saveBtn');
     saveBtn.innerText = "SAVE DATA";
-    saveBtn.disabled = false;
-    saveBtn.style.backgroundColor = ""; // Default color par jayega
-    saveBtn.style.border = "none";
-    saveBtn.style.filter = "none";
+    saveBtn.disabled = false; // Isse grey color hat jayega
+    saveBtn.style.opacity = "1";
     saveBtn.style.cursor = "pointer";
+    saveBtn.style.background = ""; // Jo bhi tumhara default green/red color hai
 
-    // 4. Alert box ko chhupao
-    const alertBox = document.getElementById('dateAlert');
-    if (alertBox) alertBox.style.display = 'none';
-
+    // 4. Cancel button hide karo
     document.getElementById('cancelBtn').style.display = "none";
+    
     isEditing = false;
-    console.log("Form & Validation Reset Complete! ✅");
+    allowEmptySave = false;
 }
 function updateDashboardOnly() {
     const selectedMonth = dashAvailableMonths[currentDashIndex];
@@ -1963,7 +1931,7 @@ function updateDashboardOnly() {
 		netBank: acc.netBank + Number(curr.n_bank || 0),
         exp: acc.exp + Number(curr.t_exp || 0) + Number(curr.jeb || 0),
         short: acc.short + Number(curr.n_out || 0)
-    }), { sale: 0, cash: 0, bank: 0, net: 0, exp: 0, short: 0 });
+    }), { sale: 0, cash: 0, bank: 0, net: 0, exp: 0, short: 0 , netBank: 0});
 
     document.getElementById('monSale').innerText = "₹" + totals.sale.toLocaleString();
     document.getElementById('monNet').innerText = "₹" + totals.net.toLocaleString();
@@ -1984,7 +1952,7 @@ function updateChartWithData(data) {
     const ctx = document.getElementById('salesChart').getContext('2d');
 
     const last7 = [...data]
-        .sort((a,b) => new Date(a.date) - new Date(b.date))
+        .sort((a, b) => new Date(a.date) - new Date(b.date))
         .slice(-7);
 
     if (myChart) myChart.destroy();
@@ -1992,17 +1960,44 @@ function updateChartWithData(data) {
     myChart = new Chart(ctx, {
         type: 'line',
         data: {
-            labels: last7.map(h => h.date.split('-').reverse().slice(0,2).join('/')),
+            labels: last7.map(h => h.date.split('-').reverse().slice(0, 2).join('/')),
             datasets: [
                 {
-                    label: 'Sale',
+                    label: 'Daily Sale', 
                     data: last7.map(h => Number(h.ts_all || 0)),
+                    borderColor: '#f1c40f',
+                    backgroundColor: 'rgba(241, 196, 15, 0.1)',
+                    tension: 0.3,
+                    fill: true
                 },
                 {
-                    label: 'Expense',
+                    label: 'Daily Expense',
                     data: last7.map(h => Number(h.t_exp || 0) + Number(h.jeb || 0)),
+                    borderColor: '#e74c3c',
+                    backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                    tension: 0.3,
+                    fill: true
                 }
             ]
+        },
+        options: { 
+            responsive: true, 
+            maintainAspectRatio: false, 
+            plugins: { 
+                legend: { 
+                    labels: { color: '#888', font: { size: 10 } } 
+                } 
+            }, 
+            scales: { 
+                y: { 
+                    grid: { color: '#222' }, 
+                    ticks: { color: '#888' } 
+                }, 
+                x: { 
+                    grid: { display: false }, 
+                    ticks: { color: '#888' } 
+                } 
+            } 
         }
     });
 }
@@ -2132,16 +2127,80 @@ function filterHistory() {
     
     renderTable(filtered); // Table ko refresh karne ke liye
 }
-
-
 // WhatsApp par report bhejne ka function
 function shareWhatsApp() {
-    const sale = document.getElementById('monSale').innerText;
-    const net = document.getElementById('monNet').innerText;
-    const msg = `📊 *JMD TRADERS REPORT*\n💰 Total Sale: ${sale}\n💵 Net Cash: ${net}\n\nApp se generated.`;
+
+    const searchTerm = document.getElementById('searchBox').value.toLowerCase();
+    const selectedMonth = document.getElementById('monthFilter').value;
+
+    // 🔹 SAME FILTER AS TABLE (IMPORTANT)
+    const dataToShare = history.filter(h => {
+        const d = new Date(h.date + "T00:00:00");
+
+        const matchesSearch =
+            h.date.includes(searchTerm) ||
+            (h.ts_all && h.ts_all.toString().includes(searchTerm));
+
+        const matchesMonth =
+            selectedMonth === "all" || d.getMonth() == selectedMonth;
+
+        return matchesSearch && matchesMonth;
+    });
+
+    if (!dataToShare.length) {
+        showToast("Koi data nahi hai!", "error");
+        return;
+    }
+
+    // 🔹 SORT
+    const sorted = [...dataToShare].sort((a, b) =>
+        new Date(a.date + "T00:00:00") - new Date(b.date + "T00:00:00")
+    );
+
+    const firstDate = new Date(sorted[0].date + "T00:00:00");
+    const lastDate = new Date(sorted[sorted.length - 1].date + "T00:00:00");
+
+    const options = { day: 'numeric', month: 'long' };
+    const totalDays = sorted.length;
+
+    // 🔥 SINGLE DAY FIX
+    let dateRangeStr = "";
+    let dayLabel = totalDays === 1 ? "Day" : "Days";
+
+    if (totalDays === 1) {
+        dateRangeStr = firstDate.toLocaleDateString('en-GB', options);
+    } else {
+        dateRangeStr = `${firstDate.toLocaleDateString('en-GB', options)} to ${lastDate.toLocaleDateString('en-GB', options)}`;
+    }
+
+    // 🔹 TOTAL CALCULATION (same as renderApp)
+    const totals = dataToShare.reduce((acc, curr) => ({
+        sale: acc.sale + Number(curr.ts_all || 0),
+        cash: acc.cash + Number(curr.c_sav || 0),
+        bank: acc.bank + Number(curr.b_sav || 0),
+        net: acc.net + Number(curr.n_bal || 0),
+        netBank: acc.netBank + Number(curr.n_bank || 0),
+        exp: acc.exp + Number(curr.t_exp || 0) + Number(curr.jeb || 0),
+    }), { sale: 0, cash: 0, bank: 0, net: 0, exp: 0, netBank: 0 });
+
+    // 🔹 MESSAGE
+    const msg = `_*Date : ${dateRangeStr} (${totalDays} ${dayLabel})*_
+
+📊 *JMD TRADERS REPORT*
+
+*_• Total Sale : ₹${totals.sale.toLocaleString()}_*
+*_• Total Expense : ₹${totals.exp.toLocaleString()}_*
+
+*_• Net Bal (40% Cash) : ₹${totals.cash.toLocaleString()}_*
+*_• Net Bal (40% Bank) : ₹${totals.bank.toLocaleString()}_*
+*_• Net Bal (Cash at home) : ₹${totals.net.toLocaleString()}_*
+*_• Net Bal (A/C Amt) : ₹${totals.netBank.toLocaleString()}_*
+
+━━━━━━━━━━━━━━━━━━━
+_Report generated by JMD Pro Software_`;
+
     window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`);
 }
-
     function updateChart() {
     const ctx = document.getElementById('salesChart').getContext('2d');
     
@@ -2268,21 +2327,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 	setTimeout(updateDashboardOnly, 400);    
 	console.log("JMD App Ready! Opening Cash & Dash Updated.");
 });
-document.addEventListener('contextmenu', (e) => {
-    e.preventDefault();
-    showToast("Bhai, yahan right click allow nahi hai! 🍷", "info");
-});
-document.addEventListener('keydown', (e) => {
-    if (e.key === "F12") {
-        e.preventDefault();
-        return false;
-    }
 
-    if (e.ctrlKey && (e.shiftKey && (e.key === 'I' || e.key === 'J') || e.key === 'u' || e.key === 's')) {
-        e.preventDefault();
-        return false;
-    }
-});
 window.addEventListener('load', updateLiveDash);
 </script>
 </body>
