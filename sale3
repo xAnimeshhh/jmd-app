@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stall Sales Management System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        :root {
+            --primary: #0f172a;
+            --primary-light: #1e293b;
+            --accent: #0284c7;
+            --success: #16a34a;
+            --danger: #dc2626;
+            --bg: #f8fafc;
+            --surface: #ffffff;
+            --border: #cbd5e1;
+            --text: #334155;
+            --text-dark: #0f172a;
+            --text-muted: #64748b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            padding: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 440px;
+            background: var(--surface);
+            padding: 20px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px dashed var(--border);
+        }
+
+        header h2 {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-dark);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        header p {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            padding: 12px;
+            border-radius: 12px;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+        }
+
+        .card-title {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .card-value {
+            font-size: 18px;
+            font-weight: 700;
+            margin-top: 4px;
+            color: var(--text-dark);
+        }
+
+        .card.total {
+            grid-column: span 2;
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            border: none;
+        }
+        .card.total .card-title { color: #94a3b8; }
+        .card.total .card-value { color: #ffffff; }
+
+        .card.profit {
+            grid-column: span 2;
+            background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+            border: 1px solid #bbf7d0;
+        }
+        .card.profit .card-title { color: #166534; }
+        .card.profit .card-value { color: #15803d; }
+
+        .form-section {
+            margin-bottom: 20px;
+        }
+
+        .section-label {
+            display: block;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            letter-spacing: 0.5px;
+        }
+
+        .type-selector {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .type-btn {
+            padding: 14px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--text-muted);
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.15s ease;
+        }
+
+        .type-btn.active {
+            border-color: var(--primary-light);
+            background: var(--primary-light);
+            color: #ffffff;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 14px 12px 14px 36px;
+            font-size: 18px;
+            font-weight: 600;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text-dark);
+            outline: none;
+            background: #f8fafc;
+            -moz-appearance: textfield;
+        }
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        input[type="number"]:focus {
+            border-color: var(--accent);
+            background: var(--surface);
+            box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.1);
+        }
+
+        .action-btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 12px;
+            transition: background 0.2s;
+        }
+
+        .logs-section {
+            border-top: 1px solid #f1f5f9;
+            padding-top: 16px;
+            margin-bottom: 20px;
+        }
+
+        .logs-container {
+            margin-top: 8px;
+            max-height: 130px;
+            overflow-y: auto;
+            border: 1px solid #f1f5f9;
+            border-radius: 10px;
+            background: #f8fafc;
+        }
+
+        .log-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 12px;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 13px;
+        }
+        .log-item:last-child { border-bottom: none; }
+        .log-meta { color: var(--text-muted); }
+        .log-amt { font-weight: 600; color: var(--text-dark); }
+
+        .summary-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .share-btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--success);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .clear-btn {
+            width: 100%;
+            padding: 10px;
+            background: transparent;
+            color: var(--danger);
+            border: 1px solid #fee2e2;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* SweetAlert Custom Popup Tuning */
+        .swal2-popup {
+            border-radius: 16px !important;
+            font-family: inherit !important;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h2>Stall Sales Counter</h2>
+        <p>Terminal: Shop 3</p>
+    </header>
+    
+    <div class="dashboard">
+        <div class="card">
+            <div class="card-title"><i class="fa-solid fa-money-bill-wave"></i> Cash Sales</div>
+            <div class="card-value" id="cash-display">₹0</div>
+        </div>
+        <div class="card">
+            <div class="card-title"><i class="fa-solid fa-credit-card"></i> GPay Sales</div>
+            <div class="card-value" id="online-display">₹0</div>
+        </div>
+        <div class="card total">
+            <div class="card-title"><i class="fa-solid fa-chart-line"></i> Total Sale</div>
+            <div class="card-value" id="total-display">₹0</div>
+        </div>
+        <div class="card profit">
+            <div class="card-title"><i class="fa-solid fa-wallet"></i> Total Profit (40%)</div>
+            <div class="card-value" id="profit-display">₹0</div>
+        </div>
+    </div>
+
+    <div class="form-section">
+        <span class="section-label">Payment Mode</span>
+        <div class="type-selector">
+            <button type="button" class="type-btn active" id="btn-cash" onclick="setMode('Cash')">
+                <i class="fa-solid fa-money-bill"></i> Cash
+            </button>
+            <button type="button" class="type-btn" id="btn-online" onclick="setMode('GPay')">
+                <i class="fa-solid fa-mobile-screen-button"></i> GPay
+            </button>
+        </div>
+
+        <span class="section-label">Amount</span>
+        <div class="input-wrapper">
+            <i class="fa-solid fa-indian-rupee-sign input-icon"></i>
+            <input type="number" id="amount" placeholder="0.00" inputmode="numeric">
+        </div>
+        
+        <button class="action-btn" onclick="addSale()">Record Entry</button>
+    </div>
+
+    <div class="logs-section">
+        <span class="section-label">Today's Transactions</span>
+        <div class="logs-container" id="logs-container"></div>
+    </div>
+
+    <div class="summary-actions">
+        <button class="share-btn" onclick="shareOnWhatsApp()">
+            <i class="fa-brands fa-whatsapp"></i> Share Report on WhatsApp
+        </button>
+        <button class="clear-btn" onclick="clearData()">
+            <i class="fa-solid fa-trash-can"></i> End Day & Clear Data
+        </button>
+    </div>
+</div>
+
+<script>
+    let currentMode = 'Cash';
+    let salesData = JSON.parse(localStorage.getItem('stall_sales_shop3')) || { cash: 0, online: 0, logs: [] };
+
+    function setMode(mode) {
+        currentMode = mode;
+        document.getElementById('btn-cash').classList.toggle('active', mode === 'Cash');
+        document.getElementById('btn-online').classList.toggle('active', mode === 'GPay');
+    }
+
+    function updateDashboard() {
+        const total = salesData.cash + salesData.online;
+        const profit = Math.round(total * 0.40);
+
+        document.getElementById('cash-display').innerText = `₹${salesData.cash}`;
+        document.getElementById('online-display').innerText = `₹${salesData.online}`;
+        document.getElementById('total-display').innerText = `₹${total}`;
+        document.getElementById('profit-display').innerText = `₹${profit}`;
+        
+        const logsContainer = document.getElementById('logs-container');
+        logsContainer.innerHTML = '';
+        
+        if (salesData.logs.length === 0) {
+            logsContainer.innerHTML = '<p style="color:var(--text-muted); text-align:center; padding:16px; font-size:12px;">No transactions recorded</p>';
+            return;
+        }
+        
+        [...salesData.logs].reverse().slice(0, 15).forEach(log => {
+            const div = document.createElement('div');
+            div.className = 'log-item';
+            div.innerHTML = `<span class="log-meta">${log.time} - ${log.type}</span> <span class="log-amt">₹${log.amount}</span>`;
+            logsContainer.appendChild(div);
+        });
+    }
+
+    function addSale() {
+        const amtInput = document.getElementById('amount');
+        const amount = parseInt(amtInput.value);
+
+        if (!amount || amount <= 0) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Validation Error',
+                text: 'Sahi transaction amount daaliye.',
+                confirmButtonColor: '#0284c7'
+            });
+            return;
+        }
+
+        const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+        if (currentMode === 'Cash') {
+            salesData.cash += amount;
+        } else {
+            salesData.online += amount;
+        }
+
+        salesData.logs.push({ type: currentMode, amount: amount, time: time });
+        localStorage.setItem('stall_sales_shop3', JSON.stringify(salesData));
+        
+        amtInput.value = '';
+        updateDashboard();
+
+        // Premium dynamic toast notice
+        Swal.fire({
+            icon: 'success',
+            title: 'Entry Saved',
+            text: `₹${amount} added successfully`,
+            timer: 1300,
+            showConfirmButton: false,
+            toast: true,
+            position: 'top'
+        });
+    }
+
+    function shareOnWhatsApp() {
+        const total = salesData.cash + salesData.online;
+        const profit = Math.round(total * 0.40);
+        const date = new Date().toLocaleDateString('en-IN');
+        
+        let message = `*Stall Sale - Shop 3*\n`;
+        message += `*Date: ${date}*\n`;
+        message += `------------------------------------\n\n`;
+        message += `Cash Sale    : ${salesData.cash}/-\n`;
+        message += `GPay Sale    : ${salesData.online}/-\n\n`;
+        message += `Total Sale   : ${total}/-\n`;
+        message += `Total Profit : ${profit}/-\n`;
+        message += `------------------------------------\n`;
+        message += `Transactions Count: ${salesData.logs.length}\n`;
+        message += `_Report generated successfully._`;
+
+        const encodedMessage = encodeURIComponent(message);
+        window.open(`https://api.whatsapp.com/send?text=${encodedMessage}`, '_blank');
+    }
+
+    function clearData() {
+        Swal.fire({
+            title: 'End Daily Session?',
+            text: "Kya aap aaj ka counter clear karna chahte hain? Confirm karne se pehle report share kar lein.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#dc2626',
+            cancelButtonColor: '#64748b',
+            confirmButtonText: 'Clear Terminal Logs'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                localStorage.removeItem('stall_sales_shop3');
+                salesData = { cash: 0, online: 0, logs: [] };
+                updateDashboard();
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Terminal Reset',
+                    text: 'Agle din ka setup ready hai.',
+                    confirmButtonColor: '#0284c7'
+                });
+            }
+        });
+    }
+
+    updateDashboard();
+</script>
+
+</body>
+</html>
