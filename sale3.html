@@ -3,347 +3,330 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stall Sales Management System</title>
+    <title>JMD Enterprise - Professional POS Terminal</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         :root {
             --primary: #0f172a;
             --primary-light: #1e293b;
-            --accent: #0284c7;
+            --accent: #2563eb;
             --success: #16a34a;
             --danger: #dc2626;
-            --bg: #f8fafc;
+            --bg: #f1f5f9;
             --surface: #ffffff;
-            --border: #cbd5e1;
-            --text: #334155;
+            --border: #e2e8f0;
             --text-dark: #0f172a;
+            --text-main: #334155;
             --text-muted: #64748b;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-            -webkit-tap-highlight-color: transparent;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--bg); color: var(--text-main); padding: 16px; display: flex; justify-content: center; min-height: 100vh; }
+        
+        .container { width: 100%; max-width: 480px; background: var(--surface); padding: 20px; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03); border: 1px solid var(--border); }
+        
+        header { text-align: center; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+        header h2 { font-size: 20px; font-weight: 700; color: var(--text-dark); letter-spacing: -0.3px; }
+        header p { font-size: 12px; color: var(--text-muted); margin-top: 2px; text-transform: uppercase; letter-spacing: 0.5px; }
+        
+        .section-label { display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; letter-spacing: 0.5px; }
+        
+        .category-nav-wrapper { position: relative; margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 4px; }
+        .category-tabs { display: flex; gap: 8px; overflow-x: auto; -webkit-overflow-scrolling: touch; scroll-behavior: smooth; padding-bottom: 6px; }
+        
+        .category-tabs::-webkit-scrollbar { height: 4px; }
+        .category-tabs::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 4px; }
+        .category-tabs::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        
+        .tab-btn { padding: 8px 16px; font-size: 12px; font-weight: 600; border-radius: 8px; border: 1px solid var(--border); background: #fff; color: var(--text-main); cursor: pointer; white-space: nowrap; transition: all 0.2s ease; flex-shrink: 0; }
+        .tab-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
 
-        body {
-            background-color: var(--bg);
-            color: var(--text);
-            padding: 12px;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            min-height: 100vh;
-        }
+        .catalog-container { background: #f8fafc; padding: 12px; border-radius: 12px; margin-bottom: 12px; border: 1px solid var(--border); }
+        .item-grid { display: none; grid-template-columns: repeat(2, 1fr); gap: 8px; max-height: 240px; overflow-y: auto; padding-right: 2px; }
+        .item-grid.active { display: grid; }
+        
+        .product-card { background: #fff; padding: 12px; border-radius: 8px; border: 1px solid var(--border); cursor: pointer; display: flex; flex-direction: column; justify-content: space-between; transition: all 0.15s ease; box-shadow: 0 1px 2px rgba(0,0,0,0.02); }
+        .product-card:hover { border-color: var(--text-muted); }
+        .product-card.active { border: 2px solid var(--accent) !important; background: #eff6ff; }
+        .product-card h4 { font-size: 12px; font-weight: 600; color: var(--text-dark); margin-bottom: 4px; line-height: 1.4; }
+        .product-card p { font-size: 11px; color: var(--text-muted); font-weight: 500; }
 
-        .container {
-            width: 100%;
-            max-width: 440px;
-            background: var(--surface);
-            padding: 20px;
-            border-radius: 16px;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
-            border: 1px solid rgba(226, 232, 240, 0.8);
-        }
+        .calc-box { background: #f8fafc; border: 1px solid var(--accent); padding: 14px; border-radius: 12px; margin-bottom: 12px; display: none; animation: fadeIn 0.2s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+        .grid-inputs input { width: 100%; padding: 10px; font-size: 14px; border: 1px solid var(--border); border-radius: 6px; font-weight: 600; color: var(--text-dark); outline: none; background: #fff; }
+        .grid-inputs label { display: block; font-size: 11px; font-weight: 600; color: var(--text-main); margin-bottom: 4px; }
+        
+        .rate-btn-group { display: flex; gap: 6px; margin-top: 6px; }
+        .rate-btn { flex: 1; padding: 8px; font-size: 11px; font-weight: 600; background: #fff; border: 1px solid var(--border); border-radius: 6px; cursor: pointer; color: var(--text-main); }
+        .rate-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+        .round-info { font-size: 12px; color: var(--accent); font-weight: 600; margin-top: 8px; background: #eff6ff; padding: 8px; border-radius: 6px; text-align: center; border: 1px solid #bfdbfe; }
 
-        header {
-            text-align: center;
-            margin-bottom: 20px;
-            padding-bottom: 12px;
-            border-bottom: 1px dashed var(--border);
-        }
+        .status-ribbon { background: #f0fdf4; border: 1px solid #bbf7d0; padding: 10px 14px; border-radius: 8px; font-size: 12px; font-weight: 600; color: #166534; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
 
-        header h2 {
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--text-dark);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        header p {
-            font-size: 12px;
-            color: var(--text-muted);
-            margin-top: 2px;
-        }
-
-        .dashboard {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .card {
-            padding: 12px;
-            border-radius: 12px;
-            background: #ffffff;
-            border: 1px solid #e2e8f0;
-        }
-
-        .card-title {
-            font-size: 11px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
-            color: var(--text-muted);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .card-value {
-            font-size: 18px;
-            font-weight: 700;
-            margin-top: 4px;
-            color: var(--text-dark);
-        }
-
-        .card.total {
-            grid-column: span 2;
-            background: linear-gradient(135deg, #1e293b, #0f172a);
-            border: none;
-        }
+        /* Premium Dashboard Section Placed Below Billing Inputs */
+        .dashboard { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 14px; margin-bottom: 14px; background: #f8fafc; border: 1px solid var(--border); padding: 10px; border-radius: 12px; }
+        .card { padding: 10px 12px; border-radius: 8px; background: #fff; border: 1px solid var(--border); }
+        .card-title { font-size: 9px; font-weight: 700; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.3px; }
+        .card-value { font-size: 15px; font-weight: 700; margin-top: 1px; color: var(--text-dark); }
+        .card.total { grid-column: span 2; background: var(--primary); border: none; color: #fff; position: relative; overflow: hidden; }
         .card.total .card-title { color: #94a3b8; }
-        .card.total .card-value { color: #ffffff; }
-
-        .card.profit {
-            grid-column: span 2;
-            background: linear-gradient(135deg, #f0fdf4, #dcfce7);
-            border: 1px solid #bbf7d0;
-        }
+        .card.total .card-value { color: #fff; font-size: 17px; }
+        .card.profit { grid-column: span 2; background: #f0fdf4; border: 1px solid #bbf7d0; }
         .card.profit .card-title { color: #166534; }
-        .card.profit .card-value { color: #15803d; }
+        .card.profit .card-value { color: #15803d; font-size: 17px; }
 
-        .form-section {
-            margin-bottom: 20px;
-        }
+        .type-selector { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+        .type-btn { padding: 10px; border: 1px solid var(--border); background: #fff; color: var(--text-main); border-radius: 8px; cursor: pointer; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 13px; }
+        .type-btn.active { border-color: var(--primary); background: var(--primary); color: #fff; }
 
-        .section-label {
-            display: block;
-            font-size: 11px;
-            font-weight: 600;
-            text-transform: uppercase;
-            color: var(--text-muted);
-            margin-bottom: 6px;
-            letter-spacing: 0.5px;
-        }
-
-        .type-selector {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 12px;
-        }
-
-        .type-btn {
-            padding: 14px;
-            border: 1px solid var(--border);
-            background: var(--surface);
-            color: var(--text-muted);
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            transition: all 0.15s ease;
-        }
-
-        .type-btn.active {
-            border-color: var(--primary-light);
-            background: var(--primary-light);
-            color: #ffffff;
-        }
-
-        .input-wrapper {
-            position: relative;
-        }
-
-        .input-icon {
-            position: absolute;
-            left: 14px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-muted);
-            font-size: 14px;
-        }
-
-        input[type="number"] {
-            width: 100%;
-            padding: 14px 12px 14px 36px;
-            font-size: 18px;
-            font-weight: 600;
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            color: var(--text-dark);
-            outline: none;
-            background: #f8fafc;
-            -moz-appearance: textfield;
-        }
-        input[type="number"]::-webkit-outer-spin-button,
-        input[type="number"]::-webkit-inner-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
-
-        input[type="number"]:focus {
-            border-color: var(--accent);
-            background: var(--surface);
-            box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.1);
-        }
-
-        .action-btn {
-            width: 100%;
-            padding: 14px;
-            background: var(--accent);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            margin-top: 12px;
-            transition: background 0.2s;
-        }
-
-        .logs-section {
-            border-top: 1px solid #f1f5f9;
-            padding-top: 16px;
-            margin-bottom: 20px;
-        }
-
-        .logs-container {
-            margin-top: 8px;
-            max-height: 130px;
-            overflow-y: auto;
-            border: 1px solid #f1f5f9;
-            border-radius: 10px;
-            background: #f8fafc;
-        }
-
-        .log-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px 12px;
-            border-bottom: 1px solid #f1f5f9;
-            font-size: 13px;
-        }
+        .input-wrapper { position: relative; margin-top: 4px; margin-bottom: 12px; }
+        input[type="number"]#amount { width: 100%; padding: 12px 12px 12px 34px; font-size: 18px; font-weight: 700; border: 1px solid #cbd5e1; border-radius: 8px; background: #fff; color: var(--text-dark); outline: none; transition: border-color 0.15s; }
+        input[type="number"]#amount:focus { border-color: var(--accent); }
+        .input-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-dark); font-weight: bold; font-size: 16px; }
+        
+        .action-btn { width: 100%; padding: 14px; background: var(--accent); color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: background 0.15s; }
+        .action-btn:hover { background: #1d4ed8; }
+        
+        .logs-section { border-top: 1px solid var(--border); padding-top: 14px; margin-bottom: 4px; margin-top: 14px; }
+        .logs-container { margin-top: 6px; max-height: 120px; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px; background: #f8fafc; }
+        .log-item { display: flex; justify-content: space-between; padding: 8px 12px; border-bottom: 1px solid var(--border); font-size: 12px; align-items: center; }
         .log-item:last-child { border-bottom: none; }
-        .log-meta { color: var(--text-muted); }
-        .log-amt { font-weight: 600; color: var(--text-dark); }
-
-        .summary-actions {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .share-btn {
-            width: 100%;
-            padding: 14px;
-            background: var(--success);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .clear-btn {
-            width: 100%;
-            padding: 10px;
-            background: transparent;
-            color: var(--danger);
-            border: 1px solid #fee2e2;
-            border-radius: 10px;
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        /* SweetAlert Custom Popup Tuning */
-        .swal2-popup {
-            border-radius: 16px !important;
-            font-family: inherit !important;
-        }
+        .log-profit { font-size: 11px; color: var(--success); font-weight: 600; }
+        
+        .summary-actions { display: flex; flex-direction: column; gap: 8px; }
+        .share-btn { width: 100%; padding: 12px; background: var(--success); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 13px; }
+        .reset-btn { width: 100%; padding: 8px; background: transparent; color: var(--text-muted); border: 1px solid var(--border); border-radius: 8px; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.15s; }
+        .reset-btn:hover { background: #fff1f2; color: var(--danger); border-color: #fecdd3; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <header>
-        <h2>Stall Sales Counter</h2>
-        <p>Terminal: Shop 3</p>
+        <h2>JMD Enterprise</h2>
+        <p>Terminal POS Platform</p>
     </header>
-    
-    <div class="dashboard">
-        <div class="card">
-            <div class="card-title"><i class="fa-solid fa-money-bill-wave"></i> Cash Sales</div>
-            <div class="card-value" id="cash-display">₹0</div>
-        </div>
-        <div class="card">
-            <div class="card-title"><i class="fa-solid fa-credit-card"></i> GPay Sales</div>
-            <div class="card-value" id="online-display">₹0</div>
-        </div>
-        <div class="card total">
-            <div class="card-title"><i class="fa-solid fa-chart-line"></i> Total Sale</div>
-            <div class="card-value" id="total-display">₹0</div>
-        </div>
-        <div class="card profit">
-            <div class="card-title"><i class="fa-solid fa-wallet"></i> Total Profit (40%)</div>
-            <div class="card-value" id="profit-display">₹0</div>
+
+    <div class="category-nav-wrapper">
+        <div class="category-tabs" id="tabScrollContainer">
+            <button class="tab-btn active" onclick="switchCategory('adults')">Umbrellas</button>
+            <button class="tab-btn" onclick="switchCategory('kids')">Kids Collection</button>
+            <button class="tab-btn" onclick="switchCategory('covers')">Rain Covers & Caps</button>
+            <button class="tab-btn" onclick="switchCategory('sheets')">Tarpaulin & Plastic Sheets</button>
         </div>
     </div>
 
-    <div class="form-section">
-        <span class="section-label">Payment Mode</span>
-        <div class="type-selector">
-            <button type="button" class="type-btn active" id="btn-cash" onclick="setMode('Cash')">
-                <i class="fa-solid fa-money-bill"></i> Cash
-            </button>
-            <button type="button" class="type-btn" id="btn-online" onclick="setMode('GPay')">
-                <i class="fa-solid fa-mobile-screen-button"></i> GPay
-            </button>
+    <div class="catalog-container">
+        <!-- Category: Adults Ordered Ascending -->
+        <div class="item-grid active" id="grid-adults">
+            <div class="product-card" onclick="selectProduct('2 Fold Black Silver', 110, 'item')"><h4>2 Fold Black Silver</h4><p>CP: ₹110.00</p></div>
+            <div class="product-card" onclick="selectProduct('2 Fold Ladies', 115, 'item')"><h4>2 Fold Ladies</h4><p>CP: ₹115.00</p></div>
+            <div class="product-card" onclick="selectProduct('Short Round U Handle', 140, 'item')"><h4>Short Round U Handle</h4><p>CP: ₹140.00</p></div>
+            <div class="product-card" onclick="selectProduct('3 Fold Manual', 150, 'item')"><h4>3 Fold Manual</h4><p>CP: ₹150.00</p></div>
+            <div class="product-card" onclick="selectProduct('Long Rainbow+Army', 165, 'item')"><h4>Long Rainbow+Army</h4><p>CP: ₹165.00</p></div>
+            <div class="product-card" onclick="selectProduct('Automatic Black', 180, 'item')"><h4>Automatic Black</h4><p>CP: ₹180.00</p></div>
+            <div class="product-card" onclick="selectProduct('Long Red Yellow Blue', 210, 'item')"><h4>Long Red Yellow Blue</h4><p>CP: ₹210.00</p></div>
+            <div class="product-card" onclick="selectProduct('Long Round U Handle', 220, 'item')"><h4>Long Round U Handle</h4><p>CP: ₹220.00</p></div>
+            <div class="product-card" onclick="selectProduct('3 Fold Indian', 220, 'item')"><h4>3 Fold Indian</h4><p>CP: ₹220.00</p></div>
+            <div class="product-card" onclick="selectProduct('Shahenshah Rubber', 230, 'item')"><h4>Shahenshah Rubber</h4><p>CP: ₹230.00</p></div>
+            <div class="product-card" onclick="selectProduct('Shahenshah Steel', 240, 'item')"><h4>Shahenshah Steel</h4><p>CP: ₹240.00</p></div>
         </div>
 
-        <span class="section-label">Amount</span>
+        <!-- Category: Kids Ordered Ascending -->
+        <div class="item-grid" id="grid-kids">
+            <div class="product-card" onclick="selectProduct('Kids Rainbow', 75, 'item')"><h4>Kids Rainbow</h4><p>CP: ₹75.00</p></div>
+            <div class="product-card" onclick="selectProduct('Plain Coloured', 80, 'item')"><h4>Plain Coloured</h4><p>CP: ₹80.00</p></div>
+            <div class="product-card" onclick="selectProduct('Kids Dotted', 85, 'item')"><h4>Kids Dotted</h4><p>CP: ₹85.00</p></div>
+            <div class="product-card" onclick="selectProduct('Kids Black', 90, 'item')"><h4>Kids Black</h4><p>CP: ₹90.00</p></div>
+            <div class="product-card" onclick="selectProduct('Kids Kaan Wala', 90, 'item')"><h4>Kids Kaan Wala</h4><p>CP: ₹90.00</p></div>
+            <div class="product-card" onclick="selectProduct('Kids Leaf Pattern', 110, 'item')"><h4>Kids Leaf Pattern</h4><p>CP: ₹110.00</p></div>
+            <div class="product-card" onclick="selectProduct('Printed Cartoon', 110, 'item')"><h4>Printed Cartoon</h4><p>CP: ₹110.00</p></div>
+            <div class="product-card" onclick="selectProduct('Kids Transparent', 135, 'item')"><h4>Kids Transparent</h4><p>CP: ₹135.00</p></div>
+        </div>
+
+        <!-- Category: Covers Ordered Ascending -->
+        <div class="item-grid" id="grid-covers">
+            <div class="product-card" onclick="selectProduct('Mobile Cover Basic', 12, 'item')"><h4>Mobile Cover Basic</h4><p>CP: ₹12.00</p></div>
+            <div class="product-card" onclick="selectProduct('Mobile Cover Premium', 25, 'item')"><h4>Mobile Cover Prem.</h4><p>CP: ₹25.00</p></div>
+            <div class="product-card" onclick="selectProduct('Cap Basic', 30, 'item')"><h4>Cap Basic</h4><p>CP: ₹30.00</p></div>
+            <div class="product-card" onclick="selectProduct('Bag Cover', 35, 'item')"><h4>Bag Cover</h4><p>CP: ₹35.00</p></div>
+            <div class="product-card" onclick="selectProduct('Cap Premium', 40, 'item')"><h4>Cap Premium</h4><p>CP: ₹40.00</p></div>
+            <div class="product-card" onclick="selectProduct('Eva Raincoat', 55, 'item')"><h4>Eva Raincoat</h4><p>CP: ₹55.00</p></div>
+        </div>
+
+        <!-- Category: Bulk Sheets -->
+        <div class="item-grid" id="grid-sheets">
+            <div class="product-card" onclick="selectProduct('Tarpaulin (Talpatri)', 0, 'talpatri')"><h4>Tarpaulin Matrix</h4><p>SqFt Configuration</p></div>
+            <div class="product-card" onclick="selectProduct('Kala Plastic', 45, 'plastic')"><h4>Kala Plastic</h4><p>CP: ₹45.00/Mtr</p></div>
+        </div>
+    </div>
+
+    <div class="calc-box" id="talpatri-box">
+        <span class="section-label" style="color:var(--accent)"><i class="fa-solid fa-calculator"></i> Dimension Matrix (SqFt)</span>
+        <div class="grid-2 grid-inputs">
+            <div><label>Length (Ft)</label><input type="number" id="t-length" value="12" oninput="calcTalpatri()"></div>
+            <div><label>Width (Ft)</label><input type="number" id="t-width" value="10" oninput="calcTalpatri()"></div>
+        </div>
+        <span class="section-label">Select Matrix Base Tariff</span>
+        <div class="rate-btn-group">
+            <button class="rate-btn active" id="r-5" onclick="setTalpatriRate(5)">Base ₹5.00</button>
+            <button class="rate-btn" id="r-5.5" onclick="setTalpatriRate(5.5)">Mid ₹5.50</button>
+            <button class="rate-btn" id="r-6" onclick="setTalpatriRate(6)">Premium ₹6.00</button>
+        </div>
+    </div>
+
+    <div class="calc-box" id="plastic-box">
+        <span class="section-label" style="color:var(--accent)"><i class="fa-solid fa-ruler-combined"></i> Imperial to Metric Conversion</span>
+        <div class="grid-inputs">
+            <label>Linear Length Allocation (In Feet)</label>
+            <input type="number" id="p-feet" value="10" oninput="calcPlastic()">
+        </div>
+        <div class="round-info" id="plastic-round-text">10 Ft = 4 Meter (Ceil Rounding Applied)</div>
+    </div>
+
+    <div class="status-ribbon">
+        <span id="selected-item-text">Selected: 2 Fold Black Silver</span>
+        <span id="selected-cp-text">Cost Price (CP): ₹110.00</span>
+    </div>
+    
+    <!-- Seamless Direct Entry Block -->
+    <div class="form-section">
+        <div class="type-selector">
+            <button type="button" class="type-btn active" id="btn-cash" onclick="setMode('Cash')"><i class="fa-solid fa-money-bill"></i> Cash Mode</button>
+            <button type="button" class="type-btn" id="btn-online" onclick="setMode('GPay')"><i class="fa-solid fa-mobile-screen-button"></i> GPay Mode</button>
+        </div>
+        <span class="section-label" style="color:var(--accent);">Execution Selling Price (Custom Entry)</span>
         <div class="input-wrapper">
             <i class="fa-solid fa-indian-rupee-sign input-icon"></i>
-            <input type="number" id="amount" placeholder="0.00" inputmode="numeric">
+            <input type="number" id="amount" placeholder="Enter custom selling rate" inputmode="numeric">
         </div>
-        
-        <button class="action-btn" onclick="addSale()">Record Entry</button>
+        <button class="action-btn" id="submit-btn" onclick="addSale()">Commit & Post Transaction</button>
     </div>
 
     <div class="logs-section">
-        <span class="section-label">Today's Transactions</span>
-        <div class="logs-container" id="logs-container"></div>
+        <span class="section-label">Real-time Terminal Audit Log</span>
+        <div class="logs-container" id="logs-container">Establishing structural link...</div>
+    </div>
+
+    <!-- Premium Relocated Metrics Panel from image_5f285e.png -->
+    <div class="dashboard">
+        <div class="card"><div class="card-title">Cash Settlement</div><div class="card-value" id="cash-display">₹0.00</div></div>
+        <div class="card"><div class="card-title">GPay Settlement</div><div class="card-value" id="online-display">₹0.00</div></div>
+        <div class="card total"><div class="card-title">Gross Revenue Pipeline</div><div class="card-value" id="total-display">₹0.00</div></div>
+        <div class="card profit"><div class="card-title">Net Cumulative Margin</div><div class="card-value" id="profit-display">₹0.00</div></div>
     </div>
 
     <div class="summary-actions">
-        <button class="share-btn" onclick="shareOnWhatsApp()">
-            <i class="fa-brands fa-whatsapp"></i> Share Report on WhatsApp
-        </button>
-        <button class="clear-btn" onclick="clearData()">
-            <i class="fa-solid fa-trash-can"></i> End Day & Clear Data
-        </button>
+        <button class="share-btn" onclick="shareOnWhatsApp()"><i class="fa-brands fa-whatsapp"></i> Broadcast Performance Summary</button>
+        <button class="reset-btn" onclick="triggerFullReset()">Terminal Factory Purge</button>
     </div>
 </div>
 
 <script>
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzB1j9gARjdaY6z0285B07XrUUEVaQ62oOksIQi36YlUDHxXh69HMlKFaGz63aQZn03-Q/exec";
     let currentMode = 'Cash';
-    let salesData = JSON.parse(localStorage.getItem('stall_sales_shop3')) || { cash: 0, online: 0, logs: [] };
+    let activeProduct = { name: "2 Fold Black Silver", cp: 110, type: 'item' };
+    let talpatriRate = 5;
+    let allRawLogs = [];
+
+    let globalCashTotal = 0;
+    let globalOnlineTotal = 0;
+    let globalProfitTotal = 0;
+
+    function switchCategory(cat) {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.item-grid').forEach(g => g.classList.remove('active'));
+        
+        if(event && event.target) {
+            event.target.classList.add('active');
+        }
+        document.getElementById(`grid-${cat}`).classList.add('active');
+    }
+
+    function handleDivToggles(modeType) {
+        document.getElementById('talpatri-box').style.display = (modeType === 'talpatri') ? 'block' : 'none';
+        document.getElementById('plastic-box').style.display = (modeType === 'plastic') ? 'block' : 'none';
+    }
+
+    document.addEventListener('click', function(e) {
+        if(e.target.closest('.product-card')) {
+            document.querySelectorAll('.product-card').forEach(c => c.classList.remove('active'));
+            e.target.closest('.product-card').classList.add('active');
+        }
+    });
+
+    function normalizeTimestamp(timeStr) {
+        if (!timeStr) return "N/A";
+        if (timeStr.includes('T')) {
+            try {
+                const parts = timeStr.split('T')[1].split('.')[0].split(':');
+                let hours = parseInt(parts[0], 10);
+                const minutes = parts[1];
+                const ampm = hours >= 12 ? 'PM' : 'AM';
+                hours = hours % 12 || 12;
+                return `${String(hours).padStart(2, '0')}:${minutes} ${ampm}`;
+            } catch(e) {
+                return timeStr;
+            }
+        }
+        return timeStr;
+    }
+
+    function selectProduct(name, cp, modeType) {
+        activeProduct.name = name;
+        activeProduct.cp = cp;
+        activeProduct.type = modeType;
+
+        handleDivToggles(modeType);
+
+        if(modeType === 'item') {
+            document.getElementById('amount').value = ''; 
+            document.getElementById('amount').placeholder = "Enter custom selling rate";
+            document.getElementById('selected-item-text').innerText = `Selected: ${name}`;
+            document.getElementById('selected-cp-text').innerText = `Cost Price (CP): ₹${cp}.00`;
+        } else if(modeType === 'talpatri') {
+            calcTalpatri();
+        } else if(modeType === 'plastic') {
+            calcPlastic();
+        }
+    }
+
+    function setTalpatriRate(rate) {
+        talpatriRate = rate;
+        document.querySelectorAll('.rate-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(`r-${rate}`).classList.add('active');
+        calcTalpatri();
+    }
+
+    function calcTalpatri() {
+        const l = parseFloat(document.getElementById('t-length').value) || 0;
+        const w = parseFloat(document.getElementById('t-width').value) || 0;
+        const totalSuggestedSale = Math.round(l * w * talpatriRate);
+        
+        document.getElementById('amount').value = totalSuggestedSale;
+        activeProduct.cp = Math.round(totalSuggestedSale * 0.60); 
+        activeProduct.name = `Tarpaulin (${l}x${w}) @₹${talpatriRate}`;
+        
+        document.getElementById('selected-item-text').innerText = `Selected: ${activeProduct.name}`;
+        document.getElementById('selected-cp-text').innerText = `Est. Base Cost: ₹${activeProduct.cp}.00`;
+    }
+
+    function calcPlastic() {
+        const feet = parseFloat(document.getElementById('p-feet').value) || 0;
+        const meters = Math.ceil(feet * 0.3048); 
+        const suggestedSale = meters * 100;
+        
+        document.getElementById('plastic-round-text').innerText = `${feet} Ft = ${meters} Meter (Ceil Rounding Applied)`;
+        document.getElementById('amount').value = suggestedSale;
+        activeProduct.cp = meters * 45; 
+        activeProduct.name = `Kala Plastic (${meters} Mtr)`;
+
+        document.getElementById('selected-item-text').innerText = `Selected: ${activeProduct.name}`;
+        document.getElementById('selected-cp-text').innerText = `Cost Price (CP): ₹${activeProduct.cp}.00`;
+    }
 
     function setMode(mode) {
         currentMode = mode;
@@ -351,117 +334,100 @@
         document.getElementById('btn-online').classList.toggle('active', mode === 'GPay');
     }
 
-    function updateDashboard() {
-        const total = salesData.cash + salesData.online;
-        const profit = Math.round(total * 0.40);
+    function fetchLiveSales() {
+        fetch(SCRIPT_URL).then(res => res.json()).then(data => { allRawLogs = data; updateUI(); });
+    }
 
-        document.getElementById('cash-display').innerText = `₹${salesData.cash}`;
-        document.getElementById('online-display').innerText = `₹${salesData.online}`;
-        document.getElementById('total-display').innerText = `₹${total}`;
-        document.getElementById('profit-display').innerText = `₹${profit}`;
+    function updateUI() {
+        let cash = 0, online = 0, profit = 0;
+        allRawLogs.forEach(item => {
+            if(item.type === 'Cash') cash += item.amount;
+            if(item.type === 'GPay') online += item.amount;
+            profit += item.profit;
+        });
+
+        globalCashTotal = cash;
+        globalOnlineTotal = online;
+        globalProfitTotal = profit;
+
+        document.getElementById('cash-display').innerText = `₹${cash}.00`;
+        document.getElementById('online-display').innerText = `₹${online}.00`;
+        document.getElementById('total-display').innerText = `₹${cash + online}.00`;
+        document.getElementById('profit-display').innerText = `₹${profit}.00`;
         
-        const logsContainer = document.getElementById('logs-container');
-        logsContainer.innerHTML = '';
+        const container = document.getElementById('logs-container');
+        container.innerHTML = '';
+        if (allRawLogs.length === 0) { container.innerHTML = '<p style="text-align:center;padding:14px;font-size:12px;color:var(--text-muted)">Empty Transaction Record Matrix</p>'; return; }
         
-        if (salesData.logs.length === 0) {
-            logsContainer.innerHTML = '<p style="color:var(--text-muted); text-align:center; padding:16px; font-size:12px;">No transactions recorded</p>';
-            return;
-        }
-        
-        [...salesData.logs].reverse().slice(0, 15).forEach(log => {
+        [...allRawLogs].reverse().forEach(log => {
             const div = document.createElement('div');
             div.className = 'log-item';
-            div.innerHTML = `<span class="log-meta">${log.time} - ${log.type}</span> <span class="log-amt">₹${log.amount}</span>`;
-            logsContainer.appendChild(div);
+            const displayTime = normalizeTimestamp(log.time);
+            div.innerHTML = `<div><b>${log.item}</b><br><small style="color:var(--text-muted)">${displayTime} - ${log.type}</small></div>
+                             <div style="text-align:right;"><span>₹${log.amount}.00</span><br><span class="log-profit">Margin: +₹${log.profit}</span></div>`;
+            container.appendChild(div);
         });
     }
 
     function addSale() {
         const amtInput = document.getElementById('amount');
-        const amount = parseInt(amtInput.value);
+        const finalAmt = parseInt(amtInput.value);
+        const submitBtn = document.getElementById('submit-btn');
 
-        if (!amount || amount <= 0) {
-            Swal.fire({
-                icon: 'warning',
-                title: 'Validation Error',
-                text: 'Sahi transaction amount daaliye.',
-                confirmButtonColor: '#0284c7'
-            });
-            return;
+        if (!finalAmt || finalAmt <= 0) { 
+            Swal.fire({ icon: 'warning', title: 'Invalid Execution Value', text: 'Please specify the exact structural Selling Price manually.' });
+            return; 
         }
+        submitBtn.innerText = "Synchronizing Block...";
+        submitBtn.disabled = true;
 
-        const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const formattedTime = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+        const exactProfit = finalAmt - activeProduct.cp;
 
-        if (currentMode === 'Cash') {
-            salesData.cash += amount;
-        } else {
-            salesData.online += amount;
-        }
+        const postData = { item: activeProduct.name, type: currentMode, amount: finalAmt, cost: activeProduct.cp, profit: exactProfit, time: formattedTime };
 
-        salesData.logs.push({ type: currentMode, amount: amount, time: time });
-        localStorage.setItem('stall_sales_shop3', JSON.stringify(salesData));
-        
-        amtInput.value = '';
-        updateDashboard();
-
-        // Premium dynamic toast notice
-        Swal.fire({
-            icon: 'success',
-            title: 'Entry Saved',
-            text: `₹${amount} added successfully`,
-            timer: 1300,
-            showConfirmButton: false,
-            toast: true,
-            position: 'top'
-        });
+        fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify(postData) })
+        .then(res => res.json())
+        .then(res => {
+            if(res.status === "SUCCESS") {
+                amtInput.value = '';
+                Swal.fire({ icon: 'success', title: 'Invoice Committed', text: `Captured Net Margin: ₹${exactProfit}.00`, timer: 1200, showConfirmButton: false, toast: true, position: 'top' });
+                fetchLiveSales();
+            }
+        }).finally(() => { submitBtn.innerText = "Commit & Post Transaction"; submitBtn.disabled = false; });
     }
 
-    function shareOnWhatsApp() {
-        const total = salesData.cash + salesData.online;
-        const profit = Math.round(total * 0.40);
-        const date = new Date().toLocaleDateString('en-IN');
-        
-        let message = `*Stall Sale - Shop 3*\n`;
-        message += `*Date: ${date}*\n`;
-        message += `------------------------------------\n\n`;
-        message += `Cash Sale    : ${salesData.cash}/-\n`;
-        message += `GPay Sale    : ${salesData.online}/-\n\n`;
-        message += `Total Sale   : ${total}/-\n`;
-        message += `Total Profit : ${profit}/-\n`;
-        message += `------------------------------------\n`;
-        message += `Transactions Count: ${salesData.logs.length}\n`;
-        message += `_Report generated successfully._`;
-
-        const encodedMessage = encodeURIComponent(message);
-        window.open(`https://api.whatsapp.com/send?text=${encodedMessage}`, '_blank');
-    }
-
-    function clearData() {
-        Swal.fire({
-            title: 'End Daily Session?',
-            text: "Kya aap aaj ka counter clear karna chahte hain? Confirm karne se pehle report share kar lein.",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#dc2626',
-            cancelButtonColor: '#64748b',
-            confirmButtonText: 'Clear Terminal Logs'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                localStorage.removeItem('stall_sales_shop3');
-                salesData = { cash: 0, online: 0, logs: [] };
-                updateDashboard();
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Terminal Reset',
-                    text: 'Agle din ka setup ready hai.',
-                    confirmButtonColor: '#0284c7'
-                });
+    function triggerFullReset() {
+        Swal.fire({ title: 'Terminal Verification Required', input: 'password', showCancelButton: true }).then((res) => {
+            if (res.isConfirmed && res.value === '1707') {
+                fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify({ action: "RESET_DATA" }) }).then(() => fetchLiveSales());
+            } else if (res.isConfirmed) {
+                Swal.fire({ icon: 'error', title: 'Access Denied', text: 'Incorrect terminal verification key.' });
             }
         });
     }
 
-    updateDashboard();
-</script>
+    function shareOnWhatsApp() {
+        const d = new Date();
+        const formattedDate = `${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear()}`;
+        const totalSale = globalCashTotal + globalOnlineTotal;
+        const totalCount = allRawLogs.length;
 
+        let msg = `*Stall Sale - Shop 3*\n` +
+                  `*Date: ${formattedDate}*\n` +
+                  `------------------------------------\n` +
+                  `Cash Sale    : ${globalCashTotal}/-\n` +
+                  `GPay Sale    : ${globalOnlineTotal}/-\n\n` +
+                  `Total Sale   : ${totalSale}/-\n` +
+                  `Total Profit : ${globalProfitTotal}/-\n` +
+                  `------------------------------------\n` +
+                  `Transactions Count: ${totalCount}\n` +
+                  `_JMD Report generated successfully._`;
+
+        window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, '_blank');
+    }
+
+    window.onload = fetchLiveSales;
+</script>
 </body>
 </html>
