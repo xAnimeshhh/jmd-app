@@ -3,103 +3,121 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JMD Enterprise - Professional POS Terminal</title>
+    <title>JMD Enterprise - Premium POS</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         :root {
-            --primary: #0f172a;
-            --primary-light: #1e293b;
+            --primary: #1e293b;
             --accent: #2563eb;
             --success: #16a34a;
+            --success-light: #f0fdf4;
+            --success-border: #dcfce7;
             --danger: #dc2626;
-            --bg: #f1f5f9;
+            --danger-light: #fef2f2;
+            --danger-border: #fee2e2;
+            --bg: #f8fafc;
             --surface: #ffffff;
             --border: #e2e8f0;
             --text-dark: #0f172a;
-            --text-main: #334155;
-            --text-muted: #64748b;
+            --text-main: #475569;
+            --text-muted: #94a3b8;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background-color: var(--bg); color: var(--text-main); padding: 16px; display: flex; justify-content: center; min-height: 100vh; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--bg); color: var(--text-main); padding: 12px; display: flex; justify-content: center; min-height: 100vh; }
         
-        .container { width: 100%; max-width: 480px; background: var(--surface); padding: 20px; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03); border: 1px solid var(--border); }
+        .container { width: 100%; max-width: 440px; background: var(--surface); padding: 18px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); border: 1px solid var(--border); height: fit-content; }
         
-        header { text-align: center; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
-        header h2 { font-size: 20px; font-weight: 700; color: var(--text-dark); letter-spacing: -0.3px; }
-        header p { font-size: 12px; color: var(--text-muted); margin-top: 2px; text-transform: uppercase; letter-spacing: 0.5px; }
+        header { text-align: center; margin-bottom: 16px; }
+        header h2 { font-size: 18px; font-weight: 700; color: var(--text-dark); letter-spacing: -0.3px; }
+        header p { font-size: 10px; color: var(--text-muted); margin-top: 2px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
         
-        .section-label { display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; letter-spacing: 0.5px; }
+        .section-label { display: block; font-size: 10px; font-weight: 700; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; letter-spacing: 0.3px; }
         
-        .category-nav-wrapper { position: relative; margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 4px; }
-        .category-tabs { display: flex; gap: 8px; overflow-x: auto; -webkit-overflow-scrolling: touch; scroll-behavior: smooth; padding-bottom: 6px; }
+        .category-nav-wrapper { position: relative; margin-bottom: 12px; }
+        .category-tabs { display: flex; gap: 6px; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 4px; }
+        .category-tabs::-webkit-scrollbar { height: 3px; }
+        .category-tabs::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 4px; }
         
-        .category-tabs::-webkit-scrollbar { height: 4px; }
-        .category-tabs::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 4px; }
-        .category-tabs::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-        
-        .tab-btn { padding: 8px 16px; font-size: 12px; font-weight: 600; border-radius: 8px; border: 1px solid var(--border); background: #fff; color: var(--text-main); cursor: pointer; white-space: nowrap; transition: all 0.2s ease; flex-shrink: 0; }
+        .tab-btn { padding: 8px 12px; font-size: 11px; font-weight: 600; border-radius: 8px; border: 1px solid var(--border); background: #f8fafc; color: var(--text-main); cursor: pointer; white-space: nowrap; transition: all 0.15s ease; }
         .tab-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
 
-        .catalog-container { background: #f8fafc; padding: 12px; border-radius: 12px; margin-bottom: 12px; border: 1px solid var(--border); }
-        .item-grid { display: none; grid-template-columns: repeat(2, 1fr); gap: 8px; max-height: 240px; overflow-y: auto; padding-right: 2px; }
+        .catalog-container { background: #f8fafc; padding: 10px; border-radius: 12px; margin-bottom: 12px; border: 1px solid var(--border); }
+        .item-grid { display: none; grid-template-columns: repeat(2, 1fr); gap: 8px; max-height: 220px; overflow-y: auto; padding-right: 2px; }
         .item-grid.active { display: grid; }
         
-        .product-card { background: #fff; padding: 12px; border-radius: 8px; border: 1px solid var(--border); cursor: pointer; display: flex; flex-direction: column; justify-content: space-between; transition: all 0.15s ease; box-shadow: 0 1px 2px rgba(0,0,0,0.02); }
-        .product-card:hover { border-color: var(--text-muted); }
-        .product-card.active { border: 2px solid var(--accent) !important; background: #eff6ff; }
-        .product-card h4 { font-size: 12px; font-weight: 600; color: var(--text-dark); margin-bottom: 4px; line-height: 1.4; }
-        .product-card p { font-size: 11px; color: var(--text-muted); font-weight: 500; }
-
-        .calc-box { background: #f8fafc; border: 1px solid var(--accent); padding: 14px; border-radius: 12px; margin-bottom: 12px; display: none; animation: fadeIn 0.2s ease-in-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+        .product-card { background: #fff; padding: 10px; border-radius: 8px; border: 1px solid var(--border); cursor: pointer; display: flex; flex-direction: column; justify-content: space-between; transition: all 0.15s ease; }
+        .product-card:hover { border-color: #cbd5e1; }
+        .product-card.active { border: 1.5px solid var(--accent) !important; background: #eff6ff; }
+        .product-card h4 { font-size: 12px; font-weight: 600; color: var(--text-dark); margin-bottom: 6px; line-height: 1.3; }
         
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
-        .grid-inputs input { width: 100%; padding: 10px; font-size: 14px; border: 1px solid var(--border); border-radius: 6px; font-weight: 600; color: var(--text-dark); outline: none; background: #fff; }
-        .grid-inputs label { display: block; font-size: 11px; font-weight: 600; color: var(--text-main); margin-bottom: 4px; }
+        .price-row { display: flex; justify-content: space-between; align-items: center; margin: 0; width: 100%; }
+        .selling-price { color: var(--success); font-weight: 600; font-size: 10.5px; }
+        .cp-price { font-weight: 600; font-size: 10.5px; color: var(--text-main); }
+
+        .calc-box { background: #f8fafc; border: 1px solid var(--border); padding: 12px; border-radius: 10px; margin-bottom: 12px; display: none; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+        .grid-inputs input { width: 100%; padding: 8px 10px; font-size: 12px; border: 1px solid var(--border); border-radius: 6px; font-weight: 600; color: var(--text-dark); outline: none; background: #fff; }
+        .grid-inputs label { display: block; font-size: 10px; font-weight: 600; color: var(--text-main); margin-bottom: 4px; }
         
-        .rate-btn-group { display: flex; gap: 6px; margin-top: 6px; }
-        .rate-btn { flex: 1; padding: 8px; font-size: 11px; font-weight: 600; background: #fff; border: 1px solid var(--border); border-radius: 6px; cursor: pointer; color: var(--text-main); }
-        .rate-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
-        .round-info { font-size: 12px; color: var(--accent); font-weight: 600; margin-top: 8px; background: #eff6ff; padding: 8px; border-radius: 6px; text-align: center; border: 1px solid #bfdbfe; }
+        .rate-btn-group { display: flex; gap: 6px; margin-top: 4px; }
+        .rate-btn { flex: 1; padding: 8px; font-size: 10px; font-weight: 600; background: #fff; border: 1px solid var(--border); border-radius: 6px; cursor: pointer; color: var(--text-main); transition: all 0.15s; }
+        .rate-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+        .round-info { font-size: 11px; color: var(--accent); font-weight: 600; margin-top: 8px; background: #eff6ff; padding: 8px; border-radius: 6px; text-align: center; }
 
-        .status-ribbon { background: #f0fdf4; border: 1px solid #bbf7d0; padding: 10px 14px; border-radius: 8px; font-size: 12px; font-weight: 600; color: #166534; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
+        .qty-container { display: flex; align-items: center; justify-content: space-between; background: #f1f5f9; padding: 8px 12px; border-radius: 10px; margin-bottom: 12px; border: 1px solid var(--border); }
+        .qty-label { font-size: 12px; font-weight: 600; color: var(--text-dark); display: flex; align-items: center; gap: 6px; }
+        .qty-controls { display: flex; align-items: center; gap: 10px; }
+        .qty-btn { width: 28px; height: 28px; border-radius: 6px; border: 1px solid var(--border); background: #fff; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text-dark); transition: all 0.1s; }
+        .qty-btn:active { background: #e2e8f0; }
+        .qty-val { font-size: 13px; font-weight: 700; color: var(--text-dark); min-width: 18px; text-align: center; }
 
-        /* Premium Dashboard Section Placed Below Billing Inputs */
-        .dashboard { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 14px; margin-bottom: 14px; background: #f8fafc; border: 1px solid var(--border); padding: 10px; border-radius: 12px; }
-        .card { padding: 10px 12px; border-radius: 8px; background: #fff; border: 1px solid var(--border); }
-        .card-title { font-size: 9px; font-weight: 700; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.3px; }
-        .card-value { font-size: 15px; font-weight: 700; margin-top: 1px; color: var(--text-dark); }
-        .card.total { grid-column: span 2; background: var(--primary); border: none; color: #fff; position: relative; overflow: hidden; }
-        .card.total .card-title { color: #94a3b8; }
-        .card.total .card-value { color: #fff; font-size: 17px; }
-        .card.profit { grid-column: span 2; background: #f0fdf4; border: 1px solid #bbf7d0; }
-        .card.profit .card-title { color: #166534; }
-        .card.profit .card-value { color: #15803d; font-size: 17px; }
+        .status-ribbon { padding: 10px 12px; border-radius: 10px; font-size: 11px; font-weight: 600; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
+        .status-ribbon.status-success { background: var(--success-light); border: 1px solid var(--success-border); color: var(--success); }
+        .status-ribbon.status-danger { background: var(--danger-light); border: 1px solid var(--danger-border); color: var(--danger); }
 
         .type-selector { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
-        .type-btn { padding: 10px; border: 1px solid var(--border); background: #fff; color: var(--text-main); border-radius: 8px; cursor: pointer; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 13px; }
+        .type-btn { padding: 10px; border: 1px solid var(--border); background: #fff; color: var(--text-main); border-radius: 8px; cursor: pointer; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 12px; transition: all 0.15s; }
         .type-btn.active { border-color: var(--primary); background: var(--primary); color: #fff; }
 
-        .input-wrapper { position: relative; margin-top: 4px; margin-bottom: 12px; }
-        input[type="number"]#amount { width: 100%; padding: 12px 12px 12px 34px; font-size: 18px; font-weight: 700; border: 1px solid #cbd5e1; border-radius: 8px; background: #fff; color: var(--text-dark); outline: none; transition: border-color 0.15s; }
+        .input-wrapper { position: relative; margin-top: 2px; margin-bottom: 12px; }
+        input[type="number"]#amount { width: 100%; padding: 10px 10px 10px 32px; font-size: 16px; font-weight: 700; border: 1px solid #cbd5e1; border-radius: 8px; background: #fff; color: var(--text-dark); outline: none; transition: border 0.15s; }
         input[type="number"]#amount:focus { border-color: var(--accent); }
-        .input-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-dark); font-weight: bold; font-size: 16px; }
+        .input-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-dark); font-weight: 700; font-size: 14px; }
         
-        .action-btn { width: 100%; padding: 14px; background: var(--accent); color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: background 0.15s; }
+        .action-btn { width: 100%; padding: 12px; background: var(--accent); color: white; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: background 0.15s; }
         .action-btn:hover { background: #1d4ed8; }
         
-        .logs-section { border-top: 1px solid var(--border); padding-top: 14px; margin-bottom: 4px; margin-top: 14px; }
-        .logs-container { margin-top: 6px; max-height: 120px; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px; background: #f8fafc; }
-        .log-item { display: flex; justify-content: space-between; padding: 8px 12px; border-bottom: 1px solid var(--border); font-size: 12px; align-items: center; }
+        .logs-section { border-top: 1px dashed var(--border); padding-top: 12px; margin-top: 12px; }
+        .logs-container { margin-top: 6px; max-height: 140px; overflow-y: auto; border: 1px solid var(--border); border-radius: 10px; background: #f8fafc; }
+        .log-item { display: flex; justify-content: space-between; padding: 8px 12px; border-bottom: 1px solid var(--border); font-size: 11px; align-items: center; gap: 6px; }
         .log-item:last-child { border-bottom: none; }
-        .log-profit { font-size: 11px; color: var(--success); font-weight: 600; }
+        .log-details { flex-grow: 1; }
+        .log-profit { font-size: 10px; font-weight: 700; margin-top: 1px; display: inline-block; }
+        .profit-positive { color: var(--success); }
+        .profit-negative { color: var(--danger); }
+        .delete-log-btn { background: transparent; border: none; color: #94a3b8; padding: 4px 6px; cursor: pointer; font-size: 12px; border-radius: 4px; }
+        .delete-log-btn:hover { color: var(--danger); }
         
-        .summary-actions { display: flex; flex-direction: column; gap: 8px; }
-        .share-btn { width: 100%; padding: 12px; background: var(--success); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 13px; }
-        .reset-btn { width: 100%; padding: 8px; background: transparent; color: var(--text-muted); border: 1px solid var(--border); border-radius: 8px; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.15s; }
-        .reset-btn:hover { background: #fff1f2; color: var(--danger); border-color: #fecdd3; }
+        .dashboard { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; margin-bottom: 12px; background: #f1f5f9; border: 1px solid var(--border); padding: 8px; border-radius: 12px; }
+        .card { padding: 8px 10px; border-radius: 8px; background: #fff; border: 1px solid var(--border); }
+        .card-title { font-size: 9px; font-weight: 700; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.3px; }
+        .card-value { font-size: 13px; font-weight: 700; margin-top: 2px; color: var(--text-dark); }
+        .card.total { grid-column: span 2; background: var(--primary); border: none; color: #fff; }
+        .card.total .card-title { color: #94a3b8; }
+        .card.total .card-value { color: #fff; font-size: 14px; }
+        
+        .card.profit { grid-column: span 2; border: 1px solid var(--success-border); background: #f0fdf4; }
+        .card.profit.margin-red { border-color: var(--danger-border); background: var(--danger-light); }
+        .card.profit .card-title { color: var(--success); }
+        .card.profit.margin-red .card-title { color: var(--danger); }
+        .card.profit .card-value { color: var(--success); font-size: 14px; }
+        .card.profit.margin-red .card-value { color: var(--danger); }
+
+        .summary-actions { display: flex; flex-direction: column; gap: 6px; }
+        .share-btn { width: 100%; padding: 11px; background: #10b981; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 12px; }
+        .reset-btn { width: 100%; padding: 8px; background: transparent; color: var(--text-muted); border: 1px solid var(--border); border-radius: 8px; font-size: 10px; font-weight: 600; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -111,7 +129,7 @@
     </header>
 
     <div class="category-nav-wrapper">
-        <div class="category-tabs" id="tabScrollContainer">
+        <div class="category-tabs">
             <button class="tab-btn active" onclick="switchCategory('adults')">Umbrellas</button>
             <button class="tab-btn" onclick="switchCategory('kids')">Kids Collection</button>
             <button class="tab-btn" onclick="switchCategory('covers')">Rain Covers & Caps</button>
@@ -120,103 +138,109 @@
     </div>
 
     <div class="catalog-container">
-        <!-- Category: Adults Ordered Ascending -->
         <div class="item-grid active" id="grid-adults">
-            <div class="product-card" onclick="selectProduct('2 Fold Black Silver', 110, 'item')"><h4>2 Fold Black Silver</h4><p>CP: ₹110.00</p></div>
-            <div class="product-card" onclick="selectProduct('2 Fold Ladies', 115, 'item')"><h4>2 Fold Ladies</h4><p>CP: ₹115.00</p></div>
-            <div class="product-card" onclick="selectProduct('Short Round U Handle', 140, 'item')"><h4>Short Round U Handle</h4><p>CP: ₹140.00</p></div>
-            <div class="product-card" onclick="selectProduct('3 Fold Manual', 150, 'item')"><h4>3 Fold Manual</h4><p>CP: ₹150.00</p></div>
-            <div class="product-card" onclick="selectProduct('Long Rainbow+Army', 165, 'item')"><h4>Long Rainbow+Army</h4><p>CP: ₹165.00</p></div>
-            <div class="product-card" onclick="selectProduct('Automatic Black', 180, 'item')"><h4>Automatic Black</h4><p>CP: ₹180.00</p></div>
-            <div class="product-card" onclick="selectProduct('Long Red Yellow Blue', 210, 'item')"><h4>Long Red Yellow Blue</h4><p>CP: ₹210.00</p></div>
-            <div class="product-card" onclick="selectProduct('Long Round U Handle', 220, 'item')"><h4>Long Round U Handle</h4><p>CP: ₹220.00</p></div>
-            <div class="product-card" onclick="selectProduct('3 Fold Indian', 220, 'item')"><h4>3 Fold Indian</h4><p>CP: ₹220.00</p></div>
-            <div class="product-card" onclick="selectProduct('Shahenshah Rubber', 230, 'item')"><h4>Shahenshah Rubber</h4><p>CP: ₹230.00</p></div>
-            <div class="product-card" onclick="selectProduct('Shahenshah Steel', 240, 'item')"><h4>Shahenshah Steel</h4><p>CP: ₹240.00</p></div>
+            <div class="product-card active" onclick="selectProduct('2 Fold Black Silver', 110, 'item', 200)"><h4>2 Fold Black Silver</h4><p class="price-row"><span class="selling-price">Selling: ₹200</span><span class="cp-price">CP: ₹110</span></p></div>
+            <div class="product-card" onclick="selectProduct('2 Fold Ladies', 115, 'item', 200)"><h4>2 Fold Ladies</h4><p class="price-row"><span class="selling-price">Selling: ₹200</span><span class="cp-price">CP: ₹115</span></p></div>
+            <div class="product-card" onclick="selectProduct('Short Round U Handle', 140, 'item', 300)"><h4>Short Round U Handle</h4><p class="price-row"><span class="selling-price">Selling: ₹300</span><span class="cp-price">CP: ₹140</span></p></div>
+            <div class="product-card" onclick="selectProduct('3 Fold Manual', 150, 'item', 300)"><h4>3 Fold Manual</h4><p class="price-row"><span class="selling-price">Selling: ₹300</span><span class="cp-price">CP: ₹150</span></p></div>
+            <div class="product-card" onclick="selectProduct('3 Fold Indian', 220, 'item', 400)"><h4>3 Fold Indian</h4><p class="price-row"><span class="selling-price">Selling: ₹400</span><span class="cp-price">CP: ₹220</span></p></div>
+            <div class="product-card" onclick="selectProduct('Shahenshah Rubber', 230, 'item', 400)"><h4>Shahenshah Rubber</h4><p class="price-row"><span class="selling-price">Selling: ₹400</span><span class="cp-price">CP: ₹230</span></p></div>
+            <div class="product-card" onclick="selectProduct('Shahenshah Steel', 240, 'item', 450)"><h4>Shahenshah Steel</h4><p class="price-row"><span class="selling-price">Selling: ₹450</span><span class="cp-price">CP: ₹240</span></p></div>
+            <div class="product-card" onclick="selectProduct('Automatic Black', 180, 'item', 350)"><h4>Automatic Black</h4><p class="price-row"><span class="selling-price">Selling: ₹350</span><span class="cp-price">CP: ₹180</span></p></div>
+            <div class="product-card" onclick="selectProduct('Long Rainbow+Army', 165, 'item', 300)"><h4>Long Rainbow+Army</h4><p class="price-row"><span class="selling-price">Selling: ₹300</span><span class="cp-price">CP: ₹165</span></p></div>
+            <div class="product-card" onclick="selectProduct('Long Red Yellow Blue', 210, 'item', 400)"><h4>Long Red Yellow Blue</h4><p class="price-row"><span class="selling-price">Selling: ₹400</span><span class="cp-price">CP: ₹210</span></p></div>
+            <div class="product-card" onclick="selectProduct('Long Round U Handle', 200, 'item', 400)"><h4>Long Round U Handle</h4><p class="price-row"><span class="selling-price">Selling: ₹400</span><span class="cp-price">CP: ₹200</span></p></div>
+            <div class="product-card" onclick="selectProduct('Long Rolls Royce', 230, 'item', 450)"><h4>Long Rolls Royce</h4><p class="price-row"><span class="selling-price">Selling: ₹450</span><span class="cp-price">CP: ₹230</span></p></div>
+            <div class="product-card" onclick="selectProduct('Magic Umbrella', 360, 'item', 650)"><h4>Magic Umbrella</h4><p class="price-row"><span class="selling-price">Selling: ₹650</span><span class="cp-price">CP: ₹360</span></p></div>
         </div>
 
-        <!-- Category: Kids Ordered Ascending -->
         <div class="item-grid" id="grid-kids">
-            <div class="product-card" onclick="selectProduct('Kids Rainbow', 75, 'item')"><h4>Kids Rainbow</h4><p>CP: ₹75.00</p></div>
-            <div class="product-card" onclick="selectProduct('Plain Coloured', 80, 'item')"><h4>Plain Coloured</h4><p>CP: ₹80.00</p></div>
-            <div class="product-card" onclick="selectProduct('Kids Dotted', 85, 'item')"><h4>Kids Dotted</h4><p>CP: ₹85.00</p></div>
-            <div class="product-card" onclick="selectProduct('Kids Black', 90, 'item')"><h4>Kids Black</h4><p>CP: ₹90.00</p></div>
-            <div class="product-card" onclick="selectProduct('Kids Kaan Wala', 90, 'item')"><h4>Kids Kaan Wala</h4><p>CP: ₹90.00</p></div>
-            <div class="product-card" onclick="selectProduct('Kids Leaf Pattern', 110, 'item')"><h4>Kids Leaf Pattern</h4><p>CP: ₹110.00</p></div>
-            <div class="product-card" onclick="selectProduct('Printed Cartoon', 110, 'item')"><h4>Printed Cartoon</h4><p>CP: ₹110.00</p></div>
-            <div class="product-card" onclick="selectProduct('Kids Transparent', 135, 'item')"><h4>Kids Transparent</h4><p>CP: ₹135.00</p></div>
+            <div class="product-card" onclick="selectProduct('Kids Rainbow', 75, 'item', 150)"><h4>Kids Rainbow</h4><p class="price-row"><span class="selling-price">Selling: ₹150</span><span class="cp-price">CP: ₹75</span></p></div>
+            <div class="product-card" onclick="selectProduct('Plain Coloured', 80, 'item', 180)"><h4>Plain Coloured</h4><p class="price-row"><span class="selling-price">Selling: ₹180</span><span class="cp-price">CP: ₹80</span></p></div>
+            <div class="product-card" onclick="selectProduct('Kids Dotted', 85, 'item', 180)"><h4>Kids Dotted</h4><p class="price-row"><span class="selling-price">Selling: ₹180</span><span class="cp-price">CP: ₹85</span></p></div>
+            <div class="product-card" onclick="selectProduct('Kids Black', 90, 'item', 200)"><h4>Kids Black</h4><p class="price-row"><span class="selling-price">Selling: ₹200</span><span class="cp-price">CP: ₹90</span></p></div>
+            <div class="product-card" onclick="selectProduct('Kids Kaan Wala', 90, 'item', 200)"><h4>Kids Kaan Wala</h4><p class="price-row"><span class="selling-price">Selling: ₹200</span><span class="cp-price">CP: ₹90</span></p></div>
+            <div class="product-card" onclick="selectProduct('Kids Leaf Pattern', 110, 'item', 250)"><h4>Kids Leaf Pattern</h4><p class="price-row"><span class="selling-price">Selling: ₹250</span><span class="cp-price">CP: ₹110</span></p></div>
+            <div class="product-card" onclick="selectProduct('Printed Cartoon', 110, 'item', 250)"><h4>Printed Cartoon</h4><p class="price-row"><span class="selling-price">Selling: ₹250</span><span class="cp-price">CP: ₹110</span></p></div>
+            <div class="product-card" onclick="selectProduct('Kids Transparent', 135, 'item', 250)"><h4>Kids Transparent</h4><p class="price-row"><span class="selling-price">Selling: ₹250</span><span class="cp-price">CP: ₹135</span></p></div>
         </div>
 
-        <!-- Category: Covers Ordered Ascending -->
         <div class="item-grid" id="grid-covers">
-            <div class="product-card" onclick="selectProduct('Mobile Cover Basic', 12, 'item')"><h4>Mobile Cover Basic</h4><p>CP: ₹12.00</p></div>
-            <div class="product-card" onclick="selectProduct('Mobile Cover Premium', 25, 'item')"><h4>Mobile Cover Prem.</h4><p>CP: ₹25.00</p></div>
-            <div class="product-card" onclick="selectProduct('Cap Basic', 30, 'item')"><h4>Cap Basic</h4><p>CP: ₹30.00</p></div>
-            <div class="product-card" onclick="selectProduct('Bag Cover', 35, 'item')"><h4>Bag Cover</h4><p>CP: ₹35.00</p></div>
-            <div class="product-card" onclick="selectProduct('Cap Premium', 40, 'item')"><h4>Cap Premium</h4><p>CP: ₹40.00</p></div>
-            <div class="product-card" onclick="selectProduct('Eva Raincoat', 55, 'item')"><h4>Eva Raincoat</h4><p>CP: ₹55.00</p></div>
+            <div class="product-card" onclick="selectProduct('Mobile Cover', 4, 'item', 10)"><h4>Mobile Cover</h4><p class="price-row"><span class="selling-price">Selling: ₹10</span><span class="cp-price">CP: ₹4</span></p></div>
+            <div class="product-card" onclick="selectProduct('Mobile Cover Basic', 12, 'item', 25)"><h4>Mobile Cover Basic</h4><p class="price-row"><span class="selling-price">Selling: ₹25</span><span class="cp-price">CP: ₹12</span></p></div>
+            <div class="product-card" onclick="selectProduct('Mobile Cover Premium', 30, 'item', 80)"><h4>Mobile Cover Prem.</h4><p class="price-row"><span class="selling-price">Selling: ₹80</span><span class="cp-price">CP: ₹30</span></p></div>
+            <div class="product-card" onclick="selectProduct('Bag Cover', 35, 'item', 60)"><h4>Bag Cover</h4><p class="price-row"><span class="selling-price">Selling: ₹60</span><span class="cp-price">CP: ₹35</span></p></div>
+            <div class="product-card" onclick="selectProduct('Cap Basic', 30, 'item', 60)"><h4>Cap Basic</h4><p class="price-row"><span class="selling-price">Selling: ₹60</span><span class="cp-price">CP: ₹30</span></p></div>
+            <div class="product-card" onclick="selectProduct('Cap Premium', 40, 'item', 70)"><h4>Cap Premium</h4><p class="price-row"><span class="selling-price">Selling: ₹70</span><span class="cp-price">CP: ₹40</span></p></div>
+            <div class="product-card" onclick="selectProduct('Eva Raincoat', 55, 'item', 100)"><h4>Eva Raincoat</h4><p class="price-row"><span class="selling-price">Selling: ₹100</span><span class="cp-price">CP: ₹55</span></p></div>
         </div>
 
-        <!-- Category: Bulk Sheets -->
         <div class="item-grid" id="grid-sheets">
-            <div class="product-card" onclick="selectProduct('Tarpaulin (Talpatri)', 0, 'talpatri')"><h4>Tarpaulin Matrix</h4><p>SqFt Configuration</p></div>
-            <div class="product-card" onclick="selectProduct('Kala Plastic', 45, 'plastic')"><h4>Kala Plastic</h4><p>CP: ₹45.00/Mtr</p></div>
+            <div class="product-card" onclick="selectProduct('Tarpaulin (Talpatri)', 0, 'talpatri', 0)"><h4>Tarpaulin Matrix</h4><p>SqFt Mode</p></div>
+            <div class="product-card" onclick="selectProduct('Kala Plastic', 45, 'plastic', 100)"><h4>Kala Plastic</h4><p class="price-row"><span class="selling-price">Selling: ₹100/M</span><span class="cp-price">CP: ₹45/M</span></p></div>
         </div>
     </div>
 
     <div class="calc-box" id="talpatri-box">
-        <span class="section-label" style="color:var(--accent)"><i class="fa-solid fa-calculator"></i> Dimension Matrix (SqFt)</span>
+        <span class="section-label" style="color:var(--accent)">Dimensions (SqFt)</span>
         <div class="grid-2 grid-inputs">
             <div><label>Length (Ft)</label><input type="number" id="t-length" value="12" oninput="calcTalpatri()"></div>
             <div><label>Width (Ft)</label><input type="number" id="t-width" value="10" oninput="calcTalpatri()"></div>
         </div>
-        <span class="section-label">Select Matrix Base Tariff</span>
         <div class="rate-btn-group">
-            <button class="rate-btn active" id="r-5" onclick="setTalpatriRate(5)">Base ₹5.00</button>
-            <button class="rate-btn" id="r-5.5" onclick="setTalpatriRate(5.5)">Mid ₹5.50</button>
-            <button class="rate-btn" id="r-6" onclick="setTalpatriRate(6)">Premium ₹6.00</button>
+            <button class="rate-btn active" id="r-5" onclick="setTalpatriRate(5)">₹5.00</button>
+            <button class="rate-btn" id="r-5.5" onclick="setTalpatriRate(5.5)">₹5.50</button>
+            <button class="rate-btn" id="r-6" onclick="setTalpatriRate(6)">₹6.00</button>
         </div>
     </div>
 
     <div class="calc-box" id="plastic-box">
-        <span class="section-label" style="color:var(--accent)"><i class="fa-solid fa-ruler-combined"></i> Imperial to Metric Conversion</span>
+        <span class="section-label" style="color:var(--accent)">Length Input</span>
         <div class="grid-inputs">
-            <label>Linear Length Allocation (In Feet)</label>
+            <label>Length Allocation (In Feet)</label>
             <input type="number" id="p-feet" value="10" oninput="calcPlastic()">
         </div>
-        <div class="round-info" id="plastic-round-text">10 Ft = 4 Meter (Ceil Rounding Applied)</div>
+        <div class="round-info" id="plastic-round-text">10 Ft = 4 Meter</div>
     </div>
 
-    <div class="status-ribbon">
-        <span id="selected-item-text">Selected: 2 Fold Black Silver</span>
-        <span id="selected-cp-text">Cost Price (CP): ₹110.00</span>
+    <div class="qty-container">
+        <div class="qty-label"><i class="fa-solid fa-boxes-stacked" style="color:var(--text-muted)"></i> Quantity</div>
+        <div class="qty-controls">
+            <button type="button" class="qty-btn" onclick="alterQty(-1)">-</button>
+            <div class="qty-val" id="qty-display">1</div>
+            <button type="button" class="qty-btn" onclick="alterQty(1)">+</button>
+        </div>
+    </div>
+
+    <div class="status-ribbon status-success" id="status-ribbon-box">
+        <span id="selected-item-text" style="font-weight: 600;">Selected: 2 Fold Black Silver</span>
+        <span id="selected-cp-text">Total CP: ₹110</span>
     </div>
     
-    <!-- Seamless Direct Entry Block -->
     <div class="form-section">
         <div class="type-selector">
-            <button type="button" class="type-btn active" id="btn-cash" onclick="setMode('Cash')"><i class="fa-solid fa-money-bill"></i> Cash Mode</button>
-            <button type="button" class="type-btn" id="btn-online" onclick="setMode('GPay')"><i class="fa-solid fa-mobile-screen-button"></i> GPay Mode</button>
+            <button type="button" class="type-btn active" id="btn-cash" onclick="setMode('Cash')"><i class="fa-solid fa-money-bill-wave"></i> Cash</button>
+            <button type="button" class="type-btn" id="btn-online" onclick="setMode('GPay')"><i class="fa-solid fa-mobile-alt"></i> GPay</button>
         </div>
-        <span class="section-label" style="color:var(--accent);">Execution Selling Price (Custom Entry)</span>
+
+        <span class="section-label">Total Deal Price (Lump-sum)</span>
         <div class="input-wrapper">
             <i class="fa-solid fa-indian-rupee-sign input-icon"></i>
-            <input type="number" id="amount" placeholder="Enter custom selling rate" inputmode="numeric">
+            <input type="number" id="amount" value="200" placeholder="Enter total amount" inputmode="numeric" oninput="monitorRealtimeMargin()">
         </div>
-        <button class="action-btn" id="submit-btn" onclick="addSale()">Commit & Post Transaction</button>
+        <button class="action-btn" id="submit-btn" onclick="addSale()">Commit Transaction</button>
     </div>
 
     <div class="logs-section">
-        <span class="section-label">Real-time Terminal Audit Log</span>
-        <div class="logs-container" id="logs-container">Establishing structural link...</div>
+        <span class="section-label">Terminal Audit Log</span>
+        <div class="logs-container" id="logs-container">Linking...</div>
     </div>
 
-    <!-- Premium Relocated Metrics Panel from image_5f285e.png -->
     <div class="dashboard">
-        <div class="card"><div class="card-title">Cash Settlement</div><div class="card-value" id="cash-display">₹0.00</div></div>
-        <div class="card"><div class="card-title">GPay Settlement</div><div class="card-value" id="online-display">₹0.00</div></div>
-        <div class="card total"><div class="card-title">Gross Revenue Pipeline</div><div class="card-value" id="total-display">₹0.00</div></div>
-        <div class="card profit"><div class="card-title">Net Cumulative Margin</div><div class="card-value" id="profit-display">₹0.00</div></div>
+        <div class="card"><div class="card-title">Cash</div><div class="card-value" id="cash-display">₹0.00</div></div>
+        <div class="card"><div class="card-title">GPay</div><div class="card-value" id="online-display">₹0.00</div></div>
+        <div class="card total"><div class="card-title">Total Sale</div><div class="card-value" id="total-display">₹0.00</div></div>
+        <div class="card profit" id="dash-profit-card"><div class="card-title">Net Margin</div><div class="card-value" id="profit-display">₹0.00</div></div>
     </div>
 
     <div class="summary-actions">
@@ -226,10 +250,11 @@
 </div>
 
 <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzB1j9gARjdaY6z0285B07XrUUEVaQ62oOksIQi36YlUDHxXh69HMlKFaGz63aQZn03-Q/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyco9n7s0S7iTwtptM8sPVusetHmD4JTh2vA6Bl0RooxMxqquMecuqoIPWyZ-hFKNm9pQ/exec";
     let currentMode = 'Cash';
-    let activeProduct = { name: "2 Fold Black Silver", cp: 110, type: 'item' };
+    let activeProduct = { name: "2 Fold Black Silver", cp: 110, type: 'item', defaultSp: 200 };
     let talpatriRate = 5;
+    let currentQty = 1;
     let allRawLogs = [];
 
     let globalCashTotal = 0;
@@ -262,35 +287,69 @@
         if (!timeStr) return "N/A";
         if (timeStr.includes('T')) {
             try {
-                const parts = timeStr.split('T')[1].split('.')[0].split(':');
-                let hours = parseInt(parts[0], 10);
-                const minutes = parts[1];
-                const ampm = hours >= 12 ? 'PM' : 'AM';
-                hours = hours % 12 || 12;
-                return `${String(hours).padStart(2, '0')}:${minutes} ${ampm}`;
-            } catch(e) {
-                return timeStr;
-            }
+                const dateObj = new Date(timeStr);
+                if (!isNaN(dateObj.getTime())) {
+                    return dateObj.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+                }
+            } catch(e) {}
         }
         return timeStr;
     }
 
-    function selectProduct(name, cp, modeType) {
+    function alterQty(val) {
+        currentQty += val;
+        if(currentQty < 1) currentQty = 1;
+        document.getElementById('qty-display').innerText = currentQty;
+        
+        if(activeProduct.type === 'talpatri') {
+            calcTalpatri();
+        } else if(activeProduct.type === 'plastic') {
+            calcPlastic();
+        } else {
+            if(activeProduct.defaultSp > 0) {
+                document.getElementById('amount').value = activeProduct.defaultSp * currentQty;
+            }
+            monitorRealtimeMargin();
+        }
+    }
+
+    function selectProduct(name, cp, modeType, defaultSp = 0) {
         activeProduct.name = name;
         activeProduct.cp = cp;
         activeProduct.type = modeType;
+        activeProduct.defaultSp = defaultSp;
+        currentQty = 1; 
+        document.getElementById('qty-display').innerText = currentQty;
 
         handleDivToggles(modeType);
 
         if(modeType === 'item') {
-            document.getElementById('amount').value = ''; 
-            document.getElementById('amount').placeholder = "Enter custom selling rate";
+            document.getElementById('amount').value = defaultSp ? defaultSp : ''; 
+            document.getElementById('amount').placeholder = "Enter total amount";
             document.getElementById('selected-item-text').innerText = `Selected: ${name}`;
-            document.getElementById('selected-cp-text').innerText = `Cost Price (CP): ₹${cp}.00`;
         } else if(modeType === 'talpatri') {
             calcTalpatri();
         } else if(modeType === 'plastic') {
             calcPlastic();
+        }
+        monitorRealtimeMargin();
+    }
+
+    function monitorRealtimeMargin() {
+        const enteredTotalRate = parseInt(document.getElementById('amount').value) || 0;
+        const ribbon = document.getElementById('status-ribbon-box');
+        const totalCostPriceBasis = activeProduct.cp * currentQty;
+        
+        document.getElementById('selected-item-text').innerText = `${activeProduct.name} (x${currentQty})`;
+
+        if(enteredTotalRate > 0 && enteredTotalRate < totalCostPriceBasis) {
+            ribbon.classList.remove('status-success');
+            ribbon.classList.add('status-danger');
+            document.getElementById('selected-cp-text').innerHTML = `Loss! CP: ₹${totalCostPriceBasis}`;
+        } else {
+            ribbon.classList.remove('status-danger');
+            ribbon.classList.add('status-success');
+            document.getElementById('selected-cp-text').innerHTML = `CP: ₹${totalCostPriceBasis}`;
         }
     }
 
@@ -304,28 +363,30 @@
     function calcTalpatri() {
         const l = parseFloat(document.getElementById('t-length').value) || 0;
         const w = parseFloat(document.getElementById('t-width').value) || 0;
-        const totalSuggestedSale = Math.round(l * w * talpatriRate);
+        const perPieceSuggested = Math.round(l * w * talpatriRate);
         
-        document.getElementById('amount').value = totalSuggestedSale;
-        activeProduct.cp = Math.round(totalSuggestedSale * 0.60); 
-        activeProduct.name = `Tarpaulin (${l}x${w}) @₹${talpatriRate}`;
+        const overallDealSuggested = perPieceSuggested * currentQty;
+        document.getElementById('amount').value = overallDealSuggested;
         
-        document.getElementById('selected-item-text').innerText = `Selected: ${activeProduct.name}`;
-        document.getElementById('selected-cp-text').innerText = `Est. Base Cost: ₹${activeProduct.cp}.00`;
+        activeProduct.cp = Math.round(perPieceSuggested * 0.60); 
+        activeProduct.name = `Tarpaulin (${l}x${w})`;
+        
+        monitorRealtimeMargin();
     }
 
     function calcPlastic() {
         const feet = parseFloat(document.getElementById('p-feet').value) || 0;
         const meters = Math.ceil(feet * 0.3048); 
-        const suggestedSale = meters * 100;
+        const perPieceSuggested = meters * 100;
         
-        document.getElementById('plastic-round-text').innerText = `${feet} Ft = ${meters} Meter (Ceil Rounding Applied)`;
-        document.getElementById('amount').value = suggestedSale;
+        const overallDealSuggested = perPieceSuggested * currentQty;
+        document.getElementById('plastic-round-text').innerText = `${feet} Ft = ${meters} Meter`;
+        document.getElementById('amount').value = overallDealSuggested;
+        
         activeProduct.cp = meters * 45; 
-        activeProduct.name = `Kala Plastic (${meters} Mtr)`;
+        activeProduct.name = `Kala Plastic (${meters}m)`;
 
-        document.getElementById('selected-item-text').innerText = `Selected: ${activeProduct.name}`;
-        document.getElementById('selected-cp-text').innerText = `Cost Price (CP): ₹${activeProduct.cp}.00`;
+        monitorRealtimeMargin();
     }
 
     function setMode(mode) {
@@ -350,59 +411,118 @@
         globalOnlineTotal = online;
         globalProfitTotal = profit;
 
-        document.getElementById('cash-display').innerText = `₹${cash}.00`;
-        document.getElementById('online-display').innerText = `₹${online}.00`;
-        document.getElementById('total-display').innerText = `₹${cash + online}.00`;
-        document.getElementById('profit-display').innerText = `₹${profit}.00`;
+        document.getElementById('cash-display').innerText = `₹${cash}`;
+        document.getElementById('online-display').innerText = `₹${online}`;
+        document.getElementById('total-display').innerText = `₹${cash + online}`;
+        document.getElementById('profit-display').innerText = `₹${profit}`;
+        
+        const profitCard = document.getElementById('dash-profit-card');
+        if(profit < 0) {
+            profitCard.classList.add('margin-red');
+        } else {
+            profitCard.classList.remove('margin-red');
+        }
         
         const container = document.getElementById('logs-container');
         container.innerHTML = '';
-        if (allRawLogs.length === 0) { container.innerHTML = '<p style="text-align:center;padding:14px;font-size:12px;color:var(--text-muted)">Empty Transaction Record Matrix</p>'; return; }
+        if (allRawLogs.length === 0) { container.innerHTML = '<p style="text-align:center;padding:10px;font-size:11px;color:var(--text-muted)">No records</p>'; return; }
         
-        [...allRawLogs].reverse().forEach(log => {
+        [...allRawLogs].reverse().forEach((log, index) => {
+            const actualGlobalIndex = allRawLogs.length - 1 - index; 
             const div = document.createElement('div');
             div.className = 'log-item';
             const displayTime = normalizeTimestamp(log.time);
-            div.innerHTML = `<div><b>${log.item}</b><br><small style="color:var(--text-muted)">${displayTime} - ${log.type}</small></div>
-                             <div style="text-align:right;"><span>₹${log.amount}.00</span><br><span class="log-profit">Margin: +₹${log.profit}</span></div>`;
+            
+            const isNegative = log.profit < 0;
+            const profitClass = isNegative ? 'profit-negative' : 'profit-positive';
+            const profitSign = isNegative ? '' : '+';
+
+            div.innerHTML = `
+                <div class="log-details">
+                    <b style="color:var(--text-dark)">${log.item}</b><br>
+                    <small style="color:var(--text-muted)">${displayTime} • ${log.type}</small>
+                </div>
+                <div style="text-align:right; margin-right: 4px;">
+                    <span style="font-weight:600; color:var(--text-dark)">₹${log.amount}</span><br>
+                    <span class="log-profit ${profitClass}">${profitSign}₹${log.profit}</span>
+                </div>
+                <button class="delete-log-btn" onclick="deleteSaleEntry(${actualGlobalIndex}, '${log.item}')">
+                    <i class="fa-solid fa-trash"></i>
+                </button>
+            `;
             container.appendChild(div);
         });
     }
 
     function addSale() {
         const amtInput = document.getElementById('amount');
-        const finalAmt = parseInt(amtInput.value);
+        const totalDealAmount = parseInt(amtInput.value);
         const submitBtn = document.getElementById('submit-btn');
 
-        if (!finalAmt || finalAmt <= 0) { 
-            Swal.fire({ icon: 'warning', title: 'Invalid Execution Value', text: 'Please specify the exact structural Selling Price manually.' });
+        if (!totalDealAmount || totalDealAmount <= 0) { 
+            Swal.fire({ icon: 'warning', title: 'Empty', text: 'Enter total deal amount.' });
             return; 
         }
-        submitBtn.innerText = "Synchronizing Block...";
+        submitBtn.innerText = "Syncing...";
         submitBtn.disabled = true;
 
         const formattedTime = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
-        const exactProfit = finalAmt - activeProduct.cp;
+        
+        const totalCostBasis = activeProduct.cp * currentQty;
+        const exactProfit = totalDealAmount - totalCostBasis;
+        const finalItemName = currentQty > 1 ? `${activeProduct.name} [x${currentQty}]` : activeProduct.name;
 
-        const postData = { item: activeProduct.name, type: currentMode, amount: finalAmt, cost: activeProduct.cp, profit: exactProfit, time: formattedTime };
+        const postData = { 
+            item: finalItemName, 
+            type: currentMode, 
+            amount: totalDealAmount, 
+            cost: totalCostBasis, 
+            profit: exactProfit, 
+            time: formattedTime 
+        };
 
         fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify(postData) })
         .then(res => res.json())
         .then(res => {
             if(res.status === "SUCCESS") {
-                amtInput.value = '';
-                Swal.fire({ icon: 'success', title: 'Invoice Committed', text: `Captured Net Margin: ₹${exactProfit}.00`, timer: 1200, showConfirmButton: false, toast: true, position: 'top' });
+                amtInput.value = '200'; // defaults back to initial item rate
+                currentQty = 1;
+                document.getElementById('qty-display').innerText = currentQty;
+                Swal.fire({ icon: 'success', title: 'Saved', text: `Margin: ₹${exactProfit}`, timer: 1000, showConfirmButton: false, toast: true, position: 'top' });
                 fetchLiveSales();
             }
-        }).finally(() => { submitBtn.innerText = "Commit & Post Transaction"; submitBtn.disabled = false; });
+        }).finally(() => { submitBtn.innerText = "Commit Transaction"; submitBtn.disabled = false; });
+    }
+
+    function deleteSaleEntry(rowIndex, itemName) {
+        Swal.fire({ 
+            title: 'Delete?', 
+            text: `Remove "${itemName}"?`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#dc2626',
+            cancelButtonColor: '#94a3b8',
+            confirmButtonText: 'Yes'
+        }).then((res) => {
+            if (res.isConfirmed) {
+                fetch(SCRIPT_URL, { 
+                    method: "POST", 
+                    body: JSON.stringify({ action: "DELETE_ROW", index: rowIndex }) 
+                })
+                .then(res => res.json())
+                .then(res => {
+                    if(res.status === "SUCCESS" || res.success) {
+                        fetchLiveSales();
+                    }
+                });
+            }
+        });
     }
 
     function triggerFullReset() {
-        Swal.fire({ title: 'Terminal Verification Required', input: 'password', showCancelButton: true }).then((res) => {
+        Swal.fire({ title: 'Key Required', input: 'password', showCancelButton: true }).then((res) => {
             if (res.isConfirmed && res.value === '1707') {
                 fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify({ action: "RESET_DATA" }) }).then(() => fetchLiveSales());
-            } else if (res.isConfirmed) {
-                Swal.fire({ icon: 'error', title: 'Access Denied', text: 'Incorrect terminal verification key.' });
             }
         });
     }
