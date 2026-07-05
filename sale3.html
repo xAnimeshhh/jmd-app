@@ -5,31 +5,38 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>JMD Enterprise - POS + Inventory</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <style>
     :root {
-      --primary:#172033;
-      --accent:#2563eb;
-      --success:#16a34a;
-      --danger:#dc2626;
-      --warning:#d97706;
-      --bg:#f6f7fb;
+      --primary:#12142c;
+      --primary2:#1d2158;
+      --accent:#4f5bfb;
+      --accent2:#8b5cf6;
+      --success:#0ea968;
+      --danger:#e0364c;
+      --warning:#e08a1e;
+      --bg:#eef0fa;
       --surface:#fff;
-      --line:#e2e8f0;
-      --dark:#0f172a;
-      --text:#475569;
-      --muted:#94a3b8;
-      --soft:#f8fafc;
+      --line:#e7e9f6;
+      --dark:#10122a;
+      --text:#5b6178;
+      --muted:#9aa0ba;
+      --soft:#f6f7fd;
     }
     * {
       box-sizing:border-box;
       margin:0;
       padding:0;
-      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+      font-family:'Manrope',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
       -webkit-tap-highlight-color:transparent;
     }
     body {
-      background:linear-gradient(180deg,#eef4ff 0,#f8fafc 160px);
+      background:
+        radial-gradient(620px 320px at 18% -6%,rgba(79,91,251,.16),transparent 70%),
+        radial-gradient(520px 300px at 100% 0%,rgba(139,92,246,.13),transparent 65%),
+        var(--bg);
       color:var(--text);
       padding:12px;
       display:flex;
@@ -39,29 +46,45 @@
     .container {
       width:100%;
       max-width:460px;
-      background:rgba(255,255,255,.96);
+      background:rgba(255,255,255,.98);
       padding:16px;
-      border-radius:18px;
-      box-shadow:0 14px 34px rgba(15,23,42,.08);
-      border:1px solid rgba(226,232,240,.9);
+      border-radius:22px;
+      box-shadow:0 20px 46px rgba(18,20,44,.10),0 2px 8px rgba(18,20,44,.06);
+      border:1px solid rgba(230,232,246,.9);
       height:fit-content;
     }
     header {
       text-align:center;
-      margin-bottom:12px;
+      margin-bottom:14px;
+    }
+    .brand-mark {
+      width:40px;
+      height:40px;
+      margin:0 auto 8px;
+      border-radius:12px;
+      background:linear-gradient(135deg,var(--accent),var(--accent2));
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:#fff;
+      font-size:16px;
+      box-shadow:0 8px 18px rgba(79,91,251,.35);
     }
     header h2 {
-      font-size:18px;
+      font-size:19px;
       font-weight:800;
-      color:var(--dark);
       letter-spacing:-.4px;
+      background:linear-gradient(120deg,var(--dark),var(--primary2) 60%,var(--accent));
+      -webkit-background-clip:text;
+      background-clip:text;
+      color:transparent;
     }
     header p {
       font-size:9px;
       color:var(--muted);
-      margin-top:2px;
+      margin-top:3px;
       text-transform:uppercase;
-      letter-spacing:.7px;
+      letter-spacing:.9px;
       font-weight:700;
     }
     .main-nav {
@@ -69,28 +92,33 @@
       grid-template-columns:1fr 1fr 1fr;
       gap:4px;
       margin-bottom:14px;
-      background:#edf2f7;
-      padding:4px;
-      border-radius:12px;
+      background:var(--soft);
+      padding:5px;
+      border-radius:14px;
+      border:1px solid var(--line);
     }
     .nav-btn {
       padding:10px 6px;
       font-size:11px;
       font-weight:700;
       border:0;
-      border-radius:9px;
+      border-radius:10px;
       cursor:pointer;
       background:transparent;
-      color:#64748b;
+      color:#8a8fa8;
       display:flex;
       align-items:center;
       justify-content:center;
       gap:5px;
+      transition:.18s;
+    }
+    .nav-btn i {
+      font-size:11px;
     }
     .nav-btn.active {
-      background:#fff;
-      color:var(--dark);
-      box-shadow:0 1px 6px rgba(15,23,42,.12);
+      background:linear-gradient(135deg,var(--primary),var(--primary2));
+      color:#fff;
+      box-shadow:0 6px 14px rgba(18,20,44,.22);
     }
     .view {
       display:none;
@@ -114,6 +142,160 @@
       -webkit-overflow-scrolling:touch;
       padding-bottom:5px;
       margin-bottom:10px;
+      flex:1;
+      min-width:0;
+    }
+    .cat-tabs-row {
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+    .add-product-fab {
+      flex-shrink:0;
+      width:34px;
+      height:34px;
+      margin-bottom:10px;
+      border-radius:10px;
+      border:none;
+      background:linear-gradient(135deg,var(--accent),var(--accent2));
+      color:#fff;
+      font-size:14px;
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      box-shadow:0 4px 12px rgba(79,91,251,.4);
+      transition:.15s;
+    }
+    .add-product-fab:active {
+      transform:scale(.92);
+    }
+    .modal-overlay {
+      display:none;
+      position:fixed;
+      inset:0;
+      background:rgba(15,23,42,.55);
+      backdrop-filter:blur(2px);
+      z-index:999;
+      align-items:flex-end;
+      justify-content:center;
+      animation:fadeIn .15s ease;
+    }
+    .modal-overlay.open {
+      display:flex;
+    }
+    @keyframes fadeIn {
+      from {
+        opacity:0;
+      }
+      to {
+        opacity:1;
+      }
+    }
+    .modal-sheet {
+      width:100%;
+      max-width:460px;
+      background:#fff;
+      border-radius:20px 20px 0 0;
+      padding:18px 16px 22px;
+      box-shadow:0 -10px 30px rgba(15,23,42,.25);
+      animation:slideUp .2s ease;
+      max-height:88vh;
+      overflow-y:auto;
+    }
+    @keyframes slideUp {
+      from {
+        transform:translateY(30px);
+        opacity:0;
+      }
+      to {
+        transform:translateY(0);
+        opacity:1;
+      }
+    }
+    .modal-handle {
+      width:36px;
+      height:4px;
+      background:var(--line);
+      border-radius:4px;
+      margin:0 auto 14px;
+    }
+    .modal-title {
+      font-size:15px;
+      font-weight:800;
+      color:var(--dark);
+      margin-bottom:2px;
+    }
+    .modal-sub {
+      font-size:10.5px;
+      color:var(--muted);
+      margin-bottom:16px;
+    }
+    .modal-field {
+      margin-bottom:12px;
+    }
+    .modal-field label {
+      display:block;
+      font-size:10px;
+      font-weight:700;
+      color:var(--text);
+      text-transform:uppercase;
+      letter-spacing:.3px;
+      margin-bottom:6px;
+    }
+    .modal-field input,.modal-field select {
+      width:100%;
+      padding:11px 12px;
+      border-radius:10px;
+      border:1.5px solid var(--line);
+      font-size:13px;
+      font-weight:600;
+      color:var(--dark);
+      background:var(--soft);
+    }
+    .modal-field input:focus,.modal-field select:focus {
+      outline:none;
+      border-color:var(--accent);
+      background:#fff;
+    }
+    .modal-row-2 {
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+    }
+    .modal-margin-preview {
+      background:#eff6ff;
+      border:1px solid #bfdbfe;
+      border-radius:10px;
+      padding:10px 12px;
+      font-size:11.5px;
+      font-weight:700;
+      color:var(--accent);
+      margin-bottom:14px;
+      text-align:center;
+    }
+    .modal-btn-row {
+      display:flex;
+      gap:10px;
+    }
+    .modal-btn-row button {
+      flex:1;
+      padding:12px;
+      border-radius:12px;
+      border:none;
+      font-size:13px;
+      font-weight:800;
+      cursor:pointer;
+    }
+    .modal-btn-cancel {
+      background:var(--soft);
+      color:var(--text);
+      border:1.5px solid var(--line) !important;
+    }
+    .modal-btn-save {
+      background:linear-gradient(135deg,var(--success),#15803d);
+      color:#fff;
+      box-shadow:0 4px 10px rgba(22,163,74,.3);
     }
     .category-tabs::-webkit-scrollbar {
       height:3px;
@@ -123,20 +305,22 @@
       border-radius:4px;
     }
     .tab-btn {
-      padding:8px 12px;
+      padding:8px 13px;
       font-size:10.5px;
       font-weight:700;
-      border-radius:8px;
+      border-radius:999px;
       border:1px solid var(--line);
       background:#fff;
       color:var(--text);
       cursor:pointer;
       white-space:nowrap;
+      transition:.15s;
     }
     .tab-btn.active {
-      background:var(--primary);
+      background:linear-gradient(135deg,var(--primary),var(--primary2));
       color:#fff;
-      border-color:var(--primary);
+      border-color:transparent;
+      box-shadow:0 4px 10px rgba(18,20,44,.22);
     }
     .catalog-container {
       background:#f8fafc;
@@ -156,7 +340,7 @@
     .product-card {
       background:#fff;
       padding:9px;
-      border-radius:9px;
+      border-radius:12px;
       border:1px solid var(--line);
       cursor:pointer;
       display:flex;
@@ -165,13 +349,15 @@
       transition:.15s;
       position:relative;
       min-height:64px;
+      box-shadow:0 1px 2px rgba(18,20,44,.04);
     }
     .product-card:active {
-      transform:scale(.99);
+      transform:scale(.97);
     }
     .product-card.active {
       border:1.5px solid var(--accent)!important;
-      background:#eff6ff;
+      background:linear-gradient(135deg,#eef0ff,#f5f1ff);
+      box-shadow:0 4px 12px rgba(79,91,251,.18);
     }
     .product-card h4 {
       font-size:11px;
@@ -270,9 +456,10 @@
       color:var(--text);
     }
     .rate-btn.active {
-      background:var(--accent);
+      background:linear-gradient(135deg,var(--accent),var(--accent2));
       color:#fff;
-      border-color:var(--accent);
+      border-color:transparent;
+      box-shadow:0 4px 10px rgba(79,91,251,.28);
     }
     .round-info {
       font-size:11px;
@@ -300,9 +487,10 @@
       cursor:pointer;
     }
     .tarp-size-btn.active {
-      background:var(--accent);
+      background:linear-gradient(135deg,var(--accent),var(--accent2));
       color:#fff;
-      border-color:var(--accent);
+      border-color:transparent;
+      box-shadow:0 4px 10px rgba(79,91,251,.28);
     }
     .qty-container {
       display:flex;
@@ -390,9 +578,10 @@
       font-size:11px;
     }
     .type-btn.active {
-      border-color:var(--primary);
-      background:var(--primary);
+      border-color:transparent;
+      background:linear-gradient(135deg,var(--primary),var(--primary2));
       color:#fff;
+      box-shadow:0 4px 10px rgba(18,20,44,.25);
     }
     .input-wrapper {
       position:relative;
@@ -412,7 +601,7 @@
     }
     .amount-input:focus {
       border-color:var(--accent);
-      box-shadow:0 0 0 3px rgba(37,99,235,.09);
+      box-shadow:0 0 0 3px rgba(79,91,251,.12);
     }
     .input-icon {
       position:absolute;
@@ -425,17 +614,23 @@
     }
     .action-btn {
       width:100%;
-      padding:12px;
-      background:var(--accent);
+      padding:13px;
+      background:linear-gradient(135deg,var(--accent),var(--accent2));
       color:white;
       border:0;
-      border-radius:10px;
+      border-radius:12px;
       font-size:12px;
       font-weight:800;
       cursor:pointer;
+      box-shadow:0 6px 16px rgba(79,91,251,.28);
+      transition:.15s;
+    }
+    .action-btn:active {
+      transform:scale(.98);
     }
     .action-btn.green {
-      background:var(--success);
+      background:linear-gradient(135deg,var(--success),#0c8a56);
+      box-shadow:0 6px 16px rgba(14,169,104,.3);
     }
     .sticky-cta {
       position:sticky;
@@ -530,7 +725,7 @@
     }
     .card.total {
       grid-column:span 2;
-      background:var(--primary);
+      background:linear-gradient(135deg,var(--primary),var(--primary2));
       border:0;
     }
     .card.total .card-title {
@@ -557,8 +752,9 @@
     }
     .share-btn {
       width:100%;
-      padding:11px;
-      background:#10b981;
+      padding:12px;
+      background:linear-gradient(135deg,#10b981,#0c8a56);
+      box-shadow:0 6px 16px rgba(16,185,129,.3);
       color:white;
       border:0;
       border-radius:10px;
@@ -588,9 +784,10 @@
       color:var(--text);
     }
     .stockin-mode-btn.active {
-      background:var(--accent);
+      background:linear-gradient(135deg,var(--accent),var(--accent2));
       color:#fff;
-      border-color:var(--accent);
+      border-color:transparent;
+      box-shadow:0 4px 10px rgba(79,91,251,.28);
     }
     .stockin-form {
       background:#f8fafc;
@@ -650,9 +847,10 @@
     }
     .ledger-card {
       padding:12px;
-      border-radius:12px;
+      border-radius:14px;
       border:1px solid var(--line);
       background:#fff;
+      box-shadow:0 2px 6px rgba(18,20,44,.05);
     }
     .lc-title {
       font-size:9px;
@@ -682,7 +880,7 @@
     }
     .ledger-card.net {
       grid-column:span 2;
-      background:var(--primary);
+      background:linear-gradient(135deg,var(--primary),var(--primary2));
       border:0;
       text-align:center;
     }
@@ -984,10 +1182,12 @@
       gap:7px;
     }
     .action-btn.secondary {
-      background:#0f172a;
+      background:linear-gradient(135deg,var(--primary),var(--primary2));
+      box-shadow:0 6px 16px rgba(18,20,44,.28);
     }
     .action-btn.gray {
       background:#64748b;
+      box-shadow:none;
     }
     .capital-box {
       background:#fff7ed;
@@ -1026,7 +1226,8 @@
     }
     .product-card.in-cart {
       border:1.5px solid var(--success)!important;
-      background:#f0fdf4;
+      background:#f0fdf7;
+      box-shadow:0 4px 12px rgba(14,169,104,.15);
     }
     .qty-stepper-row {
       display:flex;
@@ -1070,24 +1271,72 @@
       padding:4px 6px;
     }
     .action-btn.orange {
-      background:var(--warning);
+      background:linear-gradient(135deg,var(--warning),#c2660f);
+      box-shadow:0 6px 16px rgba(224,138,30,.3);
     }
   </style>
 </head>
 <body>
 <div class="container">
-  <header><h2>JMD Enterprise</h2><p>POS + Inventory Management</p></header>
+  <header><div class="brand-mark"><i class="fa-solid fa-umbrella"></i></div><h2>JMD Enterprise</h2><p>POS + Inventory Management</p></header>
   <div class="main-nav">
-    <button class="nav-btn active" onclick="switchView(event,'sell')"><i class="fa-solid fa-cash-register" style="color:#2563eb"></i> Sell</button>
-    <button class="nav-btn" onclick="switchView(event,'stockin')"><i class="fa-solid fa-truck-ramp-box" style="color:#d97706"></i> Stock In</button>
-    <button class="nav-btn" onclick="switchView(event,'ledger')"><i class="fa-solid fa-chart-pie" style="color:#7c3aed"></i> Ledger</button>
+    <button class="nav-btn active" onclick="switchView(event,'sell')"><i class="fa-solid fa-cash-register"></i> Sell</button>
+    <button class="nav-btn" onclick="switchView(event,'stockin')"><i class="fa-solid fa-truck-ramp-box"></i> Stock In</button>
+    <button class="nav-btn" onclick="switchView(event,'ledger')"><i class="fa-solid fa-chart-pie"></i> Ledger</button>
   </div>
   <div class="view active" id="view-sell"></div>
   <div class="view" id="view-stockin"></div>
   <div class="view" id="view-ledger"></div>
 </div>
+<div class="modal-overlay" id="add-product-overlay" onclick="if(event.target===this)closeAddProductModal()">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Naya Item Add Karo</div>
+    <div class="modal-sub" id="np-modal-sub">Yeh item catalog aur stock dono mein add ho jayega</div>
+    <div class="modal-field">
+      <label>Category</label>
+      <select id="np-category">
+        <option value="adults">Umbrellas</option>
+        <option value="kids">Kids</option>
+        <option value="covers">Covers & Caps</option>
+        <option value="sheets">Sheets</option>
+      </select>
+    </div>
+    <div class="modal-field">
+      <label>Item Naam</label>
+      <input type="text" id="np-name" placeholder="e.g. White Plastic">
+    </div>
+    <div class="modal-field">
+      <label>Sale Unit</label>
+      <select id="np-unit" onchange="toggleNewProductUnitHint()">
+        <option value="item">Piece (normal item)</option>
+        <option value="plastic">Plastic Roll (Rate Per Meter)</option>
+      </select>
+      <p class="tiny-note" id="np-unit-hint" style="margin-top:4px">CP/SP normal per-piece price hai.</p>
+    </div>
+    <div class="modal-row-2">
+      <div class="modal-field">
+        <label id="np-cp-label">Cost Price (CP)</label>
+        <input type="number" id="np-cp" inputmode="numeric" placeholder="0" oninput="previewNewProductMargin()">
+      </div>
+      <div class="modal-field">
+        <label id="np-sp-label">Selling Price (SP)</label>
+        <input type="number" id="np-sp" inputmode="numeric" placeholder="0" oninput="previewNewProductMargin()">
+      </div>
+    </div>
+    <div class="modal-field">
+      <label id="np-stock-label">Opening Stock (Qty)</label>
+      <input type="number" id="np-stock" inputmode="numeric" placeholder="0">
+    </div>
+    <div class="modal-margin-preview" id="np-margin-preview">Margin: ₹0 per unit</div>
+    <div class="modal-btn-row">
+      <button class="modal-btn-cancel" onclick="closeAddProductModal()">Cancel</button>
+      <button class="modal-btn-save" onclick="saveNewProduct()"><i class="fa-solid fa-check"></i> Save Item</button>
+    </div>
+  </div>
+</div>
 <script>
-  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyL_CS-0p8BxkuIOkwJ7ghXp24kaebCUC5dHsOXy3Uam1pQeyVW9i9Z1kMMJBJEtY16Kw/exec";
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzz0DcyHUWjhm7_7U8QBpdrie2Gk_Xw6b6t0Ds-xVfmWj0OsuO2hteWmvQM9sSe-4OGMg/exec";
   const PRODUCTS = {
       adults: [{ name: "2 Fold Black Silver", cp: 110, sp: 200 }, { name: "2 Fold Ladies", cp: 115, sp: 200 }, { name: "Short Round U Handle", cp: 140, sp: 300 }, { name: "3 Fold Manual", cp: 150, sp: 300 }, { name: "3 Fold Indian", cp: 220, sp: 400 }, { name: "Shahenshah Rubber", cp: 230, sp: 400 }, { name: "Shahenshah Steel", cp: 240, sp: 450 }, { name: "Automatic Black", cp: 180, sp: 350 }, { name: "Long Rainbow+Army", cp: 165, sp: 300 }, { name: "Long Red Yellow Blue", cp: 210, sp: 400 }, { name: "Long Round U Handle", cp: 200, sp: 400 }, { name: "Long Rolls Royce", cp: 230, sp: 450 }, { name: "Magic Umbrella", cp: 360, sp: 650 }, { name: "Pioneer 3 Fold 25\"", cp: 280, sp: 500 }],
       kids: [{ name: "Kids Rainbow", cp: 75, sp: 150 }, { name: "Plain Coloured", cp: 80, sp: 180 }, { name: "Kids Dotted", cp: 85, sp: 180 }, { name: "Kids Black", cp: 90, sp: 200 }, { name: "Kids Kaan Wala", cp: 90, sp: 200 }, { name: "Kids Leaf Pattern", cp: 110, sp: 250 }, { name: "Printed Cartoon", cp: 110, sp: 250 }, { name: "Kids Transparent", cp: 135, sp: 250 }],
@@ -1096,8 +1345,12 @@
   };
   const TARP_SIZES = [{ label: "8x9", l: 8, w: 9 }, { label: "10x12", l: 10, w: 12 }, { label: "12x12", l: 12, w: 12 }, { label: "18x16", l: 18, w: 16 }, { label: "24x18", l: 24, w: 18 }, { label: "Custom", l: 0, w: 0 }];
   const CATEGORY_LABELS = { adults: "Umbrellas", kids: "Kids", covers: "Covers & Caps", sheets: "Sheets" };
-  let currentView = 'sell', currentMode = 'Cash', talpatriRate = 5, selectedTarpSize = null, currentQty = 1, allSalesLogs = [], allPurchaseLogs = [], pastSalesSummary = [], inventory = {}, totalInvestment = 0, totalCapitalBorrowed = 0, saleCart = [], stockinCart = [], capitalLogs = [], activeCategory = 'adults', stockinMode = 'individual', stockinCat = 'adults', stockinSelectedProduct = null, selectedDateKey = formatDateKey(new Date());
+  let currentView = 'sell', currentMode = 'Cash', talpatriRate = 5, selectedTarpSize = null, currentQty = 1, allSalesLogs = [], allPurchaseLogs = [], pastSalesSummary = [], inventory = {}, totalInvestment = 0, totalCapitalBorrowed = 0, saleCart = [], stockinCart = [], capitalLogs = [], activeCategory = 'adults', stockinMode = 'individual', stockinCat = 'adults', stockinSelectedProduct = null, selectedDateKey = formatDateKey(new Date()), customProductNames = new Set();
   let expandedSellCard = null, sellCardDrafts = {}, expandedStockinCard = null, stockinCardDrafts = {};
+  // Tracks which meter-rate ("plastic" type) product is currently selected in
+  // Sell — e.g. Kala Plastic, White Plastic, or any future roll item — so
+  // calcPlastic() prices/stocks the ACTUAL selected product, not a hardcoded one.
+  let plasticBaseProduct = { name: 'Kala Plastic', cp: 45, sp: 100 };
   let activeProduct = { name: "2 Fold Black Silver", displayName: "2 Fold Black Silver", stockKey: "2 Fold Black Silver", cp: 110, type: 'item', defaultSp: 200, stockQty: 1 };
   function esc(v) {
       return String(v ?? '').replace(/[&<>'"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[c]));
@@ -1226,11 +1479,149 @@
           n.innerText = text;
   }
   window.onload = () => {
+      loadCustomProducts();
       renderSellView();
       renderStockInView();
       renderLedgerView();
       loadAllData();
   };
+  function loadCustomProducts() {
+      try {
+          const raw = localStorage.getItem('jmd_custom_products'), list = raw ? JSON.parse(raw) : [];
+          list.forEach(p => {
+              if (!PRODUCTS[p.category])
+                  return;
+              if (!PRODUCTS[p.category].some(x => x.name === p.name))
+                  PRODUCTS[p.category].push({ name: p.name, cp: p.cp, sp: p.sp, type: p.type || 'item', unit: p.unit || p.type || 'item' });
+              customProductNames.add(p.name);
+          });
+          applyCustomStock();
+      }
+      catch (e) {
+      }
+  }
+  // Merges products that live in the backend Products sheet (added from any
+  // device) into the local PRODUCTS catalog — keeps everyone's Sell/Stock-In
+  // list in sync, not just the browser that created the item.
+  function mergeBackendProducts(list) {
+      if (!Array.isArray(list) || !list.length)
+          return;
+      list.forEach(p => {
+          const category = p.category && PRODUCTS[p.category] ? p.category : 'adults';
+          const existing = PRODUCTS[category].find(x => x.name === p.name);
+          if (existing) {
+              existing.cp = p.cp;
+              existing.sp = p.sp;
+              existing.type = p.type || existing.type || 'item';
+              existing.unit = p.unit || existing.unit || existing.type || 'item';
+          }
+          else {
+              PRODUCTS[category].push({ name: p.name, cp: p.cp, sp: p.sp, type: p.type || 'item', unit: p.unit || p.type || 'item' });
+          }
+          customProductNames.add(p.name);
+      });
+  }
+  function applyCustomStock() {
+      try {
+          const raw = localStorage.getItem('jmd_custom_stock'), map = raw ? JSON.parse(raw) : {};
+          Object.keys(map).forEach(k => {
+              inventory[k] = map[k];
+          });
+      }
+      catch (e) {
+      }
+  }
+  function persistCustomStock(key) {
+      if (!customProductNames.has(key))
+          return;
+      try {
+          const raw = localStorage.getItem('jmd_custom_stock'), map = raw ? JSON.parse(raw) : {};
+          map[key] = getStock(key);
+          localStorage.setItem('jmd_custom_stock', JSON.stringify(map));
+      }
+      catch (e) {
+      }
+  }
+  function openAddProductModal() {
+      const fromStockin = currentView === 'stockin';
+      document.getElementById('np-category').value = fromStockin ? stockinCat : activeCategory;
+      document.getElementById('np-name').value = '';
+      document.getElementById('np-unit').value = 'item';
+      document.getElementById('np-cp').value = '';
+      document.getElementById('np-sp').value = '';
+      document.getElementById('np-stock').value = '';
+      document.getElementById('np-margin-preview').innerText = 'Margin: ₹0 per unit';
+      toggleNewProductUnitHint();
+      document.getElementById('np-modal-sub').innerText = fromStockin ? 'Item add hone ke baad Stock-In cart mein qty/cost daal ke maal book karo — Opening Stock 0 hi rehne do.' : 'Yeh item catalog aur stock dono mein add ho jayega';
+      document.getElementById('add-product-overlay').classList.add('open');
+  }
+  function closeAddProductModal() {
+      document.getElementById('add-product-overlay').classList.remove('open');
+  }
+  function toggleNewProductUnitHint() {
+      const isMeter = document.getElementById('np-unit').value === 'plastic';
+      document.getElementById('np-cp-label').innerText = isMeter ? 'Cost Price (₹/Meter)' : 'Cost Price (CP)';
+      document.getElementById('np-sp-label').innerText = isMeter ? 'Selling Price (₹/Meter)' : 'Selling Price (SP)';
+      document.getElementById('np-stock-label').innerText = isMeter ? 'Opening Stock (Meters)' : 'Opening Stock (Qty)';
+      document.getElementById('np-unit-hint').innerText = isMeter ? 'Yeh rate per meter maana jayega — grahak feet bataye to app khud meter me convert karega.' : 'CP/SP normal per-piece price hai.';
+  }
+  function previewNewProductMargin() {
+      const cp = num(document.getElementById('np-cp').value), sp = num(document.getElementById('np-sp').value), margin = sp - cp, box = document.getElementById('np-margin-preview');
+      box.innerText = `Margin: ${margin >= 0 ? '+' : '-'}₹${Math.abs(margin)} per unit`;
+      box.style.color = margin >= 0 ? 'var(--accent)' : 'var(--danger)';
+  }
+  function saveNewProduct() {
+      const category = document.getElementById('np-category').value, name = document.getElementById('np-name').value.trim(), unit = document.getElementById('np-unit').value, type = unit === 'plastic' ? 'plastic' : 'item', cp = num(document.getElementById('np-cp').value), sp = num(document.getElementById('np-sp').value), stock = num(document.getElementById('np-stock').value);
+      if (!name) {
+          Swal.fire({ icon: 'warning', title: 'Item ka naam daalo' });
+          return;
+      }
+      if (allProductList().some(p => p.name.toLowerCase() === name.toLowerCase())) {
+          Swal.fire({ icon: 'warning', title: 'Yeh item pehle se maujood hai' });
+          return;
+      }
+      if (!sp) {
+          Swal.fire({ icon: 'warning', title: 'Selling Price daalo' });
+          return;
+      }
+      const openedFromStockin = currentView === 'stockin';
+      PRODUCTS[category].push({ name, cp, sp, type, unit });
+      customProductNames.add(name);
+      inventory[name] = stock;
+      try {
+          const raw = localStorage.getItem('jmd_custom_products'), list = raw ? JSON.parse(raw) : [];
+          list.push({ category, name, cp, sp, type, unit });
+          localStorage.setItem('jmd_custom_products', JSON.stringify(list));
+      }
+      catch (e) {
+      }
+      persistCustomStock(name);
+      // Sync to backend Products sheet so it's visible on every device, and
+      // seed opening stock straight into Inventory in the same call.
+      fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: 'ADD_PRODUCT', name, category, cp, sp, type, unit, openingStock: stock }) }).catch(() => {
+          noteSyncing('Product saved locally, sync checking...');
+      });
+      closeAddProductModal();
+      if (openedFromStockin) {
+          stockinCat = category;
+          document.querySelectorAll('#stockin-cat-tabs .tab-btn').forEach(b => b.classList.remove('active'));
+          const sIdx = Object.keys(CATEGORY_LABELS).indexOf(category);
+          const sTabBtn = document.querySelectorAll('#stockin-cat-tabs .tab-btn')[sIdx];
+          if (sTabBtn)
+              sTabBtn.classList.add('active');
+      }
+      else {
+          activeCategory = category;
+          document.querySelectorAll('#sell-cat-tabs .tab-btn').forEach(b => b.classList.remove('active'));
+          const idx = Object.keys(CATEGORY_LABELS).indexOf(category);
+          const tabBtn = document.querySelectorAll('#sell-cat-tabs .tab-btn')[idx];
+          if (tabBtn)
+              tabBtn.classList.add('active');
+      }
+      refreshProductGrid();
+      refreshStockinGrid();
+      showToast('success', `${name} add ho gaya!`);
+  }
   function switchView(e, view) {
       currentView = view;
       document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
@@ -1351,6 +1742,12 @@
           if (r.isConfirmed && r.value) {
               line.amount = num(r.value);
               line.profit = line.amount - line.cost;
+              if (activeProduct.stockKey === stockKey) {
+                  const amtBox = document.getElementById('sell-amount');
+                  if (amtBox)
+                      amtBox.value = line.amount;
+                  monitorRealtimeMargin();
+              }
               renderSaleCart();
               refreshProductGrid();
           }
@@ -1360,6 +1757,7 @@
       const catalog = document.getElementById('sell-catalog');
       if (!catalog)
           return;
+      const oldGrid = catalog.querySelector('.item-grid'), scrollPos = oldGrid ? oldGrid.scrollTop : 0;
       let html = '<div class="item-grid">';
       PRODUCTS[activeCategory].forEach((p, i) => {
           const type = p.type || 'item';
@@ -1380,13 +1778,16 @@
           }
           const line = findCartLine(p.name);
           if (line) {
-              html += `<div class="product-card in-cart"><h4>${esc(p.name)}</h4><div class="qty-stepper-row"><button type="button" onclick="event.stopPropagation();incLine('${activeCategory}',${i},-1)">-</button><span>${line.qty}</span><button type="button" onclick="event.stopPropagation();incLine('${activeCategory}',${i},1)">+</button></div><div class="cart-amt-tap" onclick="event.stopPropagation();editLineAmount(event,'${p.name}')">₹${line.amount} <i class="fa-solid fa-pen" style="font-size:8px;opacity:.6"></i></div></div>`;
+              html += `<div class="product-card in-cart" onclick="editLineAmount(event,'${esc(p.name)}')"><h4>${esc(p.name)}</h4><div class="qty-stepper-row"><button type="button" onclick="event.stopPropagation();incLine('${activeCategory}',${i},-1)">-</button><span>${line.qty}</span><button type="button" onclick="event.stopPropagation();incLine('${activeCategory}',${i},1)">+</button></div><div class="cart-amt-tap">₹${line.amount} <i class="fa-solid fa-pen" style="font-size:8px;opacity:.6"></i></div></div>`;
           }
           else {
               html += `<div class="product-card" onclick="quickAddOrInc('${activeCategory}',${i})"><span class="stock-badge ${sc}">${st}</span><h4>${esc(p.name)}</h4><p class="price-row"><span class="selling-price">SP:₹${p.sp}</span><span class="cp-price">CP:₹${p.cp}</span></p></div>`;
           }
       });
       catalog.innerHTML = html + '</div>';
+      const newGrid = catalog.querySelector('.item-grid');
+      if (newGrid)
+          newGrid.scrollTop = scrollPos;
   }
   function renderTarpSizeGrid() {
       const grid = document.getElementById('tarp-size-grid');
@@ -1415,8 +1816,11 @@
           document.getElementById('sell-amount').value = '';
           document.getElementById('tarp-info').innerText = 'Size select karo';
       }
-      else if (p.type === 'plastic')
+      else if (p.type === 'plastic') {
+          plasticBaseProduct = { name: p.name, cp: p.cp || 0, sp: p.sp || 0 };
+          document.querySelector('#plastic-box .section-label').innerText = `${p.name} — Length Input`;
           calcPlastic();
+      }
       else
           document.getElementById('sell-amount').value = p.sp || '';
       refreshProductGrid();
@@ -1483,10 +1887,11 @@
       monitorRealtimeMargin();
   }
   function calcPlastic() {
-      const feet = num(document.getElementById('p-feet')?.value), meters = Math.ceil(feet * .3048), perSP = 100, perCP = 45;
-      activeProduct = { name: `Kala Plastic (${meters}m)`, displayName: `Kala Plastic (${meters}m)`, stockKey: 'Kala Plastic', cp: meters * perCP, type: 'plastic', defaultSp: meters * perSP, stockQty: meters * currentQty };
+      const feet = num(document.getElementById('p-feet')?.value), meters = Math.ceil(feet * .3048);
+      const base = plasticBaseProduct || { name: 'Kala Plastic', cp: 45, sp: 100 };
+      activeProduct = { name: `${base.name} (${meters}m)`, displayName: `${base.name} (${meters}m)`, stockKey: base.name, cp: meters * base.cp, type: 'plastic', defaultSp: meters * base.sp, stockQty: meters * currentQty };
       document.getElementById('plastic-round-text').innerText = `${feet} Ft = ${meters} Meter`;
-      document.getElementById('sell-amount').value = meters * perSP * currentQty;
+      document.getElementById('sell-amount').value = meters * base.sp * currentQty;
       monitorRealtimeMargin();
   }
   function monitorRealtimeMargin() {
@@ -1502,6 +1907,16 @@
       else {
           ribbon.className = 'status-ribbon status-success';
           document.getElementById('selected-cp-text').innerHTML = `CP: ₹${totalCP} | Margin: +₹${Math.max(margin, 0)}`;
+      }
+      if (activeProduct.stockKey) {
+          const line = findCartLine(activeProduct.stockKey);
+          if (line && line.qty === (activeProduct.stockQty || currentQty)) {
+              line.amount = amount;
+              line.cost = totalCP;
+              line.profit = amount - totalCP;
+              renderSaleCart();
+              refreshProductGrid();
+          }
       }
   }
   function setPayMode(mode) {
@@ -1542,15 +1957,58 @@
               ok();
       });
   }
+  function addCustomSaleItem() {
+      Swal.fire({
+          title: 'Custom Item Add Karo',
+          html: `<input id="ci-name" class="swal2-input" placeholder="Item Naam (e.g. White Plastic)">
+             <input id="ci-qty" type="number" inputmode="numeric" class="swal2-input" placeholder="Qty" value="1">
+             <input id="ci-cost" type="number" inputmode="numeric" class="swal2-input" placeholder="Cost Price (total)">
+             <input id="ci-amount" type="number" inputmode="numeric" class="swal2-input" placeholder="Sale Amount (total)">`,
+          focusConfirm: false,
+          showCancelButton: true,
+          confirmButtonText: 'Add to Bill',
+          preConfirm: () => {
+              const name = document.getElementById('ci-name').value.trim(), qty = num(document.getElementById('ci-qty').value) || 1, cost = num(document.getElementById('ci-cost').value), amount = num(document.getElementById('ci-amount').value);
+              if (!name) {
+                  Swal.showValidationMessage('Item ka naam daalo');
+                  return false;
+              }
+              if (!amount || amount <= 0) {
+                  Swal.showValidationMessage('Sale amount daalo');
+                  return false;
+              }
+              return { name, qty, cost, amount };
+          }
+      }).then(r => {
+          if (!r.isConfirmed)
+              return;
+          const { name, qty, cost, amount } = r.value;
+          const line = { id: Date.now() + Math.random(), item: qty > 1 ? `${name} [x${qty}]` : name, productKey: name, stockKey: null, qty, displayQty: qty, amount, cost, profit: amount - cost };
+          saleCart.push(line);
+          renderSaleCart();
+          showToast('success', 'Custom item bill mein add ho gaya');
+      });
+  }
   function addSaleToCart() {
       const line = buildSaleLine();
       if (!line)
           return;
-      warnLowStockForCart(line, () => {
-          saleCart.push(line);
+      const existing = line.stockKey ? findCartLine(line.stockKey) : null;
+      const checkLine = existing ? { ...line, qty: line.qty - existing.qty } : line;
+      warnLowStockForCart(checkLine, () => {
+          if (existing) {
+              existing.amount = line.amount;
+              existing.cost = line.cost;
+              existing.profit = line.profit;
+              existing.qty = line.qty;
+              existing.displayQty = line.displayQty;
+              existing.item = line.item;
+          }
+          else
+              saleCart.push(line);
           renderSaleCart();
           resetAfterSale();
-          showToast('success', 'Added to bill');
+          showToast('success', existing ? 'Bill updated' : 'Added to bill');
       });
   }
   function removeSaleCartItem(id) {
@@ -1575,7 +2033,37 @@
           box.innerHTML = '<div class="cart-empty">Cart empty. Product add karo.</div>';
           return;
       }
-      box.innerHTML = saleCart.map(l => `<div class="cart-item"><div><b>${esc(l.item)}</b><small>${esc(l.productKey)} • Stock Qty: ${num(l.qty)} • Margin: ${l.profit >= 0 ? '+' : ''}₹${num(l.profit)}</small></div><div><div class="cart-amt">₹${num(l.amount)}</div><button class="mini-btn red" onclick="removeSaleCartItem('${l.id}')">Remove</button></div></div>`).join('');
+      box.innerHTML = saleCart.map(l => `<div class="cart-item"><div><b>${esc(l.item)}</b><small>${esc(l.productKey)} • Stock Qty: ${num(l.qty)} • Margin: ${l.profit >= 0 ? '+' : ''}₹${num(l.profit)}</small></div><div><div class="cart-amt-tap" style="margin-top:0" onclick="editBillAmount('${l.id}')">₹${num(l.amount)} <i class="fa-solid fa-pen" style="font-size:8px;opacity:.6"></i></div><button class="mini-btn red" onclick="removeSaleCartItem('${l.id}')">Remove</button></div></div>`).join('');
+  }
+  function editBillAmount(id) {
+      const line = saleCart.find(l => String(l.id) === String(id));
+      if (!line)
+          return;
+      Swal.fire({ title: 'Rate set karo', input: 'number', inputValue: line.amount, inputAttributes: { inputmode: 'numeric' }, showCancelButton: true, confirmButtonText: 'Save' }).then(r => {
+          if (r.isConfirmed && r.value) {
+              line.amount = num(r.value);
+              line.profit = line.amount - line.cost;
+              if (line.stockKey && activeProduct.stockKey === line.stockKey) {
+                  const amtBox = document.getElementById('sell-amount');
+                  if (amtBox)
+                      amtBox.value = line.amount;
+                  const ribbon = document.getElementById('status-ribbon-box');
+                  if (ribbon) {
+                      const totalCP = num(activeProduct.cp) * currentQty, margin = line.amount - totalCP;
+                      if (line.amount > 0 && line.amount < totalCP) {
+                          ribbon.className = 'status-ribbon status-danger';
+                          document.getElementById('selected-cp-text').innerHTML = `CP: ₹${totalCP} | Margin: -₹${Math.abs(margin)}`;
+                      }
+                      else {
+                          ribbon.className = 'status-ribbon status-success';
+                          document.getElementById('selected-cp-text').innerHTML = `CP: ₹${totalCP} | Margin: +₹${Math.max(margin, 0)}`;
+                      }
+                  }
+              }
+              renderSaleCart();
+              refreshProductGrid();
+          }
+      });
   }
   function submitSaleCart() {
       if (!saleCart.length) {
@@ -1602,6 +2090,7 @@
           items.forEach(l => {
               if (l.stockKey)
                   inventory[l.stockKey] = getStock(l.stockKey) - num(l.qty);
+                  persistCustomStock(l.stockKey);
               allSalesLogs.push({ date, time, item: l.item, type: currentMode, amount: l.amount, cost: l.cost, profit: l.profit, productKey: l.productKey, qty: l.qty, billId });
           });
           clearSaleCart();
@@ -1655,7 +2144,7 @@
       }
   }
   function renderStockInView() {
-      document.getElementById('view-stockin').innerHTML = `<div class="stockin-mode-toggle"><button class="stockin-mode-btn active" onclick="setStockinMode(event,'individual')"><i class="fa-solid fa-cube"></i> Individual</button><button class="stockin-mode-btn" onclick="setStockinMode(event,'bulk')"><i class="fa-solid fa-cubes"></i> Bulk Entry</button></div><div id="stockin-individual"><div class="category-tabs" id="stockin-cat-tabs"></div><div class="catalog-container" id="stockin-catalog"></div><p class="tiny-note" style="text-align:center;margin-bottom:6px">Tap kisi bhi product pe — qty aur cost wahi set karke add karo. Multiple product ek saath select ho sakte hai.</p></div><div id="stockin-bulk" style="display:none"><div class="stockin-form"><label class="form-label">Bulk Entry (one per line)</label><textarea class="bulk-textarea" id="bulk-text" placeholder="Format: Product Name, Qty, Total Cost\n\nExample:\n2 Fold Black Silver, 24, 2640\nTarpaulin 8x9, 2, 0\nKala Plastic, 10, 450"></textarea><p class="bulk-help">Format: <b>Product Name, Qty, Total Cost</b>. Tarpaulin ke liye: <b>Tarpaulin 8x9</b>.</p><button class="action-btn secondary" onclick="addBulkStockToCart()"><i class="fa-solid fa-list-check"></i> Add Bulk to Cart</button></div></div><div class="stockin-form"><div class="form-row"><label class="form-label">Purchased From / Supplier Name</label><input type="text" class="form-input" id="supplier-name" placeholder="e.g. Raj Traders"></div><p class="tiny-note">Supplier udhar track nahi hoga. Purchase ko paid maana jayega.</p></div><div class="capital-box"><div class="capital-grid"><div><label>Capital Source</label><input type="text" id="capital-source" value="Daddy/Ghar" placeholder="Daddy/Ghar"></div><div><label>Capital Borrowed</label><input type="number" id="capital-borrowed" placeholder="e.g. 11000" inputmode="numeric"></div></div><p class="tiny-note">Agar ghar/daddy se paisa liya hai to yahan amount daalo; supplier due nahi banega.</p></div><div class="cart-box"><div class="cart-head"><b>Stock-In Cart</b><span id="stock-cart-count">0 items</span></div><div class="cart-list" id="stock-cart-list"><div class="cart-empty">Cart empty. Stock item add karo.</div></div><div class="cart-total"><div><span>Items</span><b id="stock-cart-items">0</b></div><div><span>Qty</span><b id="stock-cart-qty">0</b></div><div><span>Cost</span><b id="stock-cart-total">₹0</b></div></div></div><button class="action-btn green" id="stock-save-btn" onclick="submitStockIn()"><i class="fa-solid fa-plus"></i> Save Stock-In Cart</button><div class="logs-section"><span class="section-label">Purchase History</span><div class="logs-container" id="purchase-logs-container"><p class="empty">Loading...</p></div></div>`;
+      document.getElementById('view-stockin').innerHTML = `<div class="stockin-mode-toggle"><button class="stockin-mode-btn active" onclick="setStockinMode(event,'individual')"><i class="fa-solid fa-cube"></i> Individual</button><button class="stockin-mode-btn" onclick="setStockinMode(event,'bulk')"><i class="fa-solid fa-cubes"></i> Bulk Entry</button></div><div id="stockin-individual"><div class="cat-tabs-row"><div class="category-tabs" id="stockin-cat-tabs"></div><button class="add-product-fab" onclick="openAddProductModal()" title="Naya Item Add Karo"><i class="fa-solid fa-plus"></i></button></div><div class="catalog-container" id="stockin-catalog"></div><p class="tiny-note" style="text-align:center;margin-bottom:6px">Naya maal aaya? Pehle (+) se item add karo — phir yahin qty/cost daal ke stock-in karo, stock khud update ho jayega aur Sell mein bhi dikhne lagega. Tap kisi bhi product pe — qty aur cost wahi set karke add karo.</p></div><div id="stockin-bulk" style="display:none"><div class="stockin-form"><label class="form-label">Bulk Entry (one per line)</label><textarea class="bulk-textarea" id="bulk-text" placeholder="Format: Product Name, Qty, Total Cost\n\nExample:\n2 Fold Black Silver, 24, 2640\nTarpaulin 8x9, 2, 0\nKala Plastic, 10, 450"></textarea><p class="bulk-help">Format: <b>Product Name, Qty, Total Cost</b>. Tarpaulin ke liye: <b>Tarpaulin 8x9</b>.</p><button class="action-btn secondary" onclick="addBulkStockToCart()"><i class="fa-solid fa-list-check"></i> Add Bulk to Cart</button></div></div><div class="stockin-form"><div class="form-row"><label class="form-label">Purchased From / Supplier Name</label><input type="text" class="form-input" id="supplier-name" placeholder="e.g. Raj Traders"></div><p class="tiny-note">Supplier udhar track nahi hoga. Purchase ko paid maana jayega.</p></div><div class="capital-box"><div class="capital-grid"><div><label>Capital Source</label><input type="text" id="capital-source" value="Daddy/Ghar" placeholder="Daddy/Ghar"></div><div><label>Capital Borrowed</label><input type="number" id="capital-borrowed" placeholder="e.g. 11000" inputmode="numeric"></div></div><p class="tiny-note">Agar ghar/daddy se paisa liya hai to yahan amount daalo; supplier due nahi banega.</p></div><div class="cart-box"><div class="cart-head"><b>Stock-In Cart</b><span id="stock-cart-count">0 items</span></div><div class="cart-list" id="stock-cart-list"><div class="cart-empty">Cart empty. Stock item add karo.</div></div><div class="cart-total"><div><span>Items</span><b id="stock-cart-items">0</b></div><div><span>Qty</span><b id="stock-cart-qty">0</b></div><div><span>Cost</span><b id="stock-cart-total">₹0</b></div></div></div><button class="action-btn green" id="stock-save-btn" onclick="submitStockIn()"><i class="fa-solid fa-plus"></i> Save Stock-In Cart</button><div class="logs-section"><span class="section-label">Purchase History</span><div class="logs-container" id="purchase-logs-container"><p class="empty">Loading...</p></div></div>`;
       renderStockinCatTabs();
       refreshStockinGrid();
       renderStockinCart();
@@ -1674,7 +2163,8 @@
   function stockinProductsForCat(cat) {
       if (cat !== 'sheets')
           return PRODUCTS[cat].map(p => p.name);
-      return ['Kala Plastic', ...TARP_SIZES.filter(s => s.label !== 'Custom').map(s => 'Tarpaulin ' + s.label)];
+      const nonTarpNames = PRODUCTS.sheets.filter(p => p.type !== 'talpatri').map(p => p.name);
+      return [...nonTarpNames, ...TARP_SIZES.filter(s => s.label !== 'Custom').map(s => 'Tarpaulin ' + s.label)];
   }
   function stockinQuickAdd(i) {
       const name = stockinProductsForCat(stockinCat)[i];
@@ -1731,18 +2221,21 @@
           }
       });
   }
+  function isMeterProduct(name) {
+      return Object.values(PRODUCTS).some(list => list.some(p => p.name === name && p.type === 'plastic'));
+  }
   function refreshStockinGrid() {
       const catalog = document.getElementById('stockin-catalog');
       if (!catalog)
           return;
       let html = '<div class="item-grid">';
       stockinProductsForCat(stockinCat).forEach((name, i) => {
-          const line = stockinCart.find(x => x.name === name);
+          const line = stockinCart.find(x => x.name === name), unitTag = isMeterProduct(name) ? ' (Meter)' : '';
           if (line) {
-              html += `<div class="product-card in-cart"><h4>${esc(name)}</h4><div class="qty-stepper-row"><button type="button" onclick="event.stopPropagation();incStockinLine(${i},-1)">-</button><span>${line.qty}</span><button type="button" onclick="event.stopPropagation();incStockinLine(${i},1)">+</button></div><div class="cart-amt-tap" onclick="editStockinCost(event,${i})">₹${line.cost} <i class="fa-solid fa-pen" style="font-size:8px;opacity:.6"></i></div></div>`;
+              html += `<div class="product-card in-cart"><h4>${esc(name)}${unitTag}</h4><div class="qty-stepper-row"><button type="button" onclick="event.stopPropagation();incStockinLine(${i},-1)">-</button><span>${line.qty}</span><button type="button" onclick="event.stopPropagation();incStockinLine(${i},1)">+</button></div><div class="cart-amt-tap" onclick="editStockinCost(event,${i})">₹${line.cost} <i class="fa-solid fa-pen" style="font-size:8px;opacity:.6"></i></div></div>`;
           }
           else {
-              html += `<div class="product-card" onclick="stockinQuickAdd(${i})"><h4>${esc(name)}</h4><p style="font-size:10px;color:var(--muted)">Stock: <b>${getStock(name)}</b></p></div>`;
+              html += `<div class="product-card" onclick="stockinQuickAdd(${i})"><h4>${esc(name)}${unitTag}</h4><p style="font-size:10px;color:var(--muted)">Stock: <b>${getStock(name)}</b></p></div>`;
           }
       });
       catalog.innerHTML = html + '</div>';
@@ -1824,7 +2317,10 @@
       const supplier = String(document.getElementById('supplier-name')?.value || '').trim(), capitalSource = String(document.getElementById('capital-source')?.value || 'Daddy/Ghar').trim() || 'Daddy/Ghar', capitalBorrowed = num(document.getElementById('capital-borrowed')?.value);
       const items = stockinCart.map(x => ({ name: x.name, qty: num(x.qty), cost: num(x.cost) })), totalCost = items.reduce((sum, p) => sum + num(p.cost), 0), time = formatTimeForSheet(), date = getTodayDate();
       function localPurchaseSuccess(message = 'Stock Added!') {
-          items.forEach(p => inventory[p.name] = getStock(p.name) + p.qty);
+          items.forEach(p => {
+              inventory[p.name] = getStock(p.name) + p.qty;
+              persistCustomStock(p.name);
+          });
           totalInvestment += totalCost;
           if (capitalBorrowed > 0) {
               totalCapitalBorrowed += capitalBorrowed;
@@ -1981,6 +2477,8 @@
           allPurchaseLogs = data.purchases || [];
           pastSalesSummary = data.pastSummary || [];
           inventory = data.inventory || {};
+          mergeBackendProducts(data.products || []);
+          applyCustomStock();
           totalInvestment = num(data.investment);
           capitalLogs = data.capital || data.capitalLogs || [];
           totalCapitalBorrowed = num(data.capitalBorrowed) || capitalDueTotal();
@@ -2079,7 +2577,7 @@
   function shareOnWhatsApp() {
       const today = allSalesLogs.filter(isTodaySale), cash = today.filter(l => l.type === 'Cash').reduce((s, l) => s + num(l.amount), 0), gpay = today.filter(l => l.type === 'GPay').reduce((s, l) => s + num(l.amount), 0), profit = today.reduce((s, l) => s + num(l.profit), 0), total = cash + gpay, cap = capitalDueTotal();
       const now = new Date(), hh = now.getHours() % 12 || 12, mm = String(now.getMinutes()).padStart(2, '0'), ap = now.getHours() >= 12 ? 'PM' : 'AM', timeStr = `${String(hh).padStart(2, '0')}:${mm} ${ap}`;
-      const msg = `*JMD ENTERPRISE — SHOP 3*\n*Daily Sales Report*\n━━━━━━━━━━━━━━━━━━━━\nDate  : *${displayDate(selectedDateKey)}*\nTime  : ${timeStr}\n━━━━━━━━━━━━━━━━━━━━\nCash Sale        : ₹${cash}/-\nGPay Sale        : ₹${gpay}/-\n\n*Total Sale      : ₹${total}/-*\n*Total Profit    : ₹${profit}/-*\nPurchase Cost    : ₹${totalInvestment}/-\n${cap > 0 ? `Capital Due      : ₹${cap}/-\n` : ''}━━━━━━━━━━━━━━━━━━━━\nTotal Transactions : *${today.length}*\n━━━━━━━━━━━━━━━━━━━━\n_Generated via JMD POS System_`;
+      const msg = `*JMD ENTERPRISE — SHOP 3*\n*Daily Sales Report*\n\nDate  : *${displayDate(selectedDateKey)}*\n━━━━━━━━━━━━━━━━━\nCash Sale        :  ₹${cash}/-\nGPay Sale        :  ₹${gpay}/-\n\n*Total Sale      :  ₹${total}/-*\n*Total Profit    :  ₹${profit}/-*\n━━━━━━━━━━━━━━━━━━━━\nTotal Transactions : *${today.length}*\n\n_Generated via JMD POS System_`;
       window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, '_blank');
   }
 
