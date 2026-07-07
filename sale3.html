@@ -297,6 +297,185 @@
       color:#fff;
       box-shadow:0 4px 10px rgba(22,163,74,.3);
     }
+    .ep-search-wrap {
+      position:relative;
+      margin-bottom:10px;
+    }
+    .ep-search-wrap i {
+      position:absolute;
+      left:12px;
+      top:50%;
+      transform:translateY(-50%);
+      color:var(--muted);
+      font-size:12px;
+    }
+    .ep-search-wrap input {
+      width:100%;
+      padding:11px 12px 11px 32px;
+      border-radius:10px;
+      border:1.5px solid var(--line);
+      font-size:12.5px;
+      font-weight:600;
+      color:var(--dark);
+      background:var(--soft);
+    }
+    .ep-search-wrap input:focus {
+      outline:none;
+      border-color:var(--accent);
+      background:#fff;
+    }
+    .ep-list {
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      max-height:56vh;
+      overflow-y:auto;
+      padding-bottom:2px;
+    }
+    .ep-row {
+      border:1px solid var(--line);
+      background:var(--soft);
+      border-radius:12px;
+      padding:9px 10px;
+    }
+    .ep-row.ep-dirty {
+      border-color:var(--accent);
+      background:#eef1ff;
+    }
+    .ep-row-name {
+      font-size:11.5px;
+      font-weight:750;
+      color:var(--dark);
+      margin-bottom:7px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:6px;
+    }
+    .ep-row-name .ep-stock-tag {
+      font-size:9px;
+      font-weight:800;
+      color:var(--muted);
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:20px;
+      padding:2px 8px;
+      white-space:nowrap;
+    }
+    .ep-row-fields {
+      display:grid;
+      grid-template-columns:1fr 1fr 1fr auto;
+      gap:6px;
+      align-items:end;
+    }
+    .ep-field label {
+      display:block;
+      font-size:8.5px;
+      font-weight:800;
+      text-transform:uppercase;
+      color:var(--muted);
+      margin-bottom:3px;
+      letter-spacing:.3px;
+    }
+    .ep-field input {
+      width:100%;
+      padding:8px 6px;
+      border-radius:8px;
+      border:1.5px solid var(--line);
+      font-size:12px;
+      font-weight:700;
+      color:var(--dark);
+      background:#fff;
+      text-align:center;
+    }
+    .ep-field input:focus {
+      outline:none;
+      border-color:var(--accent);
+    }
+    .ep-save-btn {
+      width:34px;
+      height:34px;
+      border-radius:8px;
+      border:0;
+      background:linear-gradient(135deg,var(--accent),var(--accent2));
+      color:#fff;
+      font-size:13px;
+      cursor:pointer;
+      flex-shrink:0;
+    }
+    .ep-save-btn.saved {
+      background:linear-gradient(135deg,var(--success),#15803d);
+    }
+    .stockin-entry-product {
+      background:#eef1ff;
+      border:1px solid #c7d0fe;
+      border-radius:10px;
+      padding:10px 12px;
+      font-size:12.5px;
+      font-weight:800;
+      color:var(--primary2);
+      margin-bottom:14px;
+      text-align:center;
+    }
+    .stockin-entry-total {
+      background:#f0fdf4;
+      border:1px solid #bbf7d0;
+      border-radius:10px;
+      padding:10px 12px;
+      font-size:12px;
+      font-weight:800;
+      color:#15803d;
+      margin-bottom:14px;
+      text-align:center;
+    }
+    .fund-toggle-mini {
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:6px;
+      margin-bottom:12px;
+    }
+    .fund-toggle-mini button {
+      padding:10px 6px;
+      border:1.5px solid var(--line);
+      background:#fff;
+      border-radius:10px;
+      font-size:10.5px;
+      font-weight:800;
+      cursor:pointer;
+      color:var(--text);
+    }
+    .fund-toggle-mini button.active {
+      background:linear-gradient(135deg,var(--warning),#c2410c);
+      color:#fff;
+      border-color:transparent;
+    }
+    .purchase-log-item {
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:6px;
+      padding:9px 10px;
+      border-bottom:1px solid var(--line);
+    }
+    .purchase-log-item:last-child {
+      border-bottom:0;
+    }
+    .fund-chip {
+      display:inline-block;
+      font-size:8.5px;
+      font-weight:800;
+      padding:2px 7px;
+      border-radius:20px;
+      margin-top:3px;
+    }
+    .fund-chip.self {
+      background:#dcfce7;
+      color:#15803d;
+    }
+    .fund-chip.borrowed {
+      background:#ffedd5;
+      color:#c2410c;
+    }
     .category-tabs::-webkit-scrollbar {
       height:3px;
     }
@@ -1274,6 +1453,17 @@
       background:linear-gradient(135deg,var(--warning),#c2660f);
       box-shadow:0 6px 16px rgba(224,138,30,.3);
     }
+    .fund-tag {
+      display:inline-block;
+      font-size:8px;
+      font-weight:800;
+      padding:1px 6px;
+      border-radius:20px;
+      margin-left:4px;
+      vertical-align:middle;
+    }
+    .fund-tag.self { background:#dcfce7; color:#15803d; }
+    .fund-tag.borrowed { background:#ffedd5; color:#c2410c; }
   </style>
 </head>
 <body>
@@ -1335,8 +1525,88 @@
     </div>
   </div>
 </div>
+<div class="modal-overlay" id="edit-product-overlay" onclick="if(event.target===this)closeEditProductModal()">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Poora Inventory — Stock / Price Update</div>
+    <div class="modal-sub">Jis bhi item ka stock, CP ya SP badalna hai, yahin badlo aur us row ka ✓ dabao</div>
+    <div class="ep-search-wrap"><i class="fa-solid fa-magnifying-glass"></i><input type="text" id="ep-search" placeholder="Product search karo..." oninput="renderEditProductList()"></div>
+    <div class="ep-list" id="ep-list"></div>
+    <div class="modal-btn-row" style="margin-top:12px">
+      <button class="modal-btn-cancel" onclick="closeEditProductModal()">Band Karo</button>
+    </div>
+  </div>
+</div>
+<div class="modal-overlay" id="stockin-entry-overlay" onclick="if(event.target===this)closeStockinEntryModal()">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="se-title">Stock In</div>
+    <div class="modal-sub">Kitna maal aaya aur ek piece ka rate kya pada — capital kahaan se laga wo bhi bata do</div>
+    <div class="stockin-entry-product" id="se-product-name"></div>
+    <div class="modal-row-2">
+      <div class="modal-field">
+        <label id="se-qty-label">Qty Li</label>
+        <input type="number" id="se-qty" inputmode="numeric" placeholder="e.g. 12" oninput="updateStockinEntryTotal()">
+      </div>
+      <div class="modal-field">
+        <label id="se-rate-label">Rate / Piece (₹)</label>
+        <input type="number" id="se-rate" inputmode="numeric" placeholder="e.g. 110" oninput="updateStockinEntryTotal()">
+      </div>
+    </div>
+    <div class="stockin-entry-total" id="se-total-box">Total Cost: ₹0</div>
+    <div class="modal-field">
+      <label>Capital Kahaan Se Laga?</label>
+      <div class="fund-toggle-mini" id="se-fund-toggle">
+        <button type="button" class="active" id="se-fund-self" onclick="setStockinEntryFunding('self')"><i class="fa-solid fa-wallet"></i> Apna/Business Paisa</button>
+        <button type="button" id="se-fund-borrowed" onclick="setStockinEntryFunding('borrowed')"><i class="fa-solid fa-hand-holding-dollar"></i> Udhaar Liya</button>
+      </div>
+    </div>
+    <div class="modal-field" id="se-source-field" style="display:none">
+      <label>Kiske Se Udhaar Liya</label>
+      <input type="text" id="se-source" value="Daddy/Ghar" placeholder="Daddy/Ghar">
+    </div>
+    <div class="modal-btn-row">
+      <button class="modal-btn-cancel" onclick="closeStockinEntryModal()">Cancel</button>
+      <button class="modal-btn-save" onclick="saveStockinEntry()"><i class="fa-solid fa-check"></i> Add Stock</button>
+    </div>
+  </div>
+</div>
+<div class="modal-overlay" id="purchase-edit-overlay" onclick="if(event.target===this)closePurchaseEditModal()">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Purchase Edit Karo</div>
+    <div class="modal-sub">Qty, rate ya capital source galat ho gaya ho to yahan sahi karo — stock aur capital dono khud adjust ho jayenge</div>
+    <div class="stockin-entry-product" id="pe-product-name"></div>
+    <div class="modal-row-2">
+      <div class="modal-field">
+        <label id="pe-qty-label">Qty</label>
+        <input type="number" id="pe-qty" inputmode="numeric" oninput="updatePurchaseEditTotal()">
+      </div>
+      <div class="modal-field">
+        <label id="pe-rate-label">Rate / Piece (₹)</label>
+        <input type="number" id="pe-rate" inputmode="numeric" oninput="updatePurchaseEditTotal()">
+      </div>
+    </div>
+    <div class="stockin-entry-total" id="pe-total-box">Total Cost: ₹0</div>
+    <div class="modal-field">
+      <label>Capital Kahaan Se Laga?</label>
+      <div class="fund-toggle-mini" id="pe-fund-toggle">
+        <button type="button" class="active" id="pe-fund-self" onclick="setPurchaseEditFunding('self')"><i class="fa-solid fa-wallet"></i> Apna/Business Paisa</button>
+        <button type="button" id="pe-fund-borrowed" onclick="setPurchaseEditFunding('borrowed')"><i class="fa-solid fa-hand-holding-dollar"></i> Udhaar Liya</button>
+      </div>
+    </div>
+    <div class="modal-field" id="pe-source-field" style="display:none">
+      <label>Kiske Se Udhaar Liya</label>
+      <input type="text" id="pe-source" value="Daddy/Ghar" placeholder="Daddy/Ghar">
+    </div>
+    <div class="modal-btn-row">
+      <button class="modal-btn-cancel" onclick="closePurchaseEditModal()">Cancel</button>
+      <button class="modal-btn-save" onclick="savePurchaseEdit()"><i class="fa-solid fa-check"></i> Update Purchase</button>
+    </div>
+  </div>
+</div>
 <script>
-  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw9Mh2vY_8yL-ekN3WzcKyyESQBgDY8Xz_kPdfh5FvEEFOk23zyuHR9KLIC2BZ5WrBhmQ/exec";
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyWvbHhUQQv54tQstfUWc4LKfHMIRsPay8sJ6gYi96tHWDz8wiGZGvVKQqzIO1NbDm9Ew/exec";
   const PRODUCTS = {
       adults: [{ name: "2 Fold Black Silver", cp: 110, sp: 200 }, { name: "2 Fold Ladies", cp: 115, sp: 200 }, { name: "Short Round U Handle", cp: 140, sp: 300 }, { name: "3 Fold Manual", cp: 150, sp: 300 }, { name: "3 Fold Indian", cp: 220, sp: 400 }, { name: "Shahenshah Rubber", cp: 230, sp: 400 }, { name: "Shahenshah Steel", cp: 240, sp: 450 }, { name: "Automatic Black", cp: 180, sp: 350 }, { name: "Long Rainbow+Army", cp: 165, sp: 300 }, { name: "Long Red Yellow Blue", cp: 210, sp: 400 }, { name: "Long Round U Handle", cp: 200, sp: 400 }, { name: "Long Rolls Royce", cp: 230, sp: 450 }, { name: "Magic Umbrella", cp: 360, sp: 650 }, { name: "Pioneer 3 Fold 25\"", cp: 280, sp: 500 }],
       kids: [{ name: "Kids Rainbow", cp: 75, sp: 150 }, { name: "Plain Coloured", cp: 80, sp: 180 }, { name: "Kids Dotted", cp: 85, sp: 180 }, { name: "Kids Black", cp: 90, sp: 200 }, { name: "Kids Kaan Wala", cp: 90, sp: 200 }, { name: "Kids Leaf Pattern", cp: 110, sp: 250 }, { name: "Printed Cartoon", cp: 110, sp: 250 }, { name: "Kids Transparent", cp: 135, sp: 250 }],
@@ -1345,7 +1615,9 @@
   };
   const TARP_SIZES = [{ label: "8x9", l: 8, w: 9 }, { label: "10x12", l: 10, w: 12 }, { label: "12x12", l: 12, w: 12 }, { label: "18x16", l: 18, w: 16 }, { label: "24x18", l: 24, w: 18 }, { label: "Custom", l: 0, w: 0 }];
   const CATEGORY_LABELS = { adults: "Umbrellas", kids: "Kids", covers: "Covers & Caps", sheets: "Sheets" };
-  let currentView = 'sell', currentMode = 'Cash', talpatriRate = 5, selectedTarpSize = null, currentQty = 1, allSalesLogs = [], allPurchaseLogs = [], pastSalesSummary = [], inventory = {}, totalInvestment = 0, totalCapitalBorrowed = 0, saleCart = [], stockinCart = [], capitalLogs = [], activeCategory = 'adults', stockinMode = 'individual', stockinCat = 'adults', stockinSelectedProduct = null, selectedDateKey = formatDateKey(new Date()), customProductNames = new Set();
+  let currentView = 'sell', currentMode = 'Cash', talpatriRate = 5, selectedTarpSize = null, currentQty = 1, allSalesLogs = [], allPurchaseLogs = [], allExpenseLogs = [], pastSalesSummary = [], inventory = {}, totalInvestment = 0, totalCapitalBorrowed = 0, saleCart = [], stockinCart = [], capitalLogs = [], activeCategory = 'adults', stockinMode = 'individual', stockinCat = 'adults', stockinSelectedProduct = null, selectedDateKey = formatDateKey(new Date()), customProductNames = new Set();
+  let seEditingIndex = -1, seFundType = 'self';
+  let peEditingLog = null, peFundType = 'self';
   let expandedSellCard = null, sellCardDrafts = {}, expandedStockinCard = null, stockinCardDrafts = {};
   // Tracks which meter-rate ("plastic" type) product is currently selected in
   // Sell — e.g. Kala Plastic, White Plastic, or any future roll item — so
@@ -1416,7 +1688,6 @@
       const s = String(v || '').trim();
       if (!s || s === 'undefined' || s === 'null')
           return '';
-      // Google Sheets time serial: 1899-12-30THH:MM:SS.000Z
       if (/^1899-12-30T/i.test(s)) {
           try {
               const d = new Date(s), h = d.getHours() % 12 || 12, m = String(d.getMinutes()).padStart(2, '0'), ap = d.getHours() >= 12 ? 'PM' : 'AM';
@@ -1425,7 +1696,6 @@
           catch (e) {
           }
       }
-      // ISO datetime from sheet: 2026-07-04T03:42:00.000Z
       if (/^\d{4}-\d{2}-\d{2}T/i.test(s)) {
           try {
               const d = new Date(s), h = d.getHours() % 12 || 12, m = String(d.getMinutes()).padStart(2, '0'), ap = d.getHours() >= 12 ? 'PM' : 'AM';
@@ -1434,10 +1704,8 @@
           catch (e) {
           }
       }
-      // v6 format: 09:12 AM
       if (/^\d{1,2}:\d{2}\s*(AM|PM)$/i.test(s))
           return s.replace(/^0/, '').toUpperCase();
-      // Old dot format: 9.27pm → 09:27 PM
       const dm = s.match(/^(\d{1,2})\.(\d{2})(am|pm)$/i);
       if (dm)
           return `${dm[1].padStart(2, '0')}:${dm[2]} ${dm[3].toUpperCase()}`;
@@ -1500,9 +1768,6 @@
       catch (e) {
       }
   }
-  // Merges products that live in the backend Products sheet (added from any
-  // device) into the local PRODUCTS catalog — keeps everyone's Sell/Stock-In
-  // list in sync, not just the browser that created the item.
   function mergeBackendProducts(list) {
       if (!Array.isArray(list) || !list.length)
           return;
@@ -1558,6 +1823,71 @@
   function closeAddProductModal() {
       document.getElementById('add-product-overlay').classList.remove('open');
   }
+  function findProductByName(name) {
+      for (const cat of Object.keys(PRODUCTS)) {
+          const idx = PRODUCTS[cat].findIndex(p => p.name === name);
+          if (idx !== -1) return { category: cat, item: PRODUCTS[cat][idx] };
+      }
+      return null;
+  }
+  function openEditProductModal() {
+      document.getElementById('ep-search').value = '';
+      renderEditProductList();
+      document.getElementById('edit-product-overlay').classList.add('open');
+  }
+  function closeEditProductModal() {
+      document.getElementById('edit-product-overlay').classList.remove('open');
+  }
+  function renderEditProductList() {
+      const q = (document.getElementById('ep-search')?.value || '').trim().toLowerCase();
+      const names = [...new Set(allProductList().map(p => p.name))].sort();
+      const filtered = q ? names.filter(n => n.toLowerCase().includes(q)) : names;
+      const box = document.getElementById('ep-list');
+      if (!filtered.length) {
+          box.innerHTML = '<p class="empty">Koi product nahi mila</p>';
+          return;
+      }
+      box.innerHTML = filtered.map(name => {
+          const found = findProductByName(name), cp = found ? num(found.item.cp) : 0, sp = found ? num(found.item.sp) : 0, stock = getStock(name), safe = esc(name);
+          return `<div class="ep-row" data-name="${safe}">
+        <div class="ep-row-name"><span>${safe}</span><span class="ep-stock-tag">Stock: ${stock}</span></div>
+        <div class="ep-row-fields">
+          <div class="ep-field"><label>Stock</label><input type="number" inputmode="numeric" class="ep-in-stock" value="${stock}" oninput="markEpRowDirty(this)"></div>
+          <div class="ep-field"><label>CP ₹</label><input type="number" inputmode="numeric" class="ep-in-cp" value="${cp}" oninput="markEpRowDirty(this)"></div>
+          <div class="ep-field"><label>SP ₹</label><input type="number" inputmode="numeric" class="ep-in-sp" value="${sp}" oninput="markEpRowDirty(this)"></div>
+          <button type="button" class="ep-save-btn" onclick="saveEditProductRow(this)"><i class="fa-solid fa-check"></i></button>
+        </div>
+      </div>`;
+      }).join('');
+  }
+  function markEpRowDirty(el) {
+      el.closest('.ep-row')?.classList.add('ep-dirty');
+  }
+  function saveEditProductRow(btn) {
+      const row = btn.closest('.ep-row');
+      const name = row.dataset.name;
+      const found = findProductByName(name);
+      if (!found) {
+          Swal.fire({ icon: 'warning', title: 'Product catalog mein nahi mila' });
+          return;
+      }
+      const stock = num(row.querySelector('.ep-in-stock').value), cp = num(row.querySelector('.ep-in-cp').value), sp = num(row.querySelector('.ep-in-sp').value);
+      found.item.cp = cp;
+      found.item.sp = sp;
+      inventory[name] = stock;
+      persistCustomStock(name);
+      fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: 'ADD_PRODUCT', name, category: found.category, cp, sp, type: found.item.type || 'item', unit: found.item.unit || found.item.type || 'item', openingStock: stock }) })
+          .catch(() => noteSyncing('Update saved locally, sync checking...'));
+      row.classList.remove('ep-dirty');
+      row.querySelector('.ep-stock-tag').innerText = `Stock: ${stock}`;
+      btn.classList.add('saved');
+      setTimeout(() => btn.classList.remove('saved'), 900);
+      refreshProductGrid();
+      refreshStockinGrid();
+      if (typeof renderLedgerData === 'function' && document.getElementById('stock-table-body'))
+          renderLedgerData();
+      showToast('success', `${name} update ho gaya!`);
+  }
   function toggleNewProductUnitHint() {
       const isMeter = document.getElementById('np-unit').value === 'plastic';
       document.getElementById('np-cp-label').innerText = isMeter ? 'Cost Price (₹/Meter)' : 'Cost Price (CP)';
@@ -1596,8 +1926,6 @@
       catch (e) {
       }
       persistCustomStock(name);
-      // Sync to backend Products sheet so it's visible on every device, and
-      // seed opening stock straight into Inventory in the same call.
       fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: 'ADD_PRODUCT', name, category, cp, sp, type, unit, openingStock: stock }) }).catch(() => {
           noteSyncing('Product saved locally, sync checking...');
       });
@@ -2088,9 +2416,10 @@
       const total = items.reduce((s, l) => s + num(l.amount), 0), profit = items.reduce((s, l) => s + num(l.profit), 0);
       function localSuccess(message = 'Bill Saved!') {
           items.forEach(l => {
-              if (l.stockKey)
+              if (l.stockKey) {
                   inventory[l.stockKey] = getStock(l.stockKey) - num(l.qty);
                   persistCustomStock(l.stockKey);
+              }
               allSalesLogs.push({ date, time, item: l.item, type: currentMode, amount: l.amount, cost: l.cost, profit: l.profit, productKey: l.productKey, qty: l.qty, billId });
           });
           clearSaleCart();
@@ -2144,10 +2473,11 @@
       }
   }
   function renderStockInView() {
-      document.getElementById('view-stockin').innerHTML = `<div class="stockin-mode-toggle"><button class="stockin-mode-btn active" onclick="setStockinMode(event,'individual')"><i class="fa-solid fa-cube"></i> Individual</button><button class="stockin-mode-btn" onclick="setStockinMode(event,'bulk')"><i class="fa-solid fa-cubes"></i> Bulk Entry</button></div><div id="stockin-individual"><div class="cat-tabs-row"><div class="category-tabs" id="stockin-cat-tabs"></div><button class="add-product-fab" onclick="openAddProductModal()" title="Naya Item Add Karo"><i class="fa-solid fa-plus"></i></button></div><div class="catalog-container" id="stockin-catalog"></div><p class="tiny-note" style="text-align:center;margin-bottom:6px">Naya maal aaya? Pehle (+) se item add karo — phir yahin qty/cost daal ke stock-in karo, stock khud update ho jayega aur Sell mein bhi dikhne lagega. Tap kisi bhi product pe — qty aur cost wahi set karke add karo.</p></div><div id="stockin-bulk" style="display:none"><div class="stockin-form"><label class="form-label">Bulk Entry (one per line)</label><textarea class="bulk-textarea" id="bulk-text" placeholder="Format: Product Name, Qty, Total Cost\n\nExample:\n2 Fold Black Silver, 24, 2640\nTarpaulin 8x9, 2, 0\nKala Plastic, 10, 450"></textarea><p class="bulk-help">Format: <b>Product Name, Qty, Total Cost</b>. Tarpaulin ke liye: <b>Tarpaulin 8x9</b>.</p><button class="action-btn secondary" onclick="addBulkStockToCart()"><i class="fa-solid fa-list-check"></i> Add Bulk to Cart</button></div></div><div class="stockin-form"><div class="form-row"><label class="form-label">Purchased From / Supplier Name</label><input type="text" class="form-input" id="supplier-name" placeholder="e.g. Raj Traders"></div><p class="tiny-note">Supplier udhar track nahi hoga. Purchase ko paid maana jayega.</p></div><div class="capital-box"><div class="capital-grid"><div><label>Capital Source</label><input type="text" id="capital-source" value="Daddy/Ghar" placeholder="Daddy/Ghar"></div><div><label>Capital Borrowed</label><input type="number" id="capital-borrowed" placeholder="e.g. 11000" inputmode="numeric"></div></div><p class="tiny-note">Agar ghar/daddy se paisa liya hai to yahan amount daalo; supplier due nahi banega.</p></div><div class="cart-box"><div class="cart-head"><b>Stock-In Cart</b><span id="stock-cart-count">0 items</span></div><div class="cart-list" id="stock-cart-list"><div class="cart-empty">Cart empty. Stock item add karo.</div></div><div class="cart-total"><div><span>Items</span><b id="stock-cart-items">0</b></div><div><span>Qty</span><b id="stock-cart-qty">0</b></div><div><span>Cost</span><b id="stock-cart-total">₹0</b></div></div></div><button class="action-btn green" id="stock-save-btn" onclick="submitStockIn()"><i class="fa-solid fa-plus"></i> Save Stock-In Cart</button><div class="logs-section"><span class="section-label">Purchase History</span><div class="logs-container" id="purchase-logs-container"><p class="empty">Loading...</p></div></div>`;
+      document.getElementById('view-stockin').innerHTML = `<div class="stockin-mode-toggle" id="stockin-io-toggle"><button class="stockin-mode-btn active" onclick="setStockinMode(event,'individual')"><i class="fa-solid fa-cube"></i> Stock Item</button><button class="stockin-mode-btn" onclick="setStockinMode(event,'expense')"><i class="fa-solid fa-receipt"></i> Misc Expense</button></div><div id="stockin-individual"><div class="cat-tabs-row"><div class="category-tabs" id="stockin-cat-tabs"></div><button class="add-product-fab" onclick="openAddProductModal()" title="Naya Item Add Karo"><i class="fa-solid fa-plus"></i></button></div><div class="catalog-container" id="stockin-catalog"></div><p class="tiny-note" style="text-align:center;margin-bottom:6px">Naya maal aaya? Pehle (+) se item add karo — phir yahin tap karke qty, per-piece rate aur capital source daal ke stock-in karo, stock khud update ho jayega aur Sell mein bhi dikhne lagega.</p><div class="stockin-form"><div class="form-row"><label class="form-label">Purchased From / Supplier Name</label><input type="text" class="form-input" id="supplier-name" placeholder="e.g. Raj Traders"></div><p class="tiny-note">Supplier udhar track nahi hoga. Purchase ko paid maana jayega.</p></div><div class="cart-box"><div class="cart-head"><b>Stock-In Cart</b><span id="stock-cart-count">0 items</span></div><div class="cart-list" id="stock-cart-list"><div class="cart-empty">Cart empty. Stock item add karo.</div></div><div class="cart-total"><div><span>Items</span><b id="stock-cart-items">0</b></div><div><span>Qty</span><b id="stock-cart-qty">0</b></div><div><span>Cost</span><b id="stock-cart-total">₹0</b></div></div></div><button class="action-btn green" id="stock-save-btn" onclick="submitStockIn()"><i class="fa-solid fa-plus"></i> Save Stock-In Cart</button><div class="logs-section"><span class="section-label">Purchase History</span><div class="logs-container" id="purchase-logs-container"><p class="empty">Loading...</p></div></div></div><div id="stockin-expense" style="display:none"><div class="stockin-form"><p class="tiny-note" style="margin-bottom:8px">Travel, labour, rent, chai-pani jaisa koi bhi kharcha jo stock nahi badhata, par paisa laga hai — yahan daal do. Ye Inventory ko touch nahi karega, sirf Ledger mein expense/capital ke roop mein dikhega.</p><div class="form-row"><label class="form-label">Expense Naam</label><input type="text" class="form-input" id="exp-name" placeholder="e.g. Auto Bhada, Labour"></div><div class="modal-row-2"><div class="form-row"><label class="form-label">Amount (₹)</label><input type="number" class="form-input" id="exp-amount" inputmode="numeric" placeholder="0"></div><div class="form-row"><label class="form-label">Note (optional)</label><input type="text" class="form-input" id="exp-note" placeholder="e.g. supplier tak jaane ka"></div></div><div class="fund-toggle-mini" id="exp-fund-toggle"><button type="button" class="active" id="exp-fund-self" onclick="setExpenseFunding('self')"><i class="fa-solid fa-wallet"></i> Apna/Business Paisa</button><button type="button" id="exp-fund-borrowed" onclick="setExpenseFunding('borrowed')"><i class="fa-solid fa-hand-holding-dollar"></i> Udhaar Liya</button></div><div class="form-row" id="exp-source-field" style="display:none"><label class="form-label">Kiske Se Udhaar Liya</label><input type="text" class="form-input" id="exp-source" value="Daddy/Ghar" placeholder="Daddy/Ghar"></div><button class="action-btn orange" onclick="saveExpense()"><i class="fa-solid fa-plus"></i> Add Expense</button></div><div class="logs-section"><span class="section-label">Expense History</span><div class="logs-container" id="expense-logs-container"><p class="empty">Loading...</p></div></div></div>`;
       renderStockinCatTabs();
       refreshStockinGrid();
       renderStockinCart();
+      updateExpenseLogs();
   }
   function renderStockinCatTabs() {
       document.getElementById('stockin-cat-tabs').innerHTML = Object.keys(CATEGORY_LABELS).map(c => `<button class="tab-btn ${c === stockinCat ? 'active' : ''}" onclick="switchStockinCat(event,'${c}')">${CATEGORY_LABELS[c]}</button>`).join('');
@@ -2166,28 +2496,68 @@
       const nonTarpNames = PRODUCTS.sheets.filter(p => p.type !== 'talpatri').map(p => p.name);
       return [...nonTarpNames, ...TARP_SIZES.filter(s => s.label !== 'Custom').map(s => 'Tarpaulin ' + s.label)];
   }
+  function isMeterProduct(name) {
+      return Object.values(PRODUCTS).some(list => list.some(p => p.name === name && p.type === 'plastic'));
+  }
+
+  // ---- New Stock-In entry modal: qty + per-piece rate + capital source, per product ----
   function stockinQuickAdd(i) {
       const name = stockinProductsForCat(stockinCat)[i];
-      if (stockinCart.find(x => x.name === name)) {
-          incStockinLine(i, 1);
+      openStockinEntryModal(name);
+  }
+  function openStockinEntryModal(name) {
+      const existing = stockinCart.find(x => x.name === name);
+      seEditingIndex = existing ? stockinCart.indexOf(existing) : -1;
+      document.getElementById('se-title').innerText = existing ? 'Stock In — Update' : 'Stock In';
+      document.getElementById('se-product-name').innerText = name + (isMeterProduct(name) ? ' (Meter)' : '');
+      const qty = existing ? existing.qty : '';
+      const rate = existing ? (existing.qty ? Math.round(existing.cost / existing.qty) : '') : '';
+      document.getElementById('se-qty').value = qty;
+      document.getElementById('se-qty-label').innerText = isMeterProduct(name) ? 'Meters Liye' : 'Qty Li';
+      document.getElementById('se-rate-label').innerText = isMeterProduct(name) ? 'Rate / Meter (₹)' : 'Rate / Piece (₹)';
+      document.getElementById('se-rate').value = rate;
+      document.getElementById('se-source').value = (existing && existing.fundSource) || 'Daddy/Ghar';
+      setStockinEntryFunding((existing && existing.fundType) || 'self');
+      updateStockinEntryTotal();
+      document.getElementById('stockin-entry-overlay').dataset.name = name;
+      document.getElementById('stockin-entry-overlay').classList.add('open');
+  }
+  function closeStockinEntryModal() {
+      document.getElementById('stockin-entry-overlay').classList.remove('open');
+      seEditingIndex = -1;
+  }
+  function setStockinEntryFunding(mode) {
+      seFundType = mode;
+      document.getElementById('se-fund-self').classList.toggle('active', mode === 'self');
+      document.getElementById('se-fund-borrowed').classList.toggle('active', mode === 'borrowed');
+      document.getElementById('se-source-field').style.display = mode === 'borrowed' ? 'block' : 'none';
+  }
+  function updateStockinEntryTotal() {
+      const qty = num(document.getElementById('se-qty').value), rate = num(document.getElementById('se-rate').value);
+      document.getElementById('se-total-box').innerText = `Total Cost: ₹${Math.round(qty * rate)}`;
+  }
+  function saveStockinEntry() {
+      const name = document.getElementById('stockin-entry-overlay').dataset.name;
+      const qty = num(document.getElementById('se-qty').value), rate = num(document.getElementById('se-rate').value);
+      if (qty <= 0) {
+          Swal.fire({ icon: 'warning', title: 'Qty daalo' });
           return;
       }
-      Swal.fire({ title: esc(name), html: `<input id="swal-qty" type="number" class="swal2-input" placeholder="Quantity" value="12"><input id="swal-cost" type="number" class="swal2-input" placeholder="Total Cost (₹)">`, confirmButtonText: 'Add to Cart', showCancelButton: true, focusConfirm: false, preConfirm: () => {
-              const qty = num(document.getElementById('swal-qty').value), cost = num(document.getElementById('swal-cost').value);
-              if (qty <= 0 || cost <= 0) {
-                  Swal.showValidationMessage('Qty aur Cost dono daalo');
-                  return false;
-              }
-              return { qty, cost };
-          } }).then(r => {
-          if (!r.isConfirmed)
-              return;
-          const { qty, cost } = r.value;
-          stockinCart.push({ id: Date.now() + Math.random(), name, qty, cost });
-          renderStockinCart();
-          refreshStockinGrid();
-          showToast('success', 'Added', `${name} × ${qty}`);
-      });
+      if (rate <= 0) {
+          Swal.fire({ icon: 'warning', title: 'Rate daalo' });
+          return;
+      }
+      const fundSource = seFundType === 'borrowed' ? (String(document.getElementById('se-source').value || 'Daddy/Ghar').trim() || 'Daddy/Ghar') : '';
+      const cost = Math.round(qty * rate);
+      const entry = { id: Date.now() + Math.random(), name, qty, cost, rate, fundType: seFundType, fundSource };
+      if (seEditingIndex > -1)
+          stockinCart[seEditingIndex] = { ...stockinCart[seEditingIndex], ...entry, id: stockinCart[seEditingIndex].id };
+      else
+          stockinCart.push(entry);
+      closeStockinEntryModal();
+      renderStockinCart();
+      refreshStockinGrid();
+      showToast('success', 'Stock-In cart mein add ho gaya');
   }
   function incStockinLine(i, delta) {
       const name = stockinProductsForCat(stockinCat)[i];
@@ -2207,23 +2577,6 @@
       renderStockinCart();
       refreshStockinGrid();
   }
-  function editStockinCost(e, i) {
-      e.stopPropagation();
-      const name = stockinProductsForCat(stockinCat)[i];
-      const line = stockinCart.find(x => x.name === name);
-      if (!line)
-          return;
-      Swal.fire({ title: 'Total Cost set karo', input: 'number', inputValue: line.cost, showCancelButton: true, confirmButtonText: 'Save' }).then(r => {
-          if (r.isConfirmed && r.value) {
-              line.cost = num(r.value);
-              renderStockinCart();
-              refreshStockinGrid();
-          }
-      });
-  }
-  function isMeterProduct(name) {
-      return Object.values(PRODUCTS).some(list => list.some(p => p.name === name && p.type === 'plastic'));
-  }
   function refreshStockinGrid() {
       const catalog = document.getElementById('stockin-catalog');
       if (!catalog)
@@ -2232,7 +2585,8 @@
       stockinProductsForCat(stockinCat).forEach((name, i) => {
           const line = stockinCart.find(x => x.name === name), unitTag = isMeterProduct(name) ? ' (Meter)' : '';
           if (line) {
-              html += `<div class="product-card in-cart"><h4>${esc(name)}${unitTag}</h4><div class="qty-stepper-row"><button type="button" onclick="event.stopPropagation();incStockinLine(${i},-1)">-</button><span>${line.qty}</span><button type="button" onclick="event.stopPropagation();incStockinLine(${i},1)">+</button></div><div class="cart-amt-tap" onclick="editStockinCost(event,${i})">₹${line.cost} <i class="fa-solid fa-pen" style="font-size:8px;opacity:.6"></i></div></div>`;
+              const fundTag = line.fundType === 'borrowed' ? `<span class="fund-tag borrowed">${esc(line.fundSource || 'Udhaar')}</span>` : `<span class="fund-tag self">Apna</span>`;
+              html += `<div class="product-card in-cart"><h4>${esc(name)}${unitTag}${fundTag}</h4><div class="qty-stepper-row"><button type="button" onclick="event.stopPropagation();incStockinLine(${i},-1)">-</button><span>${line.qty}</span><button type="button" onclick="event.stopPropagation();incStockinLine(${i},1)">+</button></div><div class="cart-amt-tap" onclick="openStockinEntryModal('${esc(name)}')">₹${line.cost} <i class="fa-solid fa-pen" style="font-size:8px;opacity:.6"></i></div></div>`;
           }
           else {
               html += `<div class="product-card" onclick="stockinQuickAdd(${i})"><h4>${esc(name)}${unitTag}</h4><p style="font-size:10px;color:var(--muted)">Stock: <b>${getStock(name)}</b></p></div>`;
@@ -2240,55 +2594,89 @@
       });
       catalog.innerHTML = html + '</div>';
   }
-  function selectStockinProd(i) {
-      stockinSelectedProduct = stockinProductsForCat(stockinCat)[i];
-      refreshStockinGrid();
-  }
-  function updatePerUnit() {
-      const qty = num(document.getElementById('stockin-qty')?.value), cost = num(document.getElementById('stockin-cost')?.value), el = document.getElementById('stockin-per-unit');
-      if (el)
-          el.innerText = qty > 0 && cost > 0 ? `Per unit: ₹${Math.round(cost / qty)}` : '';
-  }
   function setStockinMode(e, mode) {
       stockinMode = mode;
-      document.querySelectorAll('.stockin-mode-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('#stockin-io-toggle .stockin-mode-btn').forEach(b => b.classList.remove('active'));
       e.currentTarget.classList.add('active');
       document.getElementById('stockin-individual').style.display = mode === 'individual' ? 'block' : 'none';
-      document.getElementById('stockin-bulk').style.display = mode === 'bulk' ? 'block' : 'none';
+      document.getElementById('stockin-expense').style.display = mode === 'expense' ? 'block' : 'none';
   }
-  function addStockItemToCart() {
-      if (!stockinSelectedProduct) {
-          Swal.fire({ icon: 'warning', title: 'Product select karo' });
-          return;
-      }
-      const qty = num(document.getElementById('stockin-qty').value), cost = num(document.getElementById('stockin-cost').value);
-      if (qty <= 0) {
-          Swal.fire({ icon: 'warning', title: 'Quantity missing' });
-          return;
-      }
-      stockinCart.push({ id: Date.now() + Math.random(), name: stockinSelectedProduct, qty, cost });
-      document.getElementById('stockin-cost').value = '';
-      renderStockinCart();
-      showToast('success', 'Added to stock cart');
+  function setExpenseFunding(mode) {
+      document.getElementById('exp-fund-self').classList.toggle('active', mode === 'self');
+      document.getElementById('exp-fund-borrowed').classList.toggle('active', mode === 'borrowed');
+      document.getElementById('exp-source-field').style.display = mode === 'borrowed' ? 'block' : 'none';
+      document.getElementById('exp-fund-toggle').dataset.mode = mode;
   }
-  function addBulkStockToCart() {
-      const text = document.getElementById('bulk-text').value.trim();
-      if (!text) {
-          Swal.fire({ icon: 'warning', title: 'Bulk entry empty' });
+  function saveExpense() {
+      const name = document.getElementById('exp-name').value.trim(), amount = num(document.getElementById('exp-amount').value), note = document.getElementById('exp-note').value.trim();
+      const mode = document.getElementById('exp-fund-toggle').dataset.mode || 'self';
+      const fundSource = mode === 'borrowed' ? (String(document.getElementById('exp-source').value || 'Daddy/Ghar').trim() || 'Daddy/Ghar') : '';
+      if (!name) {
+          Swal.fire({ icon: 'warning', title: 'Expense ka naam daalo' });
           return;
       }
-      const items = text.split('\n').map(l => l.trim()).filter(Boolean).map(line => {
-          const parts = line.split(',').map(s => s.trim());
-          return { id: Date.now() + Math.random(), name: parts[0], qty: num(parts[1]), cost: num(parts[2]) };
-      }).filter(p => p.name && p.qty > 0);
-      if (!items.length) {
-          Swal.fire({ icon: 'warning', title: 'Parse error', text: 'Format check karo.' });
+      if (amount <= 0) {
+          Swal.fire({ icon: 'warning', title: 'Amount daalo' });
           return;
       }
-      stockinCart.push(...items);
-      document.getElementById('bulk-text').value = '';
-      renderStockinCart();
-      showToast('success', `${items.length} items added`);
+      const date = getTodayDate(), time = formatTimeForSheet(), fundBorrowed = mode === 'borrowed' ? amount : 0;
+      function localDone() {
+          allExpenseLogs.push({ date, time, name, amount, fundSource, fundBorrowed, note });
+          if (fundBorrowed > 0) {
+              totalCapitalBorrowed += fundBorrowed;
+              capitalLogs.push({ date, time, source: fundSource, direction: 'Borrowed', amount: fundBorrowed, note: 'Expense' });
+          }
+          document.getElementById('exp-name').value = '';
+          document.getElementById('exp-amount').value = '';
+          document.getElementById('exp-note').value = '';
+          setExpenseFunding('self');
+          updateExpenseLogs();
+          showToast('success', 'Expense add ho gaya');
+          delayedReload();
+      }
+      fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: 'ADD_EXPENSE', name, amount, fundSource, fundBorrowed, note, date, time }) }).then(readBackendResponse).then(res => {
+          if (!res.status || res.status === 'SUCCESS')
+              localDone();
+          else
+              Swal.fire({ icon: 'error', title: 'Error', text: res.message || 'Failed' });
+      }).catch(() => {
+          localDone();
+          noteSyncing('Expense saved, sync checking...');
+      });
+  }
+  function updateExpenseLogs() {
+      const box = document.getElementById('expense-logs-container');
+      if (!box)
+          return;
+      if (!allExpenseLogs.length) {
+          box.innerHTML = '<p class="empty">Koi expense nahi</p>';
+          return;
+      }
+      box.innerHTML = '';
+      [...allExpenseLogs].map((log, idx) => ({ log, idx })).reverse().slice(0, 25).forEach(({ log, idx }) => {
+          const div = document.createElement('div');
+          div.className = 'log-item';
+          const fundTag = num(log.fundBorrowed) > 0 ? `<span class="fund-tag borrowed">${esc(log.fundSource || 'Udhaar')}</span>` : `<span class="fund-tag self">Apna</span>`;
+          div.innerHTML = `<div class="log-details"><b style="color:var(--dark)">${esc(log.name)}</b>${fundTag}<br><small style="color:var(--muted)">${esc(log.note || '')} ${esc(log.date || '')} ${esc(formatTimeLabel(log.time || ''))}</small></div><div style="text-align:right"><span style="font-weight:650;color:var(--dark)">₹${num(log.amount)}</span></div><button class="delete-log-btn" onclick="deleteExpenseLog(${idx})"><i class="fa-solid fa-trash"></i></button>`;
+          box.appendChild(div);
+      });
+  }
+  function deleteExpenseLog(index) {
+      const log = allExpenseLogs[index];
+      if (!log)
+          return;
+      Swal.fire({ title: 'Expense delete karein?', text: `Remove "${log.name}"?`, icon: 'warning', showCancelButton: true, confirmButtonColor: '#dc2626', confirmButtonText: 'Haan, Delete Karo' }).then(r => {
+          if (!r.isConfirmed)
+              return;
+          fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: 'DELETE_EXPENSE', id: log.id || '', row: log.row || '' }) }).then(readBackendResponse).then(res => {
+              if (res.status && res.status !== 'SUCCESS')
+                  Swal.fire({ icon: 'error', title: 'Delete failed', text: res.message || 'Backend error' });
+              loadAllData();
+          }).catch(() => {
+              showToast('success', 'Delete sent');
+              delayedReload();
+          });
+      });
   }
   function removeStockCartItem(id) {
       stockinCart = stockinCart.filter(x => String(x.id) !== String(id));
@@ -2307,52 +2695,75 @@
           box.innerHTML = '<div class="cart-empty">Cart empty. Stock item add karo.</div>';
           return;
       }
-      box.innerHTML = stockinCart.map(l => `<div class="cart-item"><div><b>${esc(l.name)}</b><small>Qty: ${num(l.qty)} • Per unit: ₹${num(l.qty) ? Math.round(num(l.cost) / num(l.qty)) : 0}</small></div><div><div class="cart-amt">₹${num(l.cost)}</div><button class="mini-btn red" onclick="removeStockCartItem('${l.id}')">Remove</button></div></div>`).join('');
+      box.innerHTML = stockinCart.map(l => {
+          const fundTag = l.fundType === 'borrowed' ? `<span class="fund-tag borrowed">${esc(l.fundSource || 'Udhaar')}</span>` : `<span class="fund-tag self">Apna</span>`;
+          return `<div class="cart-item"><div><b>${esc(l.name)}</b>${fundTag}<small>Qty: ${num(l.qty)} • Per unit: ₹${num(l.qty) ? Math.round(num(l.cost) / num(l.qty)) : 0}</small></div><div><div class="cart-amt">₹${num(l.cost)}</div><button class="mini-btn red" onclick="removeStockCartItem('${l.id}')">Remove</button></div></div>`;
+      }).join('');
   }
   function submitStockIn() {
       if (!stockinCart.length) {
           Swal.fire({ icon: 'warning', title: 'Stock-In cart empty', text: 'Pehle item cart me add karo.' });
           return;
       }
-      const supplier = String(document.getElementById('supplier-name')?.value || '').trim(), capitalSource = String(document.getElementById('capital-source')?.value || 'Daddy/Ghar').trim() || 'Daddy/Ghar', capitalBorrowed = num(document.getElementById('capital-borrowed')?.value);
-      const items = stockinCart.map(x => ({ name: x.name, qty: num(x.qty), cost: num(x.cost) })), totalCost = items.reduce((sum, p) => sum + num(p.cost), 0), time = formatTimeForSheet(), date = getTodayDate();
-      function localPurchaseSuccess(message = 'Stock Added!') {
-          items.forEach(p => {
-              inventory[p.name] = getStock(p.name) + p.qty;
+      const supplier = String(document.getElementById('supplier-name')?.value || '').trim();
+      const time = formatTimeForSheet(), date = getTodayDate();
+      const cartSnapshot = stockinCart.slice();
+
+      // Each cart line becomes its OWN Purchase row (one product per
+      // purchase) — this keeps qty/cost/funding exact per item, so later
+      // editing or deleting one item's purchase never affects any other
+      // item, and never mixes up per-piece cost across products.
+      function localPurchaseSuccess() {
+          cartSnapshot.forEach(p => {
+              inventory[p.name] = getStock(p.name) + num(p.qty);
               persistCustomStock(p.name);
           });
-          totalInvestment += totalCost;
-          if (capitalBorrowed > 0) {
-              totalCapitalBorrowed += capitalBorrowed;
-              capitalLogs.push({ date, time, source: capitalSource, direction: 'Borrowed', amount: capitalBorrowed, note: 'Stock-In' });
-          }
-          allPurchaseLogs.push({ date, time, supplier, items: items.map(i => `${i.name} x${i.qty}`).join(', '), cost: totalCost, totalCost, paid: totalCost, investment: totalCost, balance: 0, capitalSource, capitalBorrowed });
+          const grandTotal = cartSnapshot.reduce((s, p) => s + num(p.cost), 0);
+          const borrowedTotal = cartSnapshot.filter(p => p.fundType === 'borrowed').reduce((s, p) => s + num(p.cost), 0);
+          totalInvestment += grandTotal;
+          cartSnapshot.forEach(p => {
+              const fundSource = p.fundType === 'borrowed' ? (p.fundSource || 'Daddy/Ghar') : '';
+              const fundBorrowed = p.fundType === 'borrowed' ? num(p.cost) : 0;
+              if (fundBorrowed > 0) {
+                  totalCapitalBorrowed += fundBorrowed;
+                  capitalLogs.push({ date, time, source: fundSource, direction: 'Borrowed', amount: fundBorrowed, note: 'Stock-In' });
+              }
+              allPurchaseLogs.push({ date, time, supplier, items: `${p.name} x${p.qty}`, cost: num(p.cost), totalCost: num(p.cost), paid: num(p.cost), investment: num(p.cost), balance: 0, capitalSource: fundSource, capitalBorrowed: fundBorrowed });
+          });
           stockinCart = [];
-          document.getElementById('capital-borrowed').value = '';
           Swal.close();
-          showToast('success', message, capitalBorrowed > 0 ? `Capital: ₹${capitalBorrowed}` : 'Supplier due: ₹0');
+          showToast('success', 'Stock Added!', borrowedTotal > 0 ? `Capital: ₹${borrowedTotal}` : 'Apna paisa se liya gaya');
           renderStockinCart();
           refreshStockinGrid();
           refreshProductGrid();
           updatePurchaseLogs();
           delayedReload();
       }
+
       Swal.fire({ title: 'Saving...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
-      fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: 'ADD_PURCHASE', items, investment: totalCost, paid: totalCost, balance: 0, totalCost, supplier, capitalSource, capitalBorrowed, time, date }) })
-          .then(readBackendResponse)
-          .then(res => {
-          if (!res.status || res.status === 'SUCCESS')
-              localPurchaseSuccess('Stock Added!');
+
+      const calls = cartSnapshot.map(p => {
+          const fundSource = p.fundType === 'borrowed' ? (p.fundSource || 'Daddy/Ghar') : '';
+          const fundBorrowed = p.fundType === 'borrowed' ? num(p.cost) : 0;
+          return fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: 'ADD_PURCHASE', items: [{ name: p.name, qty: num(p.qty), cost: num(p.cost) }], investment: num(p.cost), paid: num(p.cost), balance: 0, totalCost: num(p.cost), supplier, capitalSource: fundSource, capitalBorrowed: fundBorrowed, time, date }) }).then(readBackendResponse);
+      });
+
+      Promise.all(calls).then(results => {
+          const failed = results.find(res => res.status && res.status !== 'SUCCESS');
+          if (failed)
+              Swal.fire({ icon: 'error', title: 'Error', text: failed.message || 'Failed' });
           else
-              Swal.fire({ icon: 'error', title: 'Error', text: res.message || 'Failed' });
-      })
-          .catch(() => {
-          localPurchaseSuccess('Saved');
+              localPurchaseSuccess();
+      }).catch(() => {
+          localPurchaseSuccess();
           noteSyncing('Sheet saved, response blocked. Sync checking...');
       });
   }
   function getSalesForSelectedDate() {
-      return allSalesLogs.filter(l => dateMatches(l.date || l.Date || '', selectedDateKey));
+      const itemized = allSalesLogs.filter(l => dateMatches(l.date || l.Date || '', selectedDateKey));
+      if (itemized.length) return itemized;
+      return pastSalesSummary.filter(p => dateMatches(p.date || '', selectedDateKey))
+          .map(p => ({ date: p.date, amount: num(p.totalSale) || (num(p.cashSale) + num(p.gpaySale)), profit: num(p.totalProfit ?? p.profit) }));
   }
   function setLedgerDate(key) {
       setSelectedDate(key);
@@ -2377,6 +2788,18 @@
               map[key].gpay += num(l.amount);
           map[key].count++;
       });
+      pastSalesSummary.forEach(p => {
+          const key = normalizeDateKey(p.date || '') || p.date;
+          if (!key || map[key]) return;
+          map[key] = {
+              date: key,
+              sale: num(p.totalSale) || (num(p.cashSale) + num(p.gpaySale)),
+              profit: num(p.totalProfit ?? p.profit),
+              cash: num(p.cashSale),
+              gpay: num(p.gpaySale),
+              count: null
+          };
+      });
       return Object.values(map).sort((a, b) => String(b.date).localeCompare(String(a.date)));
   }
   function purchaseBalance(p) {
@@ -2389,9 +2812,10 @@
       return String(log.direction || log.type || 'Borrowed').toLowerCase();
   }
   function capitalDueTotal() {
-      let fromCapital = capitalLogs.reduce((s, l) => s + (capitalDirection(l).startsWith('return') ? -capitalAmount(l) : capitalAmount(l)), 0);
-      if (fromCapital)
+      if (capitalLogs.length) {
+          const fromCapital = capitalLogs.reduce((s, l) => s + (capitalDirection(l).startsWith('return') ? -capitalAmount(l) : capitalAmount(l)), 0);
           return Math.max(fromCapital, 0);
+      }
       return allPurchaseLogs.reduce((s, p) => s + num(p.capitalBorrowed), 0);
   }
   function capitalRows() {
@@ -2399,17 +2823,19 @@
       return rows;
   }
   function renderLedgerView() {
-      document.getElementById('view-ledger').innerHTML = `<div class="ledger-cards"><div class="ledger-card invest"><div class="lc-title"><i class="fa-solid fa-boxes-stacked"></i> Purchase Cost</div><div class="lc-value" id="ledger-invested">₹0</div></div><div class="ledger-card revenue"><div class="lc-title"><i class="fa-solid fa-arrow-down"></i> Total Revenue</div><div class="lc-value" id="ledger-revenue">₹0</div></div><div class="ledger-card profitc" id="ledger-profit-card"><div class="lc-title"><i class="fa-solid fa-chart-line"></i> Total Profit</div><div class="lc-value" id="ledger-profit">₹0</div></div><div class="ledger-card stockworth"><div class="lc-title"><i class="fa-solid fa-warehouse"></i> Current Stock Value</div><div class="lc-value" id="ledger-stockval">₹0</div></div><div class="ledger-card stock-val"><div class="lc-title"><i class="fa-solid fa-house"></i> Daddy/Ghar Capital Due</div><div class="lc-value" id="ledger-capital">₹0</div></div><div class="ledger-card net"><div class="lc-title">Net After Capital Return</div><div class="lc-value" id="ledger-net">₹0</div></div></div><div class="date-bar"><div><label>Ledger Date</label><input type="date" id="ledger-date-input" value="${selectedDateKey}" onchange="setLedgerDate(this.value)"></div><button onclick="setLedgerDate(formatDateKey(new Date()))">Today</button></div><div class="stockin-form"><span class="section-label">Capital Adjustment</span><div class="capital-grid"><input type="text" class="form-input" id="cap-adj-source" value="Daddy/Ghar" placeholder="Source"><input type="number" class="form-input" id="cap-adj-amount" placeholder="Amount" inputmode="numeric"></div><div class="cta-grid" style="margin-top:8px"><button class="action-btn orange" onclick="recordCapital('Borrowed')"><i class="fa-solid fa-arrow-right-to-bracket"></i> Add Borrowed</button><button class="action-btn green" onclick="recordCapital('Returned')"><i class="fa-solid fa-arrow-right-from-bracket"></i> Record Return</button></div></div><div class="ledger-mini"><h4>Selected Date Sale</h4><div class="summary-line"><div class="summary-pill"><span>Sale</span><b id="sel-sale">₹0</b></div><div class="summary-pill"><span>Profit</span><b id="sel-profit">₹0</b></div><div class="summary-pill"><span>Txns</span><b id="sel-count">0</b></div></div><div class="stock-table-wrap"><table class="stock-table"><thead><tr><th>Date</th><th>Cash</th><th>GPay</th><th>Profit</th></tr></thead><tbody id="daily-sales-body"></tbody></table></div><h4>Daddy/Ghar Capital Ledger</h4><div class="stock-table-wrap"><table class="stock-table"><thead><tr><th>Source</th><th>Type</th><th>Amount</th><th>Date</th></tr></thead><tbody id="capital-body"></tbody></table></div></div><span class="section-label" style="margin-top:12px">Inventory Levels</span><div class="stock-table-wrap"><table class="stock-table"><thead><tr><th>Product</th><th>Qty</th><th>Value</th></tr></thead><tbody id="stock-table-body"></tbody></table></div>`;
+      document.getElementById('view-ledger').innerHTML = `<div class="ledger-cards"><div class="ledger-card invest"><div class="lc-title"><i class="fa-solid fa-boxes-stacked"></i> Purchase Cost</div><div class="lc-value" id="ledger-invested">₹0</div></div><div class="ledger-card invest"><div class="lc-title"><i class="fa-solid fa-receipt"></i> Misc Expenses</div><div class="lc-value" id="ledger-expenses">₹0</div></div><div class="ledger-card revenue"><div class="lc-title"><i class="fa-solid fa-arrow-down"></i> Total Revenue</div><div class="lc-value" id="ledger-revenue">₹0</div></div><div class="ledger-card profitc" id="ledger-profit-card"><div class="lc-title"><i class="fa-solid fa-chart-line"></i> Total Profit</div><div class="lc-value" id="ledger-profit">₹0</div></div><div class="ledger-card stockworth"><div class="lc-title"><i class="fa-solid fa-warehouse"></i> Current Stock Value</div><div class="lc-value" id="ledger-stockval">₹0</div></div><div class="ledger-card stock-val"><div class="lc-title"><i class="fa-solid fa-house"></i> Daddy/Ghar Capital Due</div><div class="lc-value" id="ledger-capital">₹0</div></div><div class="ledger-card net"><div class="lc-title">Net After Capital Return</div><div class="lc-value" id="ledger-net">₹0</div></div></div><div class="date-bar"><div><label>Ledger Date</label><input type="date" id="ledger-date-input" value="${selectedDateKey}" onchange="setLedgerDate(this.value)"></div><button onclick="setLedgerDate(formatDateKey(new Date()))">Today</button></div><div class="stockin-form"><span class="section-label">Capital Adjustment</span><div class="capital-grid"><input type="text" class="form-input" id="cap-adj-source" value="Daddy/Ghar" placeholder="Source"><input type="number" class="form-input" id="cap-adj-amount" placeholder="Amount" inputmode="numeric"></div><div class="cta-grid" style="margin-top:8px"><button class="action-btn orange" onclick="recordCapital('Borrowed')"><i class="fa-solid fa-arrow-right-to-bracket"></i> Add Borrowed</button><button class="action-btn green" onclick="recordCapital('Returned')"><i class="fa-solid fa-arrow-right-from-bracket"></i> Record Return</button></div></div><div class="ledger-mini"><h4>Selected Date Sale</h4><div class="summary-line"><div class="summary-pill"><span>Sale</span><b id="sel-sale">₹0</b></div><div class="summary-pill"><span>Profit</span><b id="sel-profit">₹0</b></div><div class="summary-pill"><span>Txns</span><b id="sel-count">0</b></div></div><div class="stock-table-wrap"><table class="stock-table"><thead><tr><th>Date</th><th>Cash</th><th>GPay</th><th>Profit</th></tr></thead><tbody id="daily-sales-body"></tbody></table></div><h4>Daddy/Ghar Capital Ledger</h4><div class="stock-table-wrap"><table class="stock-table"><thead><tr><th>Source</th><th>Type</th><th>Amount</th><th>Date</th></tr></thead><tbody id="capital-body"></tbody></table></div></div><span class="section-label" style="margin-top:12px;display:flex;align-items:center;justify-content:space-between">Inventory Levels<button class="mini-btn" onclick="openEditProductModal()"><i class="fa-solid fa-pen"></i> Edit Stock/Price</button></span><div class="stock-table-wrap"><table class="stock-table"><thead><tr><th>Product</th><th>Qty</th><th>Value</th></tr></thead><tbody id="stock-table-body"></tbody></table></div>`;
   }
   function renderLedgerData() {
       const itemized = allSalesLogs.reduce((s, l) => s + num(l.amount), 0), past = pastSalesSummary.reduce((s, l) => s + num(l.totalSale), 0), revenue = itemized + past, capDue = capitalDueTotal();
       const itemizedProfit = allSalesLogs.reduce((s, l) => s + num(l.profit), 0), pastProfit = pastSalesSummary.reduce((s, l) => s + num(l.totalProfit ?? l.profit), 0), totalProfit = itemizedProfit + pastProfit;
+      const totalExpenses = allExpenseLogs.reduce((s, l) => s + num(l.amount), 0);
       document.getElementById('ledger-invested').innerText = `₹${totalInvestment.toLocaleString()}`;
+      document.getElementById('ledger-expenses').innerText = `₹${totalExpenses.toLocaleString()}`;
       document.getElementById('ledger-revenue').innerText = `₹${revenue.toLocaleString()}`;
       document.getElementById('ledger-profit').innerText = `${totalProfit >= 0 ? '' : '-'}₹${Math.abs(totalProfit).toLocaleString()}`;
       document.getElementById('ledger-profit-card').classList.toggle('margin-red', totalProfit < 0);
       document.getElementById('ledger-capital').innerText = `₹${capDue.toLocaleString()}`;
-      const net = revenue - totalInvestment, netEl = document.getElementById('ledger-net');
+      const net = revenue - totalInvestment - totalExpenses, netEl = document.getElementById('ledger-net');
       netEl.innerText = `${net >= 0 ? '+' : '-'}₹${Math.abs(net).toLocaleString()}`;
       netEl.style.color = net >= 0 ? '#4ade80' : '#f87171';
       const selected = getSalesForSelectedDate(), selSale = selected.reduce((s, l) => s + num(l.amount), 0), selProfit = selected.reduce((s, l) => s + num(l.profit), 0);
@@ -2475,6 +2901,7 @@
       fetch(SCRIPT_URL + '?full=true', { cache: 'no-store' }).then(r => r.json()).then(data => {
           allSalesLogs = Array.isArray(data) ? data : (data.sales || []);
           allPurchaseLogs = data.purchases || [];
+          allExpenseLogs = data.expenses || [];
           pastSalesSummary = data.pastSummary || [];
           inventory = data.inventory || {};
           mergeBackendProducts(data.products || []);
@@ -2487,6 +2914,7 @@
           refreshProductGrid();
           refreshStockinGrid();
           updatePurchaseLogs();
+          updateExpenseLogs();
           renderTarpSizeGrid();
           renderSaleCart();
           renderStockinCart();
@@ -2512,10 +2940,6 @@
           if (l.type === 'GPay')
               gpay += num(l.amount);
           profit += num(l.profit);
-      });
-      ['cash-display', 'online-display', 'total-display', 'profit-display'].forEach(id => {
-          if (!document.getElementById(id))
-              return;
       });
       document.getElementById('cash-display').innerText = `₹${cash}`;
       document.getElementById('online-display').innerText = `₹${gpay}`;
@@ -2550,11 +2974,100 @@
           box.innerHTML = '<p class="empty">No purchases yet</p>';
           return;
       }
-      [...allPurchaseLogs].reverse().slice(0, 25).forEach(log => {
+      [...allPurchaseLogs].map((log, idx) => ({ log, idx })).reverse().slice(0, 25).forEach(({ log, idx }) => {
           const cap = num(log.capitalBorrowed), div = document.createElement('div');
           div.className = 'log-item';
-          div.innerHTML = `<div class="log-details"><b style="color:var(--dark)">${esc(log.items || log.item || 'Purchase')}</b><br><small style="color:var(--muted)">${esc(log.supplier || '')} ${esc(log.date || '')} ${esc(formatTimeLabel(log.time || ''))}</small></div><div style="text-align:right"><span style="font-weight:650;color:var(--dark)">Cost ₹${num(log.totalCost || log.cost || log.investment)}</span><br><span class="log-profit ${cap > 0 ? 'profit-negative' : 'profit-positive'}">Capital ₹${cap}</span></div>`;
+          const fundTag = cap > 0 ? `<span class="fund-tag borrowed">${esc(log.capitalSource || 'Udhaar')}</span>` : `<span class="fund-tag self">Apna</span>`;
+          div.innerHTML = `<div class="log-details"><b style="color:var(--dark)">${esc(log.items || log.item || 'Purchase')}</b>${fundTag}<br><small style="color:var(--muted)">${esc(log.supplier || '')} ${esc(log.date || '')} ${esc(formatTimeLabel(log.time || ''))}</small></div><div style="text-align:right"><span style="font-weight:650;color:var(--dark)">Cost ₹${num(log.totalCost || log.cost || log.investment)}</span><br><span class="log-profit ${cap > 0 ? 'profit-negative' : 'profit-positive'}">Capital ₹${cap}</span></div><button class="delete-log-btn" onclick="openPurchaseEditModal(${idx})" title="Edit"><i class="fa-solid fa-pen"></i></button><button class="delete-log-btn" onclick="deletePurchaseLog(${idx})" title="Delete"><i class="fa-solid fa-trash"></i></button>`;
           box.appendChild(div);
+      });
+  }
+  function deletePurchaseLog(index) {
+      const log = allPurchaseLogs[index];
+      if (!log)
+          return;
+      Swal.fire({ title: 'Purchase delete karein?', text: `Remove "${log.items || log.item}"? Stock aur capital reverse ho jayega.`, icon: 'warning', showCancelButton: true, confirmButtonColor: '#dc2626', confirmButtonText: 'Haan, Delete Karo' }).then(r => {
+          if (!r.isConfirmed)
+              return;
+          fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: 'DELETE_PURCHASE', id: log.purchaseId || '', row: log.row || '' }) }).then(readBackendResponse).then(res => {
+              if (res.status && res.status !== 'SUCCESS')
+                  Swal.fire({ icon: 'error', title: 'Delete failed', text: res.message || 'Backend error' });
+              loadAllData();
+          }).catch(() => {
+              showToast('success', 'Delete sent');
+              delayedReload();
+          });
+      });
+  }
+  // Parses a single-item "Name x Qty" purchase log entry (our per-item
+  // purchases created by submitStockIn) into { name, qty }. If a legacy
+  // multi-item row is opened (from before this atomic-per-item change),
+  // only the first item is editable here — safest is to delete + re-add
+  // those old rows instead.
+  function parseFirstPurchaseItem(itemsStr) {
+      const first = String(itemsStr || '').split(',')[0].trim();
+      const m = first.match(/^(.*)\sx\s*(\d+(\.\d+)?)$/i);
+      return m ? { name: m[1].trim(), qty: Number(m[2]) || 0 } : { name: first, qty: 0 };
+  }
+  function openPurchaseEditModal(index) {
+      const log = allPurchaseLogs[index];
+      if (!log)
+          return;
+      peEditingLog = { ...log, _index: index };
+      const parsed = parseFirstPurchaseItem(log.items || log.item || '');
+      const isMulti = String(log.items || '').includes(',');
+      document.getElementById('pe-product-name').innerText = parsed.name + (isMulti ? ' (+ aur items — sirf pehla edit hoga)' : '');
+      document.getElementById('pe-qty').value = parsed.qty || num(log.qty);
+      document.getElementById('pe-rate-label').innerText = isMeterProduct(parsed.name) ? 'Rate / Meter (₹)' : 'Rate / Piece (₹)';
+      const cost = num(log.totalCost || log.cost || log.investment);
+      document.getElementById('pe-rate').value = parsed.qty ? Math.round(cost / parsed.qty) : cost;
+      document.getElementById('pe-source').value = log.capitalSource || 'Daddy/Ghar';
+      setPurchaseEditFunding(num(log.capitalBorrowed) > 0 ? 'borrowed' : 'self');
+      updatePurchaseEditTotal();
+      document.getElementById('purchase-edit-overlay').classList.add('open');
+  }
+  function closePurchaseEditModal() {
+      document.getElementById('purchase-edit-overlay').classList.remove('open');
+      peEditingLog = null;
+  }
+  function setPurchaseEditFunding(mode) {
+      peFundType = mode;
+      document.getElementById('pe-fund-self').classList.toggle('active', mode === 'self');
+      document.getElementById('pe-fund-borrowed').classList.toggle('active', mode === 'borrowed');
+      document.getElementById('pe-source-field').style.display = mode === 'borrowed' ? 'block' : 'none';
+  }
+  function updatePurchaseEditTotal() {
+      const qty = num(document.getElementById('pe-qty').value), rate = num(document.getElementById('pe-rate').value);
+      document.getElementById('pe-total-box').innerText = `Total Cost: ₹${Math.round(qty * rate)}`;
+  }
+  function savePurchaseEdit() {
+      if (!peEditingLog)
+          return;
+      const qty = num(document.getElementById('pe-qty').value), rate = num(document.getElementById('pe-rate').value);
+      if (qty <= 0 || rate <= 0) {
+          Swal.fire({ icon: 'warning', title: 'Qty aur Rate dono daalo' });
+          return;
+      }
+      const parsed = parseFirstPurchaseItem(peEditingLog.items || peEditingLog.item || '');
+      const cost = Math.round(qty * rate);
+      const fundSource = peFundType === 'borrowed' ? (String(document.getElementById('pe-source').value || 'Daddy/Ghar').trim() || 'Daddy/Ghar') : '';
+      const fundBorrowed = peFundType === 'borrowed' ? cost : 0;
+      Swal.fire({ title: 'Updating...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+      fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: 'UPDATE_PURCHASE', id: peEditingLog.purchaseId || '', row: peEditingLog.row || '', items: [{ name: parsed.name, qty, cost }], supplier: peEditingLog.supplier || '', capitalSource: fundSource, capitalBorrowed: fundBorrowed }) })
+          .then(readBackendResponse).then(res => {
+          Swal.close();
+          if (res.status && res.status !== 'SUCCESS') {
+              Swal.fire({ icon: 'error', title: 'Update failed', text: res.message || 'Backend error' });
+              return;
+          }
+          closePurchaseEditModal();
+          showToast('success', 'Purchase update ho gaya');
+          loadAllData();
+      }).catch(() => {
+          Swal.close();
+          closePurchaseEditModal();
+          showToast('success', 'Update sent');
+          delayedReload();
       });
   }
   function deleteSale(index) {
@@ -2577,7 +3090,7 @@
   function shareOnWhatsApp() {
       const today = allSalesLogs.filter(isTodaySale), cash = today.filter(l => l.type === 'Cash').reduce((s, l) => s + num(l.amount), 0), gpay = today.filter(l => l.type === 'GPay').reduce((s, l) => s + num(l.amount), 0), profit = today.reduce((s, l) => s + num(l.profit), 0), total = cash + gpay, cap = capitalDueTotal();
       const now = new Date(), hh = now.getHours() % 12 || 12, mm = String(now.getMinutes()).padStart(2, '0'), ap = now.getHours() >= 12 ? 'PM' : 'AM', timeStr = `${String(hh).padStart(2, '0')}:${mm} ${ap}`;
-      const msg = `*JMD ENTERPRISE — SHOP 3*\n*Daily Sales Report*\n\nDate  : *${displayDate(selectedDateKey)}*\n━━━━━━━━━━━━━━━━━\nCash Sale        :  ₹${cash}/-\nGPay Sale        :  ₹${gpay}/-\n\n*Total Sale      :  ₹${total}/-*\n*Total Profit    :  ₹${profit}/-*\n━━━━━━━━━━━━━━━━━━━━\nTotal Transactions : *${today.length}*\n\n_Generated via JMD POS System_`;
+      const msg = `*JMD ENTERPRISE — SHOP 3*\n*Daily Sales Report*\n\nDate  : *${displayDate(selectedDateKey)}*\n━━━━━━━━━━━━━━━━━━━━\nCash Sale        : ₹${cash}/-\nGPay Sale        : ₹${gpay}/-\n\n*Total Sale      : ₹${total}/-*\n*Total Profit    : ₹${profit}/-*\n━━━━━━━━━━━━━━━━━━━━\nTotal Transactions : *${today.length}*\n_Generated via JMD POS System_`;
       window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, '_blank');
   }
 
