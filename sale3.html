@@ -1463,9 +1463,72 @@
     }
     .fund-tag.self { background:#dcfce7; color:#15803d; }
     .fund-tag.borrowed { background:#ffedd5; color:#c2410c; }
+    /* ── Sync Toast ── */
+    .sync-toast {
+      position:fixed;top:14px;left:50%;
+      transform:translateX(-50%) translateY(-90px);
+      z-index:99999;
+      padding:10px 20px;border-radius:40px;
+      font-size:12px;font-weight:700;color:#fff;
+      display:flex;align-items:center;gap:8px;
+      box-shadow:0 8px 24px rgba(18,20,44,.35);
+      transition:transform .35s cubic-bezier(.34,1.56,.64,1);
+      pointer-events:none;white-space:nowrap;
+    }
+    .sync-toast.show { transform:translateX(-50%) translateY(0); }
+    .sync-toast.loading { background:#4f5bfb; }
+    .sync-toast.success { background:#0ea968; }
+    .sync-toast.error   { background:#e0364c; }
+    .sync-toast.warn    { background:#e08a1e; }
+    .sync-spin {
+      width:14px;height:14px;border-radius:50%;
+      border:2px solid rgba(255,255,255,.35);
+      border-top-color:#fff;
+      animation:spin .7s linear infinite;
+      flex-shrink:0;
+    }
+    @keyframes spin{to{transform:rotate(360deg)}}
+    /* ── SweetAlert2 — match UI ── */
+    .swal2-popup {
+      border-radius:20px!important;
+      font-family:'Manrope',sans-serif!important;
+      padding:24px 20px!important;
+      box-shadow:0 20px 46px rgba(18,20,44,.18)!important;
+    }
+    .swal2-title { font-size:15px!important;font-weight:800!important;color:#10122a!important; }
+    .swal2-html-container { font-size:12.5px!important;color:#5b6178!important;margin-top:6px!important; }
+    .swal2-actions { gap:10px!important;margin-top:18px!important; }
+    .swal2-confirm {
+      border-radius:11px!important;font-weight:700!important;
+      font-size:12.5px!important;padding:10px 22px!important;
+      box-shadow:none!important;
+    }
+    .swal2-cancel {
+      border-radius:11px!important;font-weight:700!important;
+      font-size:12.5px!important;padding:10px 22px!important;
+      background:#f1f5f9!important;color:#334155!important;
+      box-shadow:none!important;
+    }
+    .swal2-icon { margin:0 auto 12px!important;width:54px!important;height:54px!important; }
+    .swal2-icon .swal2-icon-content { font-size:26px!important; }
+    /* ── Loading skeleton for log containers ── */
+    .log-skeleton {
+      display:flex;flex-direction:column;gap:8px;padding:8px;
+    }
+    .log-skel-row {
+      height:48px;border-radius:9px;
+      background:linear-gradient(90deg,#f1f5f9 25%,#e2e8f0 50%,#f1f5f9 75%);
+      background-size:200% 100%;
+      animation:shimmer 1.2s infinite;
+    }
+    @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
   </style>
 </head>
 <body>
+<div class="sync-toast" id="sync-toast">
+  <div class="sync-spin" id="sync-spin"></div>
+  <span id="sync-toast-text">Sync ho raha hai...</span>
+</div>
 <div class="container">
   <header><div class="brand-mark"><i class="fa-solid fa-umbrella"></i></div><h2>JMD Enterprise</h2><p>POS + Inventory Management</p></header>
   <div class="main-nav">
@@ -1605,7 +1668,7 @@
   </div>
 </div>
 <script>
-  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyk3DUTGk3H8la6_hEf1h_sFn0rH-egz8qoHhGFtFr5A1xfbTCGDTZR_xUUryoUkxSjlg/exec";
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyWvbHhUQQv54tQstfUWc4LKfHMIRsPay8sJ6gYi96tHWDz8wiGZGvVKQqzIO1NbDm9Ew/exec";
   const PRODUCTS = {
       adults: [{ name: "2 Fold Black Silver", cp: 110, sp: 200 }, { name: "2 Fold Ladies", cp: 115, sp: 200 }, { name: "Short Round U Handle", cp: 140, sp: 300 }, { name: "3 Fold Manual", cp: 150, sp: 300 }, { name: "3 Fold Indian", cp: 220, sp: 400 }, { name: "Shahenshah Rubber", cp: 230, sp: 400 }, { name: "Shahenshah Steel", cp: 240, sp: 450 }, { name: "Automatic Black", cp: 180, sp: 350 }, { name: "Long Rainbow+Army", cp: 165, sp: 300 }, { name: "Long Red Yellow Blue", cp: 210, sp: 400 }, { name: "Long Round U Handle", cp: 200, sp: 400 }, { name: "Long Rolls Royce", cp: 230, sp: 450 }, { name: "Magic Umbrella", cp: 360, sp: 650 }, { name: "Pioneer 3 Fold 25\"", cp: 280, sp: 500 }],
       kids: [{ name: "Kids Rainbow", cp: 75, sp: 150 }, { name: "Plain Coloured", cp: 80, sp: 180 }, { name: "Kids Dotted", cp: 85, sp: 180 }, { name: "Kids Black", cp: 90, sp: 200 }, { name: "Kids Kaan Wala", cp: 90, sp: 200 }, { name: "Kids Leaf Pattern", cp: 110, sp: 250 }, { name: "Printed Cartoon", cp: 110, sp: 250 }, { name: "Kids Transparent", cp: 135, sp: 250 }],
@@ -1623,6 +1686,23 @@
   // calcPlastic() prices/stocks the ACTUAL selected product, not a hardcoded one.
   let plasticBaseProduct = { name: 'Kala Plastic', cp: 45, sp: 100 };
   let activeProduct = { name: "2 Fold Black Silver", displayName: "2 Fold Black Silver", stockKey: "2 Fold Black Silver", cp: 110, type: 'item', defaultSp: 200, stockQty: 1 };
+  // ── Sync Toast ──────────────────────────────────────────────
+  let _stTimer = null;
+  function syncToast(state, msg) {
+      const el = document.getElementById('sync-toast');
+      const sp = document.getElementById('sync-spin');
+      const tx = document.getElementById('sync-toast-text');
+      if (!el) return;
+      clearTimeout(_stTimer);
+      el.className = 'sync-toast show ' + state;
+      if (sp) sp.style.display = state === 'loading' ? 'block' : 'none';
+      if (tx) tx.innerText = msg;
+      if (state !== 'loading') _stTimer = setTimeout(() => { el.className = 'sync-toast'; }, 2800);
+  }
+  function skeletonHTML(n = 3) {
+      return '<div class="log-skeleton">' + Array(n).fill('<div class="log-skel-row"></div>').join('') + '</div>';
+  }
+  // ─────────────────────────────────────────────────────────────
   function esc(v) {
       return String(v ?? '').replace(/[&<>'"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[c]));
   }
@@ -1739,31 +1819,6 @@
   function delayedReload() {
       setTimeout(loadAllData, 900);
       setTimeout(loadAllData, 2200);
-  }
-  function rebuildPastSummaryNow() {
-      Swal.fire({
-          icon: 'warning',
-          title: 'Past Sale Summary rebuild karein?',
-          text: 'Yeh poori Sheet1 (sab sales) dobara scan karke har din ka Cash/GPay/Total/Profit total sahi se recalculate karega. Manual Notes safe rahenge. Yeh sirf ek dafa karna hai.',
-          showCancelButton: true,
-          confirmButtonText: 'Haan, Rebuild karo',
-          cancelButtonText: 'Cancel'
-      }).then(r => {
-          if (!r.isConfirmed) return;
-          Swal.fire({ title: 'Rebuilding...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
-          fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: 'REBUILD_PAST_SUMMARY' }) })
-              .then(readBackendResponse)
-              .then(res => {
-              if (res.status === 'SUCCESS') {
-                  Swal.fire({ icon: 'success', title: 'Ho gaya!', text: `${res.days} din ka data rebuild ho gaya.` });
-                  loadAllData();
-              }
-              else {
-                  Swal.fire({ icon: 'error', title: 'Rebuild fail hua', text: res.message || 'Backend error' });
-              }
-          })
-              .catch(() => Swal.fire({ icon: 'error', title: 'Network error', text: 'Dobara try karo' }));
-      });
   }
   function noteSyncing(text = 'Saved. Sheet sync check ho raha hai.') {
       const n = document.getElementById('sync-note');
@@ -2015,7 +2070,7 @@
     <button class="action-btn" id="sell-submit-btn" onclick="submitSaleCart()" style="margin-bottom:10px"><i class="fa-solid fa-receipt"></i> Save Bill</button>
     <div class="cart-box"><div class="cart-head"><b>Customer Bill Cart</b><span id="sale-cart-count">0 items</span></div><div class="cart-list" id="sale-cart-list"><div class="cart-empty">Cart empty. Product add karo.</div></div><div class="cart-total"><div><span>Sale</span><b id="sale-cart-total">₹0</b></div><div><span>Cost</span><b id="sale-cart-cost">₹0</b></div><div><span>Margin</span><b id="sale-cart-profit">₹0</b></div></div></div>
     <div class="logs-section"><span class="section-label" id="sales-log-title">Sales</span><div class="logs-container" id="sales-logs-container"><p class="empty">Loading...</p></div></div>
-    <div class="dashboard"><div class="card"><div class="card-title">Cash</div><div class="card-value" id="cash-display">₹0</div></div><div class="card"><div class="card-title">GPay</div><div class="card-value" id="online-display">₹0</div></div><div class="card total"><div class="card-title">Total Sale</div><div class="card-value" id="total-display">₹0</div></div><div class="card profit" id="dash-profit-card"><div class="card-title">Net Margin</div><div class="card-value" id="profit-display">₹0</div></div></div>
+    <div class="dashboard"><div class="card"><div class="card-title">Cash Sale</div><div class="card-value" id="cash-display">₹0</div></div><div class="card"><div class="card-title">GPay</div><div class="card-value" id="online-display">₹0</div></div><div class="card total"><div class="card-title">Total Sale</div><div class="card-value" id="total-display">₹0</div></div><div class="card" style="border-color:#fecaca;background:#fef2f2;display:none" id="dash-purchase-card"><div class="card-title" style="color:var(--danger)">Purchase (Apna ₹)</div><div class="card-value" style="color:var(--danger)" id="purchase-deduct-display">₹0</div></div><div class="card" style="border-color:#bbf7d0;background:#f0fdf4;display:none" id="dash-net-cash-card"><div class="card-title" style="color:var(--success)">Net Cash in Hand</div><div class="card-value" id="net-cash-display">₹0</div></div><div class="card profit" id="dash-profit-card"><div class="card-title">Net Margin</div><div class="card-value" id="profit-display">₹0</div></div></div>
     <button class="share-btn" onclick="shareOnWhatsApp()"><i class="fa-brands fa-whatsapp"></i> WhatsApp Summary</button><p class="sync-note" id="sync-note"></p>`;
       renderCategoryTabs();
       renderTarpSizeGrid();
@@ -2847,21 +2902,43 @@
       return rows;
   }
   function renderLedgerView() {
-      document.getElementById('view-ledger').innerHTML = `<div class="ledger-cards"><div class="ledger-card invest"><div class="lc-title"><i class="fa-solid fa-boxes-stacked"></i> Purchase Cost</div><div class="lc-value" id="ledger-invested">₹0</div></div><div class="ledger-card invest"><div class="lc-title"><i class="fa-solid fa-receipt"></i> Misc Expenses</div><div class="lc-value" id="ledger-expenses">₹0</div></div><div class="ledger-card revenue"><div class="lc-title"><i class="fa-solid fa-arrow-down"></i> Total Revenue</div><div class="lc-value" id="ledger-revenue">₹0</div></div><div class="ledger-card profitc" id="ledger-profit-card"><div class="lc-title"><i class="fa-solid fa-chart-line"></i> Total Profit</div><div class="lc-value" id="ledger-profit">₹0</div></div><div class="ledger-card stockworth"><div class="lc-title"><i class="fa-solid fa-warehouse"></i> Current Stock Value</div><div class="lc-value" id="ledger-stockval">₹0</div></div><div class="ledger-card stock-val"><div class="lc-title"><i class="fa-solid fa-house"></i> Daddy/Ghar Capital Due</div><div class="lc-value" id="ledger-capital">₹0</div></div><div class="ledger-card net"><div class="lc-title">Net After Capital Return</div><div class="lc-value" id="ledger-net">₹0</div></div></div><div class="date-bar"><div><label>Ledger Date</label><input type="date" id="ledger-date-input" value="${selectedDateKey}" onchange="setLedgerDate(this.value)"></div><button onclick="setLedgerDate(formatDateKey(new Date()))">Today</button></div><div class="stockin-form"><span class="section-label">Capital Adjustment</span><div class="capital-grid"><input type="text" class="form-input" id="cap-adj-source" value="Daddy/Ghar" placeholder="Source"><input type="number" class="form-input" id="cap-adj-amount" placeholder="Amount" inputmode="numeric"></div><div class="cta-grid" style="margin-top:8px"><button class="action-btn orange" onclick="recordCapital('Borrowed')"><i class="fa-solid fa-arrow-right-to-bracket"></i> Add Borrowed</button><button class="action-btn green" onclick="recordCapital('Returned')"><i class="fa-solid fa-arrow-right-from-bracket"></i> Record Return</button></div></div><div class="ledger-mini"><h4 style="display:flex;align-items:center;justify-content:space-between">Selected Date Sale<button class="mini-btn"><i class="fa-solid fa-arrows-rotate"></i> Rebuild Summary</button></h4><div class="summary-line"><div class="summary-pill"><span>Sale</span><b id="sel-sale">₹0</b></div><div class="summary-pill"><span>Profit</span><b id="sel-profit">₹0</b></div><div class="summary-pill"><span>Txns</span><b id="sel-count">0</b></div></div><div class="stock-table-wrap"><table class="stock-table"><thead><tr><th>Date</th><th>Cash</th><th>GPay</th><th>Profit</th></tr></thead><tbody id="daily-sales-body"></tbody></table></div><h4>Daddy/Ghar Capital Ledger</h4><div class="stock-table-wrap"><table class="stock-table"><thead><tr><th>Source</th><th>Type</th><th>Amount</th><th>Date</th></tr></thead><tbody id="capital-body"></tbody></table></div></div><span class="section-label" style="margin-top:12px;display:flex;align-items:center;justify-content:space-between">Inventory Levels<button class="mini-btn" onclick="openEditProductModal()"><i class="fa-solid fa-pen"></i> Edit Stock/Price</button></span><div class="stock-table-wrap"><table class="stock-table"><thead><tr><th>Product</th><th>Qty</th><th>Value</th></tr></thead><tbody id="stock-table-body"></tbody></table></div>`;
+      document.getElementById('view-ledger').innerHTML = `<div class="ledger-cards"><div class="ledger-card invest"><div class="lc-title"><i class="fa-solid fa-boxes-stacked"></i> Purchase + Misc Cost</div><div class="lc-value" id="ledger-invested">₹0</div><div style="font-size:9px;color:var(--muted);font-weight:650;margin-top:3px" id="ledger-invested-sub">Purchase ₹0 + Misc ₹0</div></div><div class="ledger-card revenue"><div class="lc-title"><i class="fa-solid fa-wallet"></i> Available Business Balance</div><div class="lc-value" id="ledger-cash">₹0</div></div><div class="ledger-card revenue"><div class="lc-title"><i class="fa-solid fa-arrow-down"></i> Total Revenue</div><div class="lc-value" id="ledger-revenue">₹0</div></div><div class="ledger-card profitc" id="ledger-profit-card"><div class="lc-title"><i class="fa-solid fa-chart-line"></i> Total Profit</div><div class="lc-value" id="ledger-profit">₹0</div></div><div class="ledger-card stockworth"><div class="lc-title"><i class="fa-solid fa-warehouse"></i> Current Stock Value</div><div class="lc-value" id="ledger-stockval">₹0</div></div><div class="ledger-card stock-val"><div class="lc-title"><i class="fa-solid fa-house"></i> Capital Due</div><div class="lc-value" id="ledger-capital">₹0</div></div><div class="ledger-card net"><div class="lc-title"><i class="fa-solid fa-gem"></i> Business Net Worth</div><div class="lc-value" id="ledger-net">₹0</div></div></div><div class="date-bar"><div><label>Ledger Date</label><input type="date" id="ledger-date-input" value="${selectedDateKey}" onchange="setLedgerDate(this.value)"></div><button onclick="setLedgerDate(formatDateKey(new Date()))">Today</button></div><div class="stockin-form"><span class="section-label">Capital Adjustment</span><div class="capital-grid"><input type="text" class="form-input" id="cap-adj-source" value="Daddy/Ghar" placeholder="Source"><input type="number" class="form-input" id="cap-adj-amount" placeholder="Amount" inputmode="numeric"></div><div class="cta-grid" style="margin-top:8px"><button class="action-btn orange" onclick="recordCapital('Borrowed')"><i class="fa-solid fa-arrow-right-to-bracket"></i> Add Borrowed</button><button class="action-btn green" onclick="recordCapital('Returned')"><i class="fa-solid fa-arrow-right-from-bracket"></i> Record Return</button></div></div><div class="ledger-mini"><h4>Selected Date Sale</h4><div class="summary-line"><div class="summary-pill"><span>Sale</span><b id="sel-sale">₹0</b></div><div class="summary-pill"><span>Profit</span><b id="sel-profit">₹0</b></div><div class="summary-pill"><span>Txns</span><b id="sel-count">0</b></div></div><div class="stock-table-wrap"><table class="stock-table"><thead><tr><th>Date</th><th>Cash</th><th>GPay</th><th>Profit</th></tr></thead><tbody id="daily-sales-body"></tbody></table></div><h4>Daddy/Ghar Capital Ledger</h4><div class="stock-table-wrap"><table class="stock-table"><thead><tr><th>Source</th><th>Type</th><th>Amount</th><th>Date</th></tr></thead><tbody id="capital-body"></tbody></table></div></div><span class="section-label" style="margin-top:12px;display:flex;align-items:center;justify-content:space-between">Inventory Levels<button class="mini-btn" onclick="openEditProductModal()"><i class="fa-solid fa-pen"></i> Edit Stock/Price</button></span><div class="stock-table-wrap"><table class="stock-table"><thead><tr><th>Product</th><th>Qty</th><th>Value</th></tr></thead><tbody id="stock-table-body"></tbody></table></div>`;
+  }
+  function isLinkedCapitalNote(note) {
+      return /^(Stock-In|Expense)\s/.test(String(note || ''));
+  }
+  // "Kitna bacha hai apne paas" — actual cash in hand, not just paper profit.
+  // Logic: all sale money collected, minus whatever was actually paid out of
+  // that same pocket for purchases/expenses (the borrowed portion of any
+  // purchase/expense never touched this cash — it went straight from
+  // Daddy/Ghar to the supplier), plus any standalone borrowed cash that
+  // really did land in hand (not tied to a specific purchase/expense),
+  // minus whatever has actually been returned/repaid so far.
+  function cashOnHandTotal() {
+      const revenue = pastSalesSummary.reduce((s, l) => s + num(l.totalSale), 0);
+      const selfFundedPurchases = allPurchaseLogs.reduce((s, p) => s + Math.max(0, num(p.totalCost ?? p.cost ?? p.investment) - num(p.capitalBorrowed)), 0);
+      const selfFundedExpenses = allExpenseLogs.reduce((s, l) => s + Math.max(0, num(l.amount) - num(l.fundBorrowed)), 0);
+      let standaloneBorrowed = 0, totalReturned = 0;
+      capitalLogs.forEach(c => {
+          const dir = capitalDirection(c), amt = capitalAmount(c);
+          if (dir.startsWith('return')) totalReturned += amt;
+          else if (!isLinkedCapitalNote(c.note)) standaloneBorrowed += amt;
+      });
+      return revenue - selfFundedPurchases - selfFundedExpenses + standaloneBorrowed - totalReturned;
   }
   function renderLedgerData() {
-      const itemized = allSalesLogs.reduce((s, l) => s + num(l.amount), 0), past = pastSalesSummary.reduce((s, l) => s + num(l.totalSale), 0), revenue = itemized + past, capDue = capitalDueTotal();
-      const itemizedProfit = allSalesLogs.reduce((s, l) => s + num(l.profit), 0), pastProfit = pastSalesSummary.reduce((s, l) => s + num(l.totalProfit ?? l.profit), 0), totalProfit = itemizedProfit + pastProfit;
+      const revenue = pastSalesSummary.reduce((s, l) => s + num(l.totalSale), 0), capDue = capitalDueTotal();
+      const totalProfit = pastSalesSummary.reduce((s, l) => s + num(l.totalProfit ?? l.profit), 0);
       const totalExpenses = allExpenseLogs.reduce((s, l) => s + num(l.amount), 0);
-      document.getElementById('ledger-invested').innerText = `₹${totalInvestment.toLocaleString()}`;
-      document.getElementById('ledger-expenses').innerText = `₹${totalExpenses.toLocaleString()}`;
+      // Available Business Balance = Total Revenue - Purchase - Expenses
+      const availableBalance = revenue - totalInvestment - totalExpenses;
+      document.getElementById('ledger-invested').innerText = `₹${(totalInvestment + totalExpenses).toLocaleString()}`;
+      document.getElementById('ledger-invested-sub').innerText = `Purchase ₹${totalInvestment.toLocaleString()} + Misc ₹${totalExpenses.toLocaleString()}`;
+      document.getElementById('ledger-cash').innerText = `${availableBalance >= 0 ? '' : '-'}₹${Math.abs(availableBalance).toLocaleString()}`;
       document.getElementById('ledger-revenue').innerText = `₹${revenue.toLocaleString()}`;
       document.getElementById('ledger-profit').innerText = `${totalProfit >= 0 ? '' : '-'}₹${Math.abs(totalProfit).toLocaleString()}`;
       document.getElementById('ledger-profit-card').classList.toggle('margin-red', totalProfit < 0);
       document.getElementById('ledger-capital').innerText = `₹${capDue.toLocaleString()}`;
-      const net = revenue - totalInvestment - totalExpenses, netEl = document.getElementById('ledger-net');
-      netEl.innerText = `${net >= 0 ? '+' : '-'}₹${Math.abs(net).toLocaleString()}`;
-      netEl.style.color = net >= 0 ? '#4ade80' : '#f87171';
       const selected = getSalesForSelectedDate(), selSale = selected.reduce((s, l) => s + num(l.amount), 0), selProfit = selected.reduce((s, l) => s + num(l.profit), 0);
       document.getElementById('sel-sale').innerText = `₹${selSale}`;
       document.getElementById('sel-profit').innerText = `₹${selProfit}`;
@@ -2895,6 +2972,10 @@
       });
       document.getElementById('stock-table-body').innerHTML = rows || '<tr><td colspan="3" class="empty">No inventory loaded</td></tr>';
       document.getElementById('ledger-stockval').innerText = `₹${stockVal.toLocaleString()}`;
+      // Business Net Worth = Available Balance + Stock Value - Capital Due
+      const netWorth = availableBalance + stockVal - capDue, netEl = document.getElementById('ledger-net');
+      netEl.innerText = `${netWorth >= 0 ? '+' : '-'}₹${Math.abs(netWorth).toLocaleString()}`;
+      netEl.style.color = netWorth >= 0 ? '#4ade80' : '#f87171';
   }
   function recordCapital(direction) {
       const source = String(document.getElementById('cap-adj-source')?.value || 'Daddy/Ghar').trim() || 'Daddy/Ghar', amount = num(document.getElementById('cap-adj-amount')?.value);
@@ -2921,39 +3002,51 @@
           noteSyncing('Capital saved, sync checking...');
       });
   }
+  let _loadInProgress = false;
   function loadAllData() {
-      fetch(SCRIPT_URL + '?full=true', { cache: 'no-store' }).then(r => r.json()).then(data => {
-          allSalesLogs = Array.isArray(data) ? data : (data.sales || []);
-          allPurchaseLogs = data.purchases || [];
-          allExpenseLogs = data.expenses || [];
-          pastSalesSummary = data.pastSummary || [];
-          inventory = data.inventory || {};
-          mergeBackendProducts(data.products || []);
-          applyCustomStock();
-          totalInvestment = num(data.investment);
-          capitalLogs = data.capital || data.capitalLogs || [];
-          totalCapitalBorrowed = num(data.capitalBorrowed) || capitalDueTotal();
-          document.getElementById('sync-note') && (document.getElementById('sync-note').innerText = `Synced: ${new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}`);
-          updateSalesUI();
-          refreshProductGrid();
-          refreshStockinGrid();
-          updatePurchaseLogs();
-          updateExpenseLogs();
-          renderTarpSizeGrid();
-          renderSaleCart();
-          renderStockinCart();
-          if (currentView === 'ledger')
-              renderLedgerData();
-      }).catch(() => {
-          document.getElementById('sync-note') && (document.getElementById('sync-note').innerText = 'Sync failed');
-          fetch(SCRIPT_URL).then(r => r.json()).then(data => {
-              if (Array.isArray(data)) {
-                  allSalesLogs = data;
-                  updateSalesUI();
-              }
-          }).catch(() => {
+      if (_loadInProgress) return;
+      _loadInProgress = true;
+      syncToast('loading', 'Data sync ho raha hai...');
+      // Show skeleton while loading
+      const salesBox = document.getElementById('sales-logs-container');
+      const purchaseBox = document.getElementById('purchase-logs-container');
+      if (salesBox && salesBox.innerHTML.includes('Loading')) salesBox.innerHTML = skeletonHTML(4);
+      if (purchaseBox && purchaseBox.innerHTML.includes('Loading')) purchaseBox.innerHTML = skeletonHTML(3);
+      fetch(SCRIPT_URL + '?full=true', { cache: 'no-store' })
+          .then(r => r.json())
+          .then(data => {
+              _loadInProgress = false;
+              allSalesLogs = Array.isArray(data) ? data : (data.sales || []);
+              allPurchaseLogs = data.purchases || [];
+              allExpenseLogs = data.expenses || [];
+              pastSalesSummary = data.pastSummary || [];
+              inventory = data.inventory || {};
+              mergeBackendProducts(data.products || []);
+              applyCustomStock();
+              totalInvestment = num(data.investment);
+              capitalLogs = data.capital || data.capitalLogs || [];
+              totalCapitalBorrowed = num(data.capitalBorrowed) || capitalDueTotal();
+              const t = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+              document.getElementById('sync-note') && (document.getElementById('sync-note').innerText = `Synced: ${t}`);
+              syncToast('success', `Sync ho gaya ✓  ${t}`);
+              updateSalesUI();
+              refreshProductGrid();
+              refreshStockinGrid();
+              updatePurchaseLogs();
+              updateExpenseLogs();
+              renderTarpSizeGrid();
+              renderSaleCart();
+              renderStockinCart();
+              if (currentView === 'ledger') renderLedgerData();
+          })
+          .catch(() => {
+              _loadInProgress = false;
+              syncToast('error', 'Sync fail hua — purana data dikha raha hai');
+              document.getElementById('sync-note') && (document.getElementById('sync-note').innerText = 'Sync failed — check internet');
+              fetch(SCRIPT_URL).then(r => r.json()).then(data => {
+                  if (Array.isArray(data)) { allSalesLogs = data; updateSalesUI(); }
+              }).catch(() => {});
           });
-      });
   }
   function updateSalesUI() {
       let cash = 0, gpay = 0, profit = 0;
@@ -2965,11 +3058,27 @@
               gpay += num(l.amount);
           profit += num(l.profit);
       });
+      // Aaj ke jo purchases "Apna/Business Paisa" se huye, wo cash me se kata
+      const todayPurchases = allPurchaseLogs.filter(p => dateMatches(p.date || '', selectedDateKey));
+      const selfPurchaseToday = todayPurchases.reduce((s, p) => s + Math.max(0, num(p.totalCost || p.cost || p.investment) - num(p.capitalBorrowed)), 0);
+      const netCash = cash - selfPurchaseToday;
       document.getElementById('cash-display').innerText = `₹${cash}`;
       document.getElementById('online-display').innerText = `₹${gpay}`;
       document.getElementById('total-display').innerText = `₹${cash + gpay}`;
       document.getElementById('profit-display').innerText = `₹${profit}`;
       document.getElementById('dash-profit-card').classList.toggle('margin-red', profit < 0);
+      const pdEl = document.getElementById('purchase-deduct-display');
+      if (pdEl) {
+          pdEl.innerText = selfPurchaseToday > 0 ? `-₹${selfPurchaseToday}` : '₹0';
+          document.getElementById('dash-purchase-card').style.display = selfPurchaseToday > 0 ? '' : 'none';
+      }
+      const ncEl = document.getElementById('net-cash-display');
+      if (ncEl) {
+          ncEl.innerText = `₹${netCash}`;
+          ncEl.style.color = netCash >= 0 ? 'var(--dark)' : 'var(--danger)';
+          document.getElementById('dash-net-cash-card').classList.toggle('margin-red', netCash < 0);
+          document.getElementById('dash-net-cash-card').style.display = selfPurchaseToday > 0 ? '' : 'none';
+      }
       const box = document.getElementById('sales-logs-container');
       if (!box)
           return;
@@ -3008,19 +3117,27 @@
   }
   function deletePurchaseLog(index) {
       const log = allPurchaseLogs[index];
-      if (!log)
-          return;
-      Swal.fire({ title: 'Purchase delete karein?', text: `Remove "${log.items || log.item}"? Stock aur capital reverse ho jayega.`, icon: 'warning', showCancelButton: true, confirmButtonColor: '#dc2626', confirmButtonText: 'Haan, Delete Karo' }).then(r => {
-          if (!r.isConfirmed)
-              return;
-          fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: 'DELETE_PURCHASE', id: log.purchaseId || '', row: log.row || '' }) }).then(readBackendResponse).then(res => {
-              if (res.status && res.status !== 'SUCCESS')
-                  Swal.fire({ icon: 'error', title: 'Delete failed', text: res.message || 'Backend error' });
-              loadAllData();
-          }).catch(() => {
-              showToast('success', 'Delete sent');
-              delayedReload();
-          });
+      if (!log) return;
+      Swal.fire({
+          title: 'Purchase delete karein?',
+          html: `<b style="color:#10122a">${esc(log.items || log.item || 'Purchase')}</b><br><small style="color:#64748b">Cost ₹${num(log.totalCost || log.cost)} &bull; ${esc(log.date || '')}</small>`,
+          icon: 'warning', showCancelButton: true,
+          confirmButtonColor: '#dc2626', confirmButtonText: 'Delete',
+          cancelButtonText: 'Cancel'
+      }).then(r => {
+          if (!r.isConfirmed) return;
+          // Immediately remove from local state
+          const removedLog = allPurchaseLogs.splice(index, 1)[0];
+          updateSalesUI();
+          updatePurchaseLogs();
+          refreshProductGrid();
+          refreshStockinGrid();
+          showToast('success', 'Purchase delete ho gaya! ✓');
+          // Background server sync
+          fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: 'DELETE_PURCHASE', id: removedLog.purchaseId || '', row: removedLog.row || '' }) })
+              .then(readBackendResponse)
+              .then(res => { if (res.status && res.status !== 'SUCCESS') showToast('warning', 'Local delete hua, sheet manually check karo'); setTimeout(loadAllData, 1800); })
+              .catch(() => { setTimeout(loadAllData, 1800); });
       });
   }
   // Parses a single-item "Name x Qty" purchase log entry (our per-item
@@ -3096,25 +3213,33 @@
   }
   function deleteSale(index) {
       const log = allSalesLogs[index];
-      if (!log)
-          return;
-      Swal.fire({ title: 'Delete sale?', text: `Remove "${log.item}"?`, icon: 'warning', showCancelButton: true, confirmButtonColor: '#dc2626', confirmButtonText: 'Yes, Delete' }).then(r => {
-          if (!r.isConfirmed)
-              return;
-          fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: 'DELETE_ROW', index, row: log.row || log.rowNumber || log._row || '', id: log.id || '' }) }).then(readBackendResponse).then(res => {
-              if (res.status && res.status !== 'SUCCESS')
-                  Swal.fire({ icon: 'error', title: 'Delete failed', text: res.message || 'Backend error' });
-              loadAllData();
-          }).catch(() => {
-              showToast('success', 'Delete sent');
-              delayedReload();
-          });
+      if (!log) return;
+      Swal.fire({
+          title: 'Sale delete karein?',
+          html: `<b style="color:#10122a">${esc(log.item)}</b><br><small style="color:#64748b">₹${num(log.amount)} &bull; ${esc(log.type)} &bull; ${esc(log.date || '')}</small>`,
+          icon: 'warning', showCancelButton: true,
+          confirmButtonColor: '#dc2626', confirmButtonText: 'Delete',
+          cancelButtonText: 'Cancel'
+      }).then(r => {
+          if (!r.isConfirmed) return;
+          // Immediately update local state — no waiting
+          allSalesLogs.splice(index, 1);
+          updateSalesUI();
+          showToast('success', 'Sale delete ho gaya! ✓');
+          // Background server sync
+          fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: 'DELETE_ROW', index, row: log.row || log.rowNumber || log._row || '', id: log.id || '' }) })
+              .then(readBackendResponse)
+              .then(res => { if (res.status && res.status !== 'SUCCESS') showToast('warning', 'Local delete hua, sheet manually check karo'); setTimeout(loadAllData, 1800); })
+              .catch(() => { setTimeout(loadAllData, 1800); });
       });
   }
   function shareOnWhatsApp() {
-      const today = allSalesLogs.filter(isTodaySale), cash = today.filter(l => l.type === 'Cash').reduce((s, l) => s + num(l.amount), 0), gpay = today.filter(l => l.type === 'GPay').reduce((s, l) => s + num(l.amount), 0), profit = today.reduce((s, l) => s + num(l.profit), 0), total = cash + gpay, cap = capitalDueTotal();
-      const now = new Date(), hh = now.getHours() % 12 || 12, mm = String(now.getMinutes()).padStart(2, '0'), ap = now.getHours() >= 12 ? 'PM' : 'AM', timeStr = `${String(hh).padStart(2, '0')}:${mm} ${ap}`;
-      const msg = `*JMD ENTERPRISE — SHOP 3*\n*Daily Sales Report*\n\nDate  : *${displayDate(selectedDateKey)}*\n━━━━━━━━━━━━━━━━━━━━\nCash Sale        : ₹${cash}/-\nGPay Sale        : ₹${gpay}/-\n\n*Total Sale      : ₹${total}/-*\n*Total Profit    : ₹${profit}/-*\n━━━━━━━━━━━━━━━━━━━━\nTotal Transactions : *${today.length}*\n_Generated via JMD POS System_`;
+      const today = allSalesLogs.filter(isTodaySale), cash = today.filter(l => l.type === 'Cash').reduce((s, l) => s + num(l.amount), 0), gpay = today.filter(l => l.type === 'GPay').reduce((s, l) => s + num(l.amount), 0), profit = today.reduce((s, l) => s + num(l.profit), 0), total = cash + gpay;
+      const todayPurchases = allPurchaseLogs.filter(p => dateMatches(p.date || '', selectedDateKey));
+      const selfPurchaseToday = todayPurchases.reduce((s, p) => s + Math.max(0, num(p.totalCost || p.cost || p.investment) - num(p.capitalBorrowed)), 0);
+      const netCash = cash - selfPurchaseToday;
+      const purchaseLine = selfPurchaseToday > 0 ? `\nPurchase (Apna ₹) : -₹${selfPurchaseToday}/-\nNet Cash in Hand : ₹${netCash}/-` : '';
+      const msg = `*JMD ENTERPRISE — SHOP 3*\n*Daily Sales Report*\n\nDate  : *${displayDate(selectedDateKey)}*\n━━━━━━━━━━━━━━━━━━━━\nCash Sale        : ₹${cash}/-\nGPay Sale        : ₹${gpay}/-${purchaseLine}\n\n*Total Sale      : ₹${total}/-*\n*Total Profit    : ₹${profit}/-*\n━━━━━━━━━━━━━━━━━━━━\nTotal Transactions : *${today.length}*\n_Generated via JMD POS System_`;
       window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, '_blank');
   }
 
