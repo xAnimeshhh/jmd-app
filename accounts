@@ -1,0 +1,2936 @@
+<!DOCTYPE html>
+<!-- saved from url=(0055)https://hi-chat-2581.preview.emergentagent.com/jmd.html -->
+<html lang="en" crxlauncher=""><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JMD Traders — Command Center</title>
+<link rel="preconnect" href="https://fonts.googleapis.com/">
+<link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
+<link href="./JMD Traders — Command Center_files/css2" rel="stylesheet">
+<script src="./JMD Traders — Command Center_files/saved_resource"></script><link type="text/css" rel="stylesheet" id="dark-mode-custom-link"><link type="text/css" rel="stylesheet" id="dark-mode-general-link"><style lang="en" type="text/css" id="dark-mode-custom-style"></style><style lang="en" type="text/css" id="dark-mode-native-style"></style><style lang="en" type="text/css" id="dark-mode-native-sheet"></style>
+<script src="./JMD Traders — Command Center_files/chart.umd.min.js.download"></script>
+<link rel="stylesheet" href="./JMD Traders — Command Center_files/all.min.css" crossorigin="anonymous">
+<style>
+:root {
+  --bg: #0a0a0f;
+  --panel: #13131a;
+  --panel2: #0f0f16;
+  --line: #232334;
+  --jtext: #f0f0f4;
+  --muted: #8888a8;
+  --accent: #7c5cfc;
+  --accent2: #06b6d4;
+  --good: #22c55e;
+  --warn: #f59e0b;
+  --bad: #ef4444;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--jtext); font-family: 'Inter', sans-serif; overflow-x: hidden; font-size: 14px; line-height: 1.5; }
+.mono { font-family: 'JetBrains Mono', monospace; }
+::-webkit-scrollbar { width: 4px; } ::-webkit-scrollbar-track { background: transparent; } ::-webkit-scrollbar-thumb { background: var(--line); border-radius: 4px; }
+
+/* ── Sidebar ── */
+#sidebar { position: fixed; left: 0; top: 0; bottom: 0; width: 210px; background: var(--panel2); border-right: 1px solid var(--line); display: flex; flex-direction: column; z-index: 40; }
+.sidebar-logo { padding: 18px 16px 12px; border-bottom: 1px solid var(--line); }
+.sidebar-logo .brand { font-size: 13px; font-weight: 800; letter-spacing: -0.02em; color: var(--jtext); }
+.sidebar-logo .sub { font-size: 10px; color: var(--muted); margin-top: 1px; }
+.nav-section { padding: 10px 8px; flex: 1; overflow-y: auto; }
+.nav-label { font-size: 9.5px; font-weight: 700; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; padding: 0 8px; margin: 10px 0 4px; }
+.nav-item { display: flex; align-items: center; gap: 9px; padding: 8px 12px; border-radius: 7px; cursor: pointer; color: var(--muted); font-size: 12.5px; font-weight: 500; transition: all 0.12s; user-select: none; position: relative; }
+.nav-item:hover { background: rgba(124,92,252,0.08); color: var(--jtext); }
+.nav-item.active { background: rgba(124,92,252,0.14); color: var(--accent); font-weight: 600; }
+.nav-item .nav-badge { margin-left: auto; font-size: 9.5px; font-weight: 700; padding: 1px 6px; border-radius: 10px; min-width: 16px; text-align: center; }
+.nav-badge.red { background: rgba(239,68,68,0.18); color: #ef4444; }
+.nav-badge.amber { background: rgba(245,158,11,0.18); color: #f59e0b; }
+.sidebar-footer { padding: 12px 14px; border-top: 1px solid var(--line); }
+.sidebar-footer .owner { font-size: 10.5px; color: var(--muted); margin-bottom: 8px; }
+
+/* ── Main ── */
+#main { margin-left: 210px; min-height: 100vh; }
+.top-bar { display: flex; align-items: center; justify-content: space-between; padding: 12px 22px; border-bottom: 1px solid var(--line); background: var(--bg); position: sticky; top: 0; z-index: 30; }
+.top-bar .page-title { font-size: 15px; font-weight: 700; }
+.top-bar .page-sub { font-size: 10.5px; color: var(--muted); margin-top: 1px; }
+.top-bar-right { display: flex; align-items: center; gap: 8px; }
+.content { padding: 20px 22px; }
+
+/* ── Buttons ── */
+.btn { display: inline-flex; align-items: center; gap: 6px; border-radius: 7px; padding: 7px 14px; font-size: 12.5px; font-weight: 600; cursor: pointer; border: none; transition: all 0.12s; font-family: 'Inter', sans-serif; }
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-primary:hover { background: #6a4de8; transform: translateY(-1px); }
+.btn-ghost { background: transparent; color: var(--muted); border: 1px solid var(--line); }
+.btn-ghost:hover { color: var(--jtext); border-color: var(--accent); }
+.btn-good { background: rgba(34,197,94,0.12); color: var(--good); border: 1px solid rgba(34,197,94,0.28); }
+.btn-good:hover { background: rgba(34,197,94,0.2); }
+.btn-warn { background: rgba(245,158,11,0.12); color: var(--warn); border: 1px solid rgba(245,158,11,0.28); }
+.btn-warn:hover { background: rgba(245,158,11,0.2); }
+.btn-bad { background: rgba(239,68,68,0.1); color: var(--bad); border: 1px solid rgba(239,68,68,0.28); }
+.btn-bad:hover { background: rgba(239,68,68,0.18); }
+.btn-sm { padding: 5px 10px; font-size: 11.5px; }
+.btn-xs { padding: 3px 8px; font-size: 10.5px; }
+
+/* ── Inputs ── */
+.inp { background: var(--panel2); border: 1px solid var(--line); border-radius: 7px; color: var(--jtext); padding: 8px 11px; font-size: 13px; width: 100%; outline: none; transition: border 0.15s; font-family: 'Inter', sans-serif; }
+.inp:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(124,92,252,0.15); }
+.inp::placeholder { color: #444460; }
+
+/* ── Custom Select Styling ── */
+select.inp {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path fill='%237c5cfc' d='M0 0h10L5 6z'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 30px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+select.inp:hover { border-color: var(--accent); }
+select.inp:focus { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path fill='%237c5cfc' d='M0 6h10L5 0z'/></svg>"); }
+select.inp option {
+  background: var(--panel2);
+  color: var(--jtext);
+  padding: 10px 12px;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  border: none;
+}
+select.inp option:checked, select.inp option:hover {
+  background: linear-gradient(0deg, rgba(124,92,252,0.35), rgba(124,92,252,0.35));
+  color: #fff;
+}
+
+/* ── Chip / Pill Toggle Group (Modern selectors) ── */
+.chip-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 4px;
+  background: var(--panel2);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+.chip-group.no-bg { background: transparent; border: none; padding: 0; }
+.chip-tile {
+  flex: 1 1 auto;
+  min-width: 0;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  padding: 8px 12px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-family: 'Inter', sans-serif;
+  white-space: nowrap;
+  user-select: none;
+}
+.chip-tile:hover { background: rgba(124,92,252,0.06); color: var(--jtext); }
+.chip-tile.active {
+  background: linear-gradient(135deg, rgba(124,92,252,0.22), rgba(124,92,252,0.12));
+  border-color: rgba(124,92,252,0.5);
+  color: var(--jtext);
+  box-shadow: 0 2px 8px rgba(124,92,252,0.15), inset 0 1px 0 rgba(255,255,255,0.05);
+}
+.chip-tile .chip-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.chip-tile i { font-size: 12px; }
+
+/* Shop chip variant — shows colored dot */
+.chip-group.chip-shops .chip-tile { padding: 8px 11px; font-size: 12px; }
+.chip-group.chip-shops .chip-tile.active { background: linear-gradient(135deg, rgba(124,92,252,0.15), rgba(6,182,212,0.08)); }
+
+/* Compact variant */
+.chip-group.chip-compact { padding: 3px; }
+.chip-group.chip-compact .chip-tile { padding: 5px 10px; font-size: 11.5px; }
+.lbl { font-size: 10.5px; font-weight: 600; color: var(--muted); letter-spacing: 0.07em; text-transform: uppercase; margin-bottom: 5px; }
+.fg { margin-bottom: 14px; }
+.fg:last-child { margin-bottom: 0; }
+.inp-inline { background: var(--panel2); border: 1px solid var(--accent); border-radius: 5px; color: var(--jtext); padding: 3px 7px; font-size: 13px; font-family: 'JetBrains Mono', monospace; outline: none; width: 90px; text-align: right; }
+
+/* ── Cards ── */
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 11px; }
+.card2 { background: var(--panel2); border: 1px solid var(--line); border-radius: 9px; }
+.cards-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 13px; }
+@media(max-width: 700px){ .cards-grid { grid-template-columns: 1fr; } }
+
+/* ── Record card (base styles moved below with compact version) ── */
+.rec-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+.rec-name { font-size: 14px; font-weight: 700; }
+.rec-meta { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; background: var(--panel2); border-radius: 7px; padding: 9px 11px; }
+.rec-cell .k { font-size: 9.5px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 2px; font-weight: 600; }
+.rec-cell .v { font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700; }
+.rec-foot { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+.rec-foot .meta-info { font-size: 11px; color: var(--muted); display: flex; align-items: center; gap: 5px; }
+
+/* ── Progress bar ── */
+.prog-track { background: rgba(255,255,255,0.06); border-radius: 4px; height: 5px; overflow: hidden; margin-top: 4px; }
+.prog-fill { height: 100%; border-radius: 4px; transition: width 0.4s ease; }
+
+/* ── Badges ── */
+.badge { display: inline-flex; align-items: center; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 6px; letter-spacing: 0.04em; }
+.badge-green { background: rgba(34,197,94,0.12); color: var(--good); border: 1px solid rgba(34,197,94,0.28); }
+.badge-red { background: rgba(239,68,68,0.12); color: var(--bad); border: 1px solid rgba(239,68,68,0.28); }
+.badge-amber { background: rgba(245,158,11,0.12); color: var(--warn); border: 1px solid rgba(245,158,11,0.28); }
+.badge-purple { background: rgba(124,92,252,0.12); color: var(--accent); border: 1px solid rgba(124,92,252,0.28); }
+.badge-blue { background: rgba(6,182,212,0.12); color: var(--accent2); border: 1px solid rgba(6,182,212,0.28); }
+.badge-gray { background: rgba(136,136,168,0.12); color: var(--muted); border: 1px solid rgba(136,136,168,0.2); }
+
+/* ── Stat tile ── */
+.stat-tile { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; }
+.stat-tile .st-label { font-size: 10px; color: var(--muted); font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 7px; display: flex; align-items: center; gap: 6px; }
+.stat-tile .st-val { font-family: 'JetBrains Mono', monospace; font-size: 20px; font-weight: 700; letter-spacing: -0.02em; }
+
+/* ── Modal ── */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); z-index: 100; display: none; align-items: center; justify-content: center; padding: 16px; }
+.modal-overlay.open { display: flex; }
+.modal-box { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 22px 24px; width: 100%; max-width: 440px; max-height: 90vh; overflow-y: auto; animation: modal-in 0.18s ease; }
+@keyframes modal-in { from { opacity: 0; transform: scale(0.96) translateY(6px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+.modal-title { font-size: 16px; font-weight: 700; margin-bottom: 18px; display: flex; justify-content: space-between; align-items: center; }
+.modal-close { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 20px; line-height: 1; padding: 0; }
+.modal-close:hover { color: var(--jtext); }
+
+/* ── PIN ── */
+#pin-screen { position: fixed; inset: 0; z-index: 200; background: var(--bg); display: flex; align-items: center; justify-content: center; transition: opacity 0.4s; }
+.pin-key { width: 64px; height: 64px; background: var(--panel); border: 1px solid var(--line); border-radius: 50%; font-size: 19px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--jtext); transition: all 0.1s; font-family: 'JetBrains Mono', monospace; }
+.pin-key:hover { background: var(--line); border-color: var(--accent); }
+.pin-key:active { transform: scale(0.93); background: rgba(124,92,252,0.2); }
+.pin-dot { width: 11px; height: 11px; border-radius: 50%; border: 2px solid var(--line); transition: all 0.15s; }
+.pin-dot.filled { background: var(--accent); border-color: var(--accent); }
+
+/* ── Section ── */
+.tab-section { display: none; }
+.tab-section.active { display: block; }
+
+/* ── Shop matrix table ── */
+.shop-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.shop-table th { text-align: left; padding: 8px 12px; font-size: 9.5px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.07em; border-bottom: 1px solid var(--line); }
+.shop-table td { padding: 10px 12px; border-bottom: 1px solid rgba(35,35,52,0.5); }
+.shop-table tr:last-child td { border-bottom: none; font-weight: 700; background: rgba(124,92,252,0.04); }
+.shop-table .editable-cell { cursor: pointer; border-radius: 4px; padding: 2px 4px; transition: background 0.12s; }
+.shop-table .editable-cell:hover { background: rgba(124,92,252,0.12); }
+
+/* ── Perf cards ── */
+.perf-card { background: var(--panel2); border: 1px solid var(--line); border-radius: 11px; padding: 14px 16px; }
+
+/* ── Audit ── */
+.audit-row { display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid rgba(35,35,52,0.5); }
+.audit-row:last-child { border-bottom: none; }
+.audit-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 13px; }
+.audit-body { flex: 1; }
+.audit-action { font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 5px; }
+.audit-ts { font-size: 10.5px; color: var(--muted); }
+.audit-summary { font-size: 12.5px; color: var(--jtext); margin-top: 3px; }
+
+/* ── Day Close formula box ── */
+.formula-box { background: var(--panel2); border: 1px solid rgba(124,92,252,0.25); border-radius: 10px; padding: 14px 16px; }
+.formula-line { display: flex; align-items: center; justify-content: space-between; font-size: 12px; margin-bottom: 5px; }
+.formula-line .fl-label { color: var(--muted); }
+.formula-line .fl-val { font-family: 'JetBrains Mono', monospace; font-weight: 600; }
+.formula-total { border-top: 1px solid var(--line); margin-top: 8px; padding-top: 10px; display: flex; justify-content: space-between; font-size: 14px; font-weight: 700; }
+.formula-total .ft-val { font-family: 'JetBrains Mono', monospace; color: var(--good); font-size: 16px; }
+
+/* ── Toast ── */
+#toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 999; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
+.toast { background: var(--panel); border: 1px solid var(--line); border-radius: 9px; padding: 11px 15px; font-size: 12.5px; font-weight: 500; min-width: 220px; max-width: 320px; animation: toast-in 0.2s ease; pointer-events: auto; display: flex; align-items: center; gap: 9px; box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
+.toast.success { border-left: 3px solid var(--good); }
+.toast.error   { border-left: 3px solid var(--bad); }
+.toast.info    { border-left: 3px solid var(--accent2); }
+@keyframes toast-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes toast-out { to { opacity: 0; transform: translateY(8px); } }
+
+/* ── Empty state ── */
+.empty { text-align: center; padding: 48px 20px; color: var(--muted); font-size: 13px; }
+.empty .empty-icon { font-size: 32px; margin-bottom: 12px; opacity: 0.4; }
+
+/* ── Filter bar ── */
+.filter-bar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.filter-btn { background: transparent; border: 1px solid var(--line); border-radius: 7px; color: var(--muted); padding: 5px 12px; font-size: 11.5px; font-weight: 600; cursor: pointer; transition: all 0.12s; font-family: 'Inter', sans-serif; }
+.filter-btn:hover { border-color: var(--accent); color: var(--jtext); }
+.filter-btn.on { background: rgba(124,92,252,0.14); border-color: var(--accent); color: var(--accent); }
+
+/* ── Sync dot ── */
+.sync-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--good); display: inline-block; }
+.sync-dot.syncing { background: var(--warn); animation: pulse 1s infinite; }
+.sync-dot.error { background: var(--bad); }
+@keyframes pulse { 0%,100%{opacity:1}50%{opacity:0.3} }
+
+/* ── Mobile bottom nav ── */
+#bnav { display: none; position: fixed; bottom: 0; left: 0; right: 0; background: var(--panel2); border-top: 1px solid var(--line); z-index: 40; padding: 6px 0 env(safe-area-inset-bottom); }
+.bnav-items { display: flex; justify-content: space-around; }
+.bnav-item { display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 6px 10px; cursor: pointer; color: var(--muted); font-size: 9px; font-weight: 600; transition: color 0.12s; }
+.bnav-item.active { color: var(--accent); }
+.bnav-item i { font-size: 16px; }
+
+@media(max-width: 768px){
+  #sidebar { display: none; }
+  #main { margin-left: 0; padding-bottom: 60px; }
+  #bnav { display: block; }
+  .top-bar { padding: 10px 14px; }
+  .content { padding: 14px; }
+  .cards-grid { grid-template-columns: 1fr; }
+}
+
+/* ── Section header ── */
+.section-hd { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; flex-wrap: wrap; gap: 10px; }
+.section-hd h2 { font-size: 13px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.07em; }
+
+/* ── Net worth hero ── */
+.nw-hero { background: linear-gradient(135deg, #1a1040, #051820, var(--bg)); border: 1px solid var(--line); border-radius: 14px; padding: 22px 24px; margin-bottom: 18px; position: relative; overflow: hidden; }
+.nw-hero::before { content: ''; position: absolute; top: -60px; right: -60px; width: 200px; height: 200px; border-radius: 50%; background: radial-gradient(circle, rgba(124,92,252,0.12), transparent 70%); pointer-events: none; }
+.nw-hero .nw-label { font-size: 10px; font-weight: 700; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 8px; }
+.nw-hero .nw-val { font-family: 'JetBrains Mono', monospace; font-size: 34px; font-weight: 800; letter-spacing: -0.03em; color: var(--jtext); }
+.nw-breakdown { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 16px; }
+@media(max-width:640px){ .nw-breakdown { grid-template-columns: repeat(2,1fr); } }
+.nw-bd-item .k { font-size: 9.5px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px; }
+.nw-bd-item .v { font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 700; }
+
+/* ── Loan card ── */
+.loan-card { background: var(--panel); border: 1px solid var(--line); border-radius: 11px; padding: 15px 17px; }
+.loan-card.repaid { opacity: 0.5; }
+
+/* ── Day close history card ── */
+.dc-hist-card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 13px 15px; }
+.dc-calc-row { display: flex; align-items: center; justify-content: space-between; font-size: 11.5px; padding: 2px 0; color: var(--muted); }
+.dc-calc-row .dc-v { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--jtext); font-weight: 600; }
+
+/* ── Day Close Shop Tabs ── */
+.dc-shop-tabs { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; }
+.dc-shop-tab { padding: 7px 16px; border-radius: 8px; border: 1px solid var(--line); background: transparent; color: var(--muted); font-size: 12px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.12s; display: flex; align-items: center; gap: 6px; }
+.dc-shop-tab:hover { border-color: var(--accent); color: var(--jtext); }
+.dc-shop-tab.active { border-color: var(--accent); background: rgba(124,92,252,0.14); color: var(--jtext); }
+.dc-form-panel { display: none; }
+.dc-form-panel.active { display: block; }
+
+/* ── Rec card compact ── */
+.rec-card { background: var(--panel); border: 1px solid var(--line); border-left: 3px solid transparent; border-radius: 11px; padding: 13px 15px; display: flex; flex-direction: column; gap: 9px; transition: border-color 0.12s; }
+.rec-card:hover { border-color: rgba(124,92,252,0.35); border-left-color: inherit; }
+.rec-card.overdue { border-left-color: var(--bad); }
+.rec-card.settled { opacity: 0.5; }
+
+/* ── Stat grid compact ── */
+.stat-grid-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 16px; }
+@media(max-width:640px){ .stat-grid-3 { grid-template-columns: repeat(2,1fr); } }
+.stat-tile { background: var(--panel); border: 1px solid var(--line); border-radius: 9px; padding: 11px 14px; }
+.stat-tile .st-label { font-size: 9.5px; color: var(--muted); font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 5px; display: flex; align-items: center; gap: 5px; }
+.stat-tile .st-val { font-family: 'JetBrains Mono', monospace; font-size: 18px; font-weight: 700; letter-spacing: -0.02em; }
+
+/* ── Settings ── */
+.settings-section { background: var(--panel); border: 1px solid var(--line); border-radius: 11px; padding: 18px 20px; margin-bottom: 14px; }
+.settings-section h3 { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 14px; display: flex; align-items: center; gap: 7px; }
+
+/* ── Separator ── */
+hr.divider { border: none; border-top: 1px solid var(--line); margin: 14px 0; }
+
+/* ── Interop arrow ── */
+.arrow-shops { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; }
+.arrow-shops .arrow { color: var(--muted); font-size: 16px; }
+
+/* ── Compact DC History row card ── */
+.dc-row-card { background: var(--panel); border: 1px solid var(--line); border-left: 3px solid transparent; border-radius: 9px; padding: 10px 14px; display: flex; align-items: center; gap: 10px; cursor: pointer; transition: border-color 0.12s, opacity 0.12s; margin-bottom: 7px; }
+.dc-row-card:hover { border-color: rgba(124,92,252,0.4); }
+.dc-row-card.dc-deleted { opacity: 0.35; }
+
+/* ── Paid stamp ── */
+.paid-stamp { font-size: 9px; font-weight: 800; letter-spacing: 0.12em; padding: 2px 6px; border-radius: 4px; border: 1px solid rgba(34,197,94,0.4); background: rgba(34,197,94,0.1); color: var(--good); text-transform: uppercase; }
+
+/* ── Transfer panel ── */
+.transfer-panel { background: var(--panel); border: 1px solid var(--line); border-radius: 11px; padding: 16px 18px; margin-bottom: 18px; }
+
+/* ── Chart card ── */
+.chart-card { background: var(--panel); border: 1px solid var(--line); border-radius: 11px; padding: 16px 18px; margin-bottom: 18px; }
+
+/* ── Profit live display ── */
+.profit-live-box { background: rgba(124,92,252,0.07); border: 1px solid rgba(124,92,252,0.22); border-radius: 9px; padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; margin-top: 6px; }
+
+/* ── Home Expense ── */
+.he-row { display: flex; align-items: center; gap: 10px; background: var(--panel2); border-radius: 8px; padding: 9px 13px; margin-bottom: 7px; }
+.he-cat-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+/* ── Reminder card ── */
+.rem-card { background: var(--panel); border: 1px solid var(--line); border-left: 3px solid var(--muted); border-radius: 10px; padding: 11px 14px; display: flex; align-items: center; gap: 12px; margin-bottom: 8px; transition: border-color 0.15s; }
+.rem-card:hover { border-color: rgba(245,158,11,0.4); }
+.rem-card.due-soon { border-left-color: var(--warn); background: linear-gradient(90deg, rgba(245,158,11,0.05), transparent 40%); }
+.rem-card.due-today { border-left-color: var(--bad); background: linear-gradient(90deg, rgba(239,68,68,0.08), transparent 40%); }
+.rem-card.overdue { border-left-color: var(--bad); background: linear-gradient(90deg, rgba(239,68,68,0.12), transparent 45%); }
+.rem-days-badge { font-size: 10px; font-weight: 800; padding: 3px 8px; border-radius: 6px; letter-spacing: 0.04em; text-transform: uppercase; }
+</style>
+<style>*, ::before, ::after{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/* ! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com */*,::after,::before{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}::after,::before{--tw-content:''}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0;padding:0}legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}</style><style></style><link href="chrome-extension://alhgpfoeiimagjlnfekdhkjlkiomcapa/js/css/inject.css" rel="stylesheet" type="text/css" data-apio="true"><link data-apio="true" rel="stylesheet" type="text/css" href="chrome-extension://alhgpfoeiimagjlnfekdhkjlkiomcapa/js/css/a_chrome-extension_inject_global_module_scss.css"><link data-apio="true" rel="stylesheet" type="text/css" href="chrome-extension://alhgpfoeiimagjlnfekdhkjlkiomcapa/js/css/a_chrome-extension_inject_core_components_OpenPopupButton_tsx.css"></head>
+<body>
+
+<!-- ═══════════════ PIN SCREEN ═══════════════ -->
+<div class="zp-open-popup-button"><div class="zp apolloio-css-vars-reset x_lAIzV x_ktWFc" dir="ltr"><div class="x_R61yl zp-16-0-1-zp-fixed"><img alt="Apollo.io" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgZmlsbD0ibm9uZSIgdmlld0JveD0iMCAwIDQwIDQwIj48cGF0aCBmaWxsPSIjZWJmMjEyIiBkPSJtMjEuNDY2IDUuMDcxLjAwNCAxMC45MTVjLjAwMSAxLjcyNS0xLjgzNCAyLjgzLTMuMzU4IDIuMDI0TDcuMTcgMTIuMjIzYTE1LjEgMTUuMSAwIDAgMSAzLjEtMy42NGw4LjU4MiA3LjkzMmMuNDU1LjQyIDEuMTcyLS4wMzYuOTg1LS42MjZMMTYuNTA5IDUuNDFhMTUgMTUgMCAwIDEgNC45NTYtLjMzOE0xOC40OTYgMzQuOTI1bC0uMDA1LTEwLjg2YzAtMS43MjQgMS44MzQtMi44MyAzLjM1OS0yLjAyM2wxMC45NDYgNS43OWExNSAxNSAwIDAgMS0zLjExNiAzLjYyNmwtOC41Ny03LjkyMWMtLjQ1NS0uNDItMS4xNzIuMDM1LS45ODUuNjI1bDMuMzE2IDEwLjQ0MWExNSAxNSAwIDAgMS00Ljk0NS4zMjJNMjMuNDkyIDE4Ljg5OCAzMS40NCAxMC4zYTE1IDE1IDAgMCAwLTMuNjQtMy4xMTNsLTUuODA0IDEwLjk3MmMtLjgwNiAxLjUyNC4zIDMuMzU5IDIuMDI0IDMuMzU4bDEwLjkwNS0uMDA1YTE1LjIgMTUuMiAwIDAgMC0uMzI0LTQuOTU4bC0xMC40ODQgMy4zM2MtLjU5LjE4Ny0xLjA0NS0uNTMtLjYyNS0uOTg1TTUuMDcgMTguNTRsMTAuODcyLS4wMDRjMS43MjUgMCAyLjgzIDEuODM0IDIuMDI0IDMuMzU4TDEyLjE5MiAzMi44MWExNSAxNSAwIDAgMS0zLjYyNy0zLjEwM2w3LjkwNi04LjU1M2MuNDItLjQ1NS0uMDM2LTEuMTcyLS42MjYtLjk4NUw1LjQwOCAyMy40ODRhMTUgMTUgMCAwIDEtLjMzNy00Ljk0MyIvPjwvc3ZnPg==" class="x_kJtSQ"></div></div></div><div id="pin-screen" style="display: flex;">
+  <div style="text-align:center;">
+    <div style="font-size:24px;font-weight:800;letter-spacing:-0.03em;margin-bottom:4px;">JMD Traders</div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:32px;">Enter PIN to access</div>
+    <div style="display:flex;gap:12px;justify-content:center;margin-bottom:24px;">
+      <div class="pin-dot" id="d0"></div><div class="pin-dot" id="d1"></div>
+      <div class="pin-dot" id="d2"></div><div class="pin-dot" id="d3"></div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,68px);gap:12px;justify-content:center;">
+      <button class="pin-key" onclick="pinPress(&#39;1&#39;)">1</button>
+      <button class="pin-key" onclick="pinPress(&#39;2&#39;)">2</button>
+      <button class="pin-key" onclick="pinPress(&#39;3&#39;)">3</button>
+      <button class="pin-key" onclick="pinPress(&#39;4&#39;)">4</button>
+      <button class="pin-key" onclick="pinPress(&#39;5&#39;)">5</button>
+      <button class="pin-key" onclick="pinPress(&#39;6&#39;)">6</button>
+      <button class="pin-key" onclick="pinPress(&#39;7&#39;)">7</button>
+      <button class="pin-key" onclick="pinPress(&#39;8&#39;)">8</button>
+      <button class="pin-key" onclick="pinPress(&#39;9&#39;)">9</button>
+      <button class="pin-key" onclick="pinPress(&#39;0&#39;)" style="grid-column:2;">0</button>
+      <button class="pin-key btn" onclick="pinBack()" style="font-size:16px;border-radius:50%;">⌫</button>
+    </div>
+    <div id="pin-error" style="color:var(--bad);font-size:12px;margin-top:14px;min-height:18px;"></div>
+  </div>
+</div>
+
+<!-- ═══════════════ APP ═══════════════ -->
+<div id="app" style="display:none;">
+  <!-- Sidebar -->
+  <nav id="sidebar">
+    <div class="sidebar-logo">
+      <div class="brand">JMD Traders</div>
+      <div class="sub">Command Center</div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">Modules</div>
+      <div class="nav-item active" id="nav-dashboard" onclick="switchTab(&#39;dashboard&#39;)"><i class="fa-solid fa-chart-pie" style="width:14px;"></i> Dashboard</div>
+      <div class="nav-item" id="nav-dayclose" onclick="switchTab(&#39;dayclose&#39;)"><i class="fa-solid fa-calendar-check" style="width:14px;"></i> Day Close</div>
+      <div class="nav-label">Finance</div>
+      <div class="nav-item" id="nav-udhaari" onclick="switchTab(&#39;udhaari&#39;)"><i class="fa-solid fa-users" style="width:14px;"></i> Market Udhaari <span class="nav-badge red" id="badge-udhaari"></span></div>
+      <div class="nav-item" id="nav-outflows" onclick="switchTab(&#39;outflows&#39;)"><i class="fa-solid fa-file-invoice" style="width:14px;"></i> Outflows <span class="nav-badge amber" id="badge-outflows"></span></div>
+      <div class="nav-item" id="nav-intershop" onclick="switchTab(&#39;intershop&#39;)"><i class="fa-solid fa-right-left" style="width:14px;"></i> InterShop <span class="nav-badge amber" id="badge-intershop"></span></div>
+      <div class="nav-item" id="nav-loans" onclick="switchTab(&#39;loans&#39;)"><i class="fa-solid fa-hand-holding-dollar" style="width:14px;"></i> Loans Liye <span class="nav-badge red" id="badge-loans"></span></div>
+      <div class="nav-label">Records</div>
+      <div class="nav-item" id="nav-homeexp" onclick="switchTab(&#39;homeexp&#39;)"><i class="fa-solid fa-house" style="width:14px;"></i> Home Expenses <span class="nav-badge amber" id="badge-homeexp"></span></div>
+      <div class="nav-item" id="nav-audit" onclick="switchTab(&#39;audit&#39;)"><i class="fa-solid fa-list-ul" style="width:14px;"></i> Audit Log</div>
+      <div class="nav-item" id="nav-settings" onclick="switchTab(&#39;settings&#39;)"><i class="fa-solid fa-gear" style="width:14px;"></i> Settings</div>
+    </div>
+    <div class="sidebar-footer">
+      <div class="owner">Logged in as Owner</div>
+      <button class="btn btn-ghost" style="width:100%;font-size:11px;" onclick="lockApp()"><i class="fa-solid fa-lock" style="margin-right:5px;"></i>Lock Session</button>
+    </div>
+  </nav>
+
+  <!-- Main -->
+  <main id="main">
+    <!-- Top bar -->
+    <div class="top-bar">
+      <div>
+        <div class="page-title" id="header-title">Dashboard</div>
+        <div class="page-sub" id="header-date"></div>
+      </div>
+      <div class="top-bar-right">
+        <button class="btn btn-good btn-sm" onclick="openWaShareModal()" title="Share daily summary on WhatsApp"><i class="fa-brands fa-whatsapp"></i> Share</button>
+        <span class="sync-dot" id="sync-dot" title="Sync status" style="background: rgb(68, 68, 96);"></span>
+        <span style="font-size:11px;color:var(--muted);" id="sync-label">No Sheet</span>
+        <button class="btn btn-ghost" style="padding:5px 10px;font-size:11.5px;" onclick="manualSync()"><i class="fa-solid fa-rotate" id="sync-icon"></i></button>
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div class="content">
+
+      <!-- ═══ DASHBOARD ═══ -->
+      <div class="tab-section active" id="tab-dashboard">
+        <!-- Net Worth Hero -->
+        <div class="nw-hero">
+          <div class="nw-label">Total Net Position</div>
+          <div class="nw-val" id="nw-val">₹0</div>
+          <div class="nw-breakdown">
+            <div class="nw-bd-item"><div class="k">Personal Wallet</div><div class="v" style="color:var(--accent);" id="nw-galla" title="Cumulative cash-taken-home minus personal expenses">₹0</div></div>
+            <div class="nw-bd-item"><div class="k">GPay / Online</div><div class="v" style="color:var(--accent2);" id="nw-online">₹0</div></div>
+            <div class="nw-bd-item"><div class="k">Udhaari Due</div><div class="v" style="color:var(--warn);" id="nw-udhaar">₹0</div></div>
+            <div class="nw-bd-item"><div class="k">Bills Pending</div><div class="v" style="color:var(--bad);" id="nw-liab">₹0</div></div>
+          </div>
+          <div style="margin-top:14px;font-size:10.5px;color:var(--muted);border-top:1px solid var(--line);padding-top:10px;">
+            <i class="fa-solid fa-circle-info" style="margin-right:4px;color:var(--accent2);"></i>
+            <strong style="color:var(--jtext);">Formula:</strong> Personal Wallet + GPay/Online + Udhaari Due − Bills Pending. Counter Cash is working capital, not net worth.
+          </div>
+        </div>
+
+        <!-- Shop matrix -->
+        <div class="card" style="margin-bottom:18px;overflow:auto;">
+          <div style="padding:14px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;">
+            <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.07em;">Shop Balances <span style="font-size:10px;font-weight:400;margin-left:6px;">(dbl-click to edit)</span></div>
+          </div>
+          <table class="shop-table">
+            <thead><tr>
+              <th>Shop</th>
+              <th title="Cumulative cash taken home from this shop">Home Cash</th>
+              <th title="Counter cash — working capital, not net worth">Counter <span style="font-weight:400;font-size:8.5px;">(working)</span></th>
+              <th>GPay / Online</th>
+              <th>Active Udhaari</th>
+              <th>Pending Bills</th>
+              <th>Net Worth</th>
+            </tr></thead>
+            <tbody id="shop-tbody"></tbody>
+          </table>
+        </div>
+
+        <!-- Quick stats -->
+        <div class="stat-grid-3">
+          <div class="stat-tile">
+            <div class="st-label"><i class="fa-solid fa-plus-circle" style="color:var(--accent);"></i> Udhaari Today</div>
+            <div class="st-val" id="qs-today">0</div>
+          </div>
+          <div class="stat-tile">
+            <div class="st-label"><i class="fa-solid fa-calendar" style="color:var(--warn);"></i> Last Day Close</div>
+            <div class="st-val" id="qs-lastdc" style="font-size:13px;">—</div>
+          </div>
+          <div class="stat-tile">
+            <div class="st-label"><i class="fa-solid fa-triangle-exclamation" style="color:var(--bad);"></i> Loans Pending</div>
+            <div class="st-val" id="qs-loans" style="color:var(--bad);">₹0</div>
+          </div>
+        </div>
+
+        <!-- Sales Chart -->
+        <div class="chart-card">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+            <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.07em;"><i class="fa-solid fa-chart-bar" style="margin-right:5px;"></i>Sales vs Profit (Last 7 Days)</div>
+            <select class="inp" id="chart-shop-filter" style="width:auto;padding:4px 10px;font-size:11px;" onchange="renderSalesChart()">
+              <option value="all">All Shops</option>
+              <option value="SHOP01">JMD Pooja</option>
+              <option value="SHOP02">SMS Pooja</option>
+              <option value="SHOP03">Stall</option>
+              <option value="SHOP04">Graphics</option>
+            </select>
+          </div>
+          <div style="position:relative;height:180px;"><canvas id="sales-chart"></canvas></div>
+        </div>
+
+        <!-- Cash Transfer Panel -->
+        <div class="transfer-panel" id="transfer-panel-wrap">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+            <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.07em;"><i class="fa-solid fa-arrow-right-arrow-left" style="margin-right:5px;"></i>Transfer / Move Funds</div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;align-items:flex-end;">
+            <div class="fg" style="margin:0;">
+              <div class="lbl">Shop</div>
+              <select class="inp" id="tr-shop" style="padding:7px 10px;font-size:12px;" onchange="updateTransferPreview()">
+                <option value="SHOP01">JMD Pooja</option><option value="SHOP02">SMS Pooja</option>
+                <option value="SHOP03">Stall</option><option value="SHOP04">Graphics</option>
+              </select>
+            </div>
+            <div class="fg" style="margin:0;">
+              <div class="lbl">Type</div>
+              <select class="inp" id="tr-type" style="padding:7px 10px;font-size:12px;" onchange="updateTransferPreview()">
+                <option value="deposit">Counter → Bank (Deposit)</option>
+                <option value="atm">ATM / Bank → Counter</option>
+                <option value="g2c">GPay → Counter Cash</option>
+                <option value="c2g">Counter → GPay</option>
+              </select>
+            </div>
+            <div class="fg" style="margin:0;">
+              <div class="lbl">Amount (₹)</div>
+              <input class="inp" id="tr-amt" type="number" placeholder="0" style="padding:7px 10px;font-size:12px;" oninput="updateTransferPreview()" onfocus="clearIfZero(this)">
+            </div>
+            <button class="btn btn-primary" style="height:36px;" onclick="executeTransfer()"><i class="fa-solid fa-arrow-right-arrow-left"></i> Transfer</button>
+          </div>
+          <div id="tr-preview" style="margin-top:10px;font-size:11.5px;color:var(--muted);min-height:16px;"></div>
+        </div>
+
+        <!-- Performance Tracker -->
+        <div class="section-hd"><h2><i class="fa-solid fa-chart-bar" style="margin-right:5px;"></i>Shop Performance</h2></div>
+        <div class="cards-grid" id="perf-grid"></div>
+      </div>
+
+      <!-- ═══ DAY CLOSE ═══ -->
+      <div class="tab-section" id="tab-dayclose">
+        <!-- Shop tabs -->
+        <div class="dc-shop-tabs" id="dc-shop-tabs"></div>
+        <!-- Active shop form -->
+        <div id="dc-forms"></div>
+
+        <div style="margin-top:24px;">
+          <div class="section-hd"><h2>History</h2></div>
+          <div id="dc-history"></div>
+        </div>
+      </div>
+
+      <!-- ═══ MARKET UDHAARI ═══ -->
+      <div class="tab-section" id="tab-udhaari">
+        <div class="section-hd">
+          <div class="filter-bar">
+            <button class="filter-btn on" id="uf-all" onclick="setUFilter(&#39;all&#39;)">All</button>
+            <button class="filter-btn" id="uf-active" onclick="setUFilter(&#39;active&#39;)">Active</button>
+            <button class="filter-btn" id="uf-overdue" onclick="setUFilter(&#39;overdue&#39;)">Overdue</button>
+            <button class="filter-btn" id="uf-settle" onclick="setUFilter(&#39;settle&#39;)">Settled</button>
+            <select class="inp" style="width:auto;padding:5px 10px;font-size:11.5px;" id="uf-shop" onchange="renderUdhaari()">
+              <option value="all">All Shops</option>
+              <option value="SHOP01">JMD Pooja</option><option value="SHOP02">SMS Pooja</option>
+              <option value="SHOP03">Stall</option><option value="SHOP04">Graphics</option>
+            </select>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="openModal(&#39;modal-add-udhaari&#39;)"><i class="fa-solid fa-plus"></i> Add Udhaari</button>
+        </div>
+        <div class="cards-grid" id="udhaari-cards"></div>
+      </div>
+
+      <!-- ═══ OUTFLOWS ═══ -->
+      <div class="tab-section" id="tab-outflows">
+        <div class="section-hd">
+          <div class="filter-bar">
+            <button class="filter-btn on" id="of-all" onclick="setOFilter(&#39;all&#39;)">All</button>
+            <button class="filter-btn" id="of-pending" onclick="setOFilter(&#39;pending&#39;)">Pending</button>
+            <button class="filter-btn" id="of-paid" onclick="setOFilter(&#39;paid&#39;)">Paid</button>
+            <select class="inp" style="width:auto;padding:5px 10px;font-size:11.5px;" id="of-shop" onchange="renderOutflows()">
+              <option value="all">All Shops</option>
+              <option value="SHOP01">JMD Pooja</option><option value="SHOP02">SMS Pooja</option>
+              <option value="SHOP03">Stall</option><option value="SHOP04">Graphics</option>
+            </select>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="openModal(&#39;modal-add-outflow&#39;)"><i class="fa-solid fa-plus"></i> Add Outflow</button>
+        </div>
+        <div class="cards-grid" id="outflow-cards"></div>
+      </div>
+
+      <!-- ═══ INTERSHOP ═══ -->
+      <div class="tab-section" id="tab-intershop">
+        <div class="section-hd">
+          <div class="filter-bar">
+            <button class="filter-btn on" id="isf-all" onclick="setISFilter(&#39;all&#39;)">All</button>
+            <button class="filter-btn" id="isf-open" onclick="setISFilter(&#39;open&#39;)">Open</button>
+            <button class="filter-btn" id="isf-settled" onclick="setISFilter(&#39;settled&#39;)">Settled</button>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="openModal(&#39;modal-add-intershop&#39;)"><i class="fa-solid fa-plus"></i> Add Transfer</button>
+        </div>
+        <div class="cards-grid" id="intershop-cards"></div>
+      </div>
+
+      <!-- ═══ LOANS ═══ -->
+      <div class="tab-section" id="tab-loans">
+        <div class="section-hd">
+          <div class="filter-bar">
+            <button class="filter-btn on" id="lf-all" onclick="setLFilter(&#39;all&#39;)">All</button>
+            <button class="filter-btn" id="lf-pending" onclick="setLFilter(&#39;pending&#39;)">Pending</button>
+            <button class="filter-btn" id="lf-repaid" onclick="setLFilter(&#39;repaid&#39;)">Repaid</button>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="openModal(&#39;modal-add-loan&#39;)"><i class="fa-solid fa-plus"></i> Add Loan</button>
+        </div>
+        <div class="cards-grid" id="loan-cards"></div>
+      </div>
+
+      <!-- ═══ HOME EXPENSES ═══ -->
+      <div class="tab-section" id="tab-homeexp">
+        <!-- Fixed Payments Reminders -->
+        <div class="section-hd">
+          <div>
+            <h2><i class="fa-solid fa-bell" style="margin-right:5px;color:var(--warn);"></i>Fixed Payments Reminder</h2>
+            <div style="font-size:11px;color:var(--muted);margin-top:4px;">Recurring EMIs, rent, subscriptions — kabhi date miss mat karo</div>
+          </div>
+          <button class="btn btn-warn btn-sm" onclick="openAddReminderModal()"><i class="fa-solid fa-plus"></i> Add Reminder</button>
+        </div>
+        <div id="reminder-summary" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px;"></div>
+        <div id="reminder-list" style="margin-bottom:26px;"></div>
+
+        <!-- Expense list header -->
+        <div class="section-hd">
+          <div>
+            <h2><i class="fa-solid fa-house" style="margin-right:5px;"></i>Home / Personal Expenses</h2>
+            <div style="font-size:11px;color:var(--muted);margin-top:4px;">EMI, D-Mart, Light Bill, Maintenance, etc.</div>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="openHomeExpModal()"><i class="fa-solid fa-plus"></i> Add Expense</button>
+        </div>
+        <!-- Monthly summary -->
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px;" id="he-summary"></div>
+        <!-- Category donut chart -->
+        <div style="display:grid;grid-template-columns:1.2fr 1fr;gap:14px;margin-bottom:18px;" id="he-chart-wrap">
+          <div class="chart-card" style="margin:0;">
+            <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:10px;"><i class="fa-solid fa-chart-pie" style="margin-right:5px;"></i>This Month by Category</div>
+            <div style="position:relative;height:220px;"><canvas id="he-donut"></canvas></div>
+          </div>
+          <div class="card" style="padding:14px 16px;">
+            <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:10px;"><i class="fa-solid fa-ranking-star" style="margin-right:5px;"></i>Top Categories</div>
+            <div id="he-top-cats"></div>
+          </div>
+        </div>
+        <!-- Expense list -->
+        <div id="homeexp-list"></div>
+      </div>
+
+      <!-- ═══ AUDIT ═══ -->
+      <div class="tab-section" id="tab-audit">
+        <div class="section-hd">
+          <h2>Audit Log</h2>
+          <select class="inp" style="width:auto;padding:5px 10px;font-size:11.5px;" id="audit-filter" onchange="renderAudit()">
+            <option value="all">All Actions</option>
+            <option value="ADD_UDHAARI">Add Udhaari</option>
+            <option value="COLLECT_UDHAARI">Collect Udhaari</option>
+            <option value="ADD_OUTFLOW">Add Outflow</option>
+            <option value="SETTLE_OUTFLOW">Settle Outflow</option>
+            <option value="DAY_CLOSE">Day Close</option>
+            <option value="ADD_LOAN">Add Loan</option>
+            <option value="REPAY_LOAN">Repay Loan</option>
+            <option value="INTERSHOP">InterShop</option>
+            <option value="MANUAL_ADJUST">Manual Adjust</option>
+            <option value="HOME_EXPENSE">Home Expense</option>
+            <option value="TRANSFER">Transfer / Move Funds</option>
+            <option value="DELETE_DC">Delete Day Close</option>
+            <option value="REMINDER">Reminder</option>
+          </select>
+        </div>
+        <div class="card" style="padding:6px 18px;" id="audit-list"></div>
+      </div>
+
+      <!-- ═══ SETTINGS ═══ -->
+      <div class="tab-section" id="tab-settings">
+        <div class="settings-section">
+          <h3><i class="fa-solid fa-link"></i> Google Sheets Sync</h3>
+
+          <!-- Managed / Locked view (when INBUILT_SHEET_URL is set in code) -->
+          <div id="settings-managed" style="display:none;">
+            <div style="background:linear-gradient(135deg, rgba(34,197,94,0.08), rgba(6,182,212,0.05));border:1px solid rgba(34,197,94,0.28);border-radius:9px;padding:14px 16px;">
+              <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+                <i class="fa-solid fa-shield-halved" style="color:var(--good);font-size:16px;"></i>
+                <span style="font-size:13px;font-weight:700;color:var(--good);">Team Sync Active — Auto Managed</span>
+                <span class="badge badge-green" style="margin-left:auto;padding:2px 8px;">LOCKED</span>
+              </div>
+              <div style="font-size:11.5px;color:var(--muted);line-height:1.6;">
+                Sheet URL app ke code me hardcoded hai. Aap aur aapke partner/CA/staff sab ek hi Google Sheet ke saath sync hote hain — same data everywhere.
+              </div>
+              <div style="margin-top:10px;background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:8px 10px;font-family:&#39;JetBrains Mono&#39;,monospace;font-size:10.5px;color:var(--accent2);word-break:break-all;" id="settings-managed-url">—</div>
+              <div style="display:flex;gap:8px;margin-top:12px;">
+                <button class="btn btn-ghost btn-sm" onclick="testSheetConnection()"><i class="fa-solid fa-plug"></i> Test Connection</button>
+                <button class="btn btn-primary btn-sm" onclick="pullFromSheet()"><i class="fa-solid fa-cloud-arrow-down"></i> Pull Latest</button>
+                <button class="btn btn-good btn-sm" onclick="manualSync()"><i class="fa-solid fa-cloud-arrow-up"></i> Push Now</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Editable view (user config) -->
+          <div id="settings-editable">
+            <div class="fg">
+              <div class="lbl">AppScript Web App URL</div>
+              <input class="inp" id="sheet-url-inp" placeholder="https://script.google.com/macros/s/.../exec">
+            </div>
+            <div style="display:flex;gap:8px;margin-top:8px;">
+              <button class="btn btn-primary btn-sm" onclick="saveSheetUrl()">Save URL</button>
+              <button class="btn btn-ghost btn-sm" onclick="testSheetConnection()">Test Connection</button>
+              <button class="btn btn-bad btn-sm" onclick="clearSheetUrl()">Clear</button>
+            </div>
+            <div style="margin-top:14px;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:12px 14px;font-size:11.5px;color:var(--muted);line-height:1.6;">
+              <strong style="color:var(--jtext);">Setup:</strong> Open Google Sheets → Extensions → Apps Script → paste the Code.gs file → Deploy → New Deployment → Web App → Execute as Me, Anyone → Deploy → copy URL above.
+              <br><br><strong style="color:var(--accent2);">Tip:</strong> Sab users ke liye same sheet auto-sync karna hai? App ke code me <code style="color:var(--accent);">INBUILT_SHEET_URL</code> variable set karo — Settings hide ho jayegi aur sab team members auto-sync ho jayenge.
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <h3><i class="fa-solid fa-lock"></i> Change PIN</h3>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <div class="fg"><div class="lbl">Current PIN</div><input class="inp" id="cur-pin" type="password" maxlength="4" placeholder="••••"></div>
+            <div class="fg"><div class="lbl">New PIN</div><input class="inp" id="new-pin" type="password" maxlength="4" placeholder="••••"></div>
+          </div>
+          <button class="btn btn-primary btn-sm" style="margin-top:4px;" onclick="changePin()">Update PIN</button>
+        </div>
+
+        <div class="settings-section">
+          <h3><i class="fa-solid fa-calculator"></i> Sale Formula</h3>
+          <div style="font-size:13px;color:var(--muted);line-height:1.8;">
+            <div><strong style="color:var(--good);">Total Sale</strong> = Cash Taken Home + Counter Cash Kept + GPay/Online + Counter Expenses − Yesterday's Counter Cash</div>
+            <hr class="divider">
+            <div style="font-size:11.5px;">Example: Took ₹2000 home, left ₹500 in counter, received ₹1000 GPay, spent ₹200 from counter, yesterday's counter was ₹800 →</div>
+            <div style="font-family:&#39;JetBrains Mono&#39;,monospace;margin-top:6px;color:var(--jtext);">Sale = 2000 + 500 + 1000 + 200 − 800 = <strong style="color:var(--good);">₹2900</strong></div>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <h3><i class="fa-solid fa-trash"></i> Danger Zone</h3>
+          <button class="btn btn-bad btn-sm" onclick="if(confirm(&#39;Sab data delete ho jayega! Sure ho?&#39;)) resetAll()">Reset All Data</button>
+        </div>
+      </div>
+
+    </div><!-- /content -->
+  </main>
+
+  <!-- Mobile bottom nav -->
+  <div id="bnav">
+    <div class="bnav-items">
+      <div class="bnav-item active" id="bnav-dashboard" onclick="switchTab(&#39;dashboard&#39;)"><i class="fa-solid fa-chart-pie"></i><span>Home</span></div>
+      <div class="bnav-item" id="bnav-dayclose" onclick="switchTab(&#39;dayclose&#39;)"><i class="fa-solid fa-calendar-check"></i><span>Day Close</span></div>
+      <div class="bnav-item" id="bnav-udhaari" onclick="switchTab(&#39;udhaari&#39;)"><i class="fa-solid fa-users"></i><span>Udhaari</span></div>
+      <div class="bnav-item" id="bnav-outflows" onclick="switchTab(&#39;outflows&#39;)"><i class="fa-solid fa-file-invoice"></i><span>Bills</span></div>
+      <div class="bnav-item" id="bnav-loans" onclick="switchTab(&#39;loans&#39;)"><i class="fa-solid fa-hand-holding-dollar"></i><span>Loans</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ MODALS ═══════════════ -->
+
+<!-- Add Udhaari -->
+<div class="modal-overlay" id="modal-add-udhaari" onclick="modalBgClose(event,&#39;modal-add-udhaari&#39;)">
+  <div class="modal-box">
+    <div class="modal-title">Add Market Udhaari <button class="modal-close" onclick="closeModal(&#39;modal-add-udhaari&#39;)">×</button></div>
+    <div class="fg"><div class="lbl">Customer Name</div><input class="inp" id="au-cust" placeholder="Naam likho"></div>
+    <div class="fg"><div class="lbl">Shop</div>
+      <div class="chip-group chip-shops" id="au-shop" data-value="SHOP01">
+        <button type="button" class="chip-tile active" data-value="SHOP01" onclick="chipPick(&#39;au-shop&#39;,&#39;SHOP01&#39;)"><span class="chip-dot" style="background:#7c5cfc;"></span>JMD Pooja</button>
+        <button type="button" class="chip-tile" data-value="SHOP02" onclick="chipPick(&#39;au-shop&#39;,&#39;SHOP02&#39;)"><span class="chip-dot" style="background:#06b6d4;"></span>SMS Pooja</button>
+        <button type="button" class="chip-tile" data-value="SHOP03" onclick="chipPick(&#39;au-shop&#39;,&#39;SHOP03&#39;)"><span class="chip-dot" style="background:#22c55e;"></span>Stall</button>
+        <button type="button" class="chip-tile" data-value="SHOP04" onclick="chipPick(&#39;au-shop&#39;,&#39;SHOP04&#39;)"><span class="chip-dot" style="background:#f59e0b;"></span>Graphics</button>
+      </div>
+    </div>
+    <div class="fg"><div class="lbl">Amount (₹)</div><input class="inp" id="au-amt" type="number" placeholder="0"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div class="fg"><div class="lbl">Date</div><input class="inp" id="au-date" type="date"></div>
+      <div class="fg"><div class="lbl">Due Date</div><input class="inp" id="au-due" type="date"></div>
+    </div>
+    <div class="fg"><div class="lbl">Note (optional)</div><input class="inp" id="au-note" placeholder="Koi note?"></div>
+    <div style="display:flex;gap:10px;margin-top:6px;"><button class="btn btn-ghost" style="flex:1;" onclick="closeModal(&#39;modal-add-udhaari&#39;)">Cancel</button><button class="btn btn-primary" style="flex:2;" onclick="saveUdhaari()">Add Udhaari</button></div>
+  </div>
+</div>
+
+<!-- Collect Udhaari -->
+<div class="modal-overlay" id="modal-collect-udhaari" onclick="modalBgClose(event,&#39;modal-collect-udhaari&#39;)">
+  <div class="modal-box">
+    <div class="modal-title">Collect Udhaari <button class="modal-close" onclick="closeModal(&#39;modal-collect-udhaari&#39;)">×</button></div>
+    <div id="collect-info" style="background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:12px;margin-bottom:16px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;">
+    </div>
+    <div class="fg"><div class="lbl">Amount (₹)</div><input class="inp" id="cu-amt" type="number" placeholder="0"></div>
+    <div class="fg"><div class="lbl">Received Via</div>
+      <div class="chip-group" id="cu-mode" data-value="Cash">
+        <button type="button" class="chip-tile active" data-value="Cash" onclick="chipPick(&#39;cu-mode&#39;,&#39;Cash&#39;)"><i class="fa-solid fa-money-bill-wave"></i>Cash</button>
+        <button type="button" class="chip-tile" data-value="GPay" onclick="chipPick(&#39;cu-mode&#39;,&#39;GPay&#39;)"><i class="fa-solid fa-mobile-screen"></i>GPay</button>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:6px;"><button class="btn btn-ghost" style="flex:1;" onclick="closeModal(&#39;modal-collect-udhaari&#39;)">Cancel</button><button class="btn btn-good" style="flex:2;" onclick="saveCollect()">Mark Collected</button></div>
+  </div>
+</div>
+
+<!-- Add Outflow -->
+<div class="modal-overlay" id="modal-add-outflow" onclick="modalBgClose(event,&#39;modal-add-outflow&#39;)">
+  <div class="modal-box">
+    <div class="modal-title">Add Outflow <button class="modal-close" onclick="closeModal(&#39;modal-add-outflow&#39;)">×</button></div>
+    <div class="fg"><div class="lbl">Payee / Kise Dena Hai</div><input class="inp" id="ao-payee" placeholder="Naam"></div>
+    <div class="fg"><div class="lbl">Shop</div>
+      <div class="chip-group chip-shops" id="ao-shop" data-value="SHOP01">
+        <button type="button" class="chip-tile active" data-value="SHOP01" onclick="chipPick(&#39;ao-shop&#39;,&#39;SHOP01&#39;)"><span class="chip-dot" style="background:#7c5cfc;"></span>JMD Pooja</button>
+        <button type="button" class="chip-tile" data-value="SHOP02" onclick="chipPick(&#39;ao-shop&#39;,&#39;SHOP02&#39;)"><span class="chip-dot" style="background:#06b6d4;"></span>SMS Pooja</button>
+        <button type="button" class="chip-tile" data-value="SHOP03" onclick="chipPick(&#39;ao-shop&#39;,&#39;SHOP03&#39;)"><span class="chip-dot" style="background:#22c55e;"></span>Stall</button>
+        <button type="button" class="chip-tile" data-value="SHOP04" onclick="chipPick(&#39;ao-shop&#39;,&#39;SHOP04&#39;)"><span class="chip-dot" style="background:#f59e0b;"></span>Graphics</button>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div class="fg"><div class="lbl">Category</div><select class="inp" id="ao-cat"><option>Rent</option><option>Staff</option><option>Supplier</option><option>Utility</option><option>Misc</option></select></div>
+      <div class="fg"><div class="lbl">Amount (₹)</div><input class="inp" id="ao-amt" type="number" placeholder="0"></div>
+    </div>
+    <div class="fg"><div class="lbl">Due Date</div><input class="inp" id="ao-due" type="date"></div>
+    <div class="fg" style="display:flex;align-items:center;gap:8px;"><input type="checkbox" id="ao-recur" style="accent-color:var(--accent);width:15px;height:15px;"><label for="ao-recur" style="font-size:12.5px;cursor:pointer;">Recurring monthly</label></div>
+    <div style="display:flex;gap:10px;margin-top:6px;"><button class="btn btn-ghost" style="flex:1;" onclick="closeModal(&#39;modal-add-outflow&#39;)">Cancel</button><button class="btn btn-primary" style="flex:2;" onclick="saveOutflow()">Add Outflow</button></div>
+  </div>
+</div>
+
+<!-- Pay Outflow -->
+<div class="modal-overlay" id="modal-pay-outflow" onclick="modalBgClose(event,&#39;modal-pay-outflow&#39;)">
+  <div class="modal-box">
+    <div class="modal-title">Pay Bill <button class="modal-close" onclick="closeModal(&#39;modal-pay-outflow&#39;)">×</button></div>
+    <div id="pay-info" style="background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:12px;margin-bottom:16px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div class="fg"><div class="lbl">Amount (₹)</div><input class="inp" id="po-amt" type="number" placeholder="0"></div>
+      <div class="fg"><div class="lbl">Late Fee (₹)</div><input class="inp" id="po-latefee" type="number" value="0"></div>
+    </div>
+    <div class="fg"><div class="lbl">Paid Via</div>
+      <div class="chip-group" id="po-mode" data-value="Cash">
+        <button type="button" class="chip-tile active" data-value="Cash" onclick="chipPick(&#39;po-mode&#39;,&#39;Cash&#39;)"><i class="fa-solid fa-money-bill-wave"></i>Cash</button>
+        <button type="button" class="chip-tile" data-value="GPay" onclick="chipPick(&#39;po-mode&#39;,&#39;GPay&#39;)"><i class="fa-solid fa-mobile-screen"></i>GPay</button>
+      </div>
+    </div>
+    <div class="fg"><div class="lbl">Shop (Cash From)</div>
+      <div class="chip-group chip-shops" id="po-vault" data-value="SHOP01">
+        <button type="button" class="chip-tile active" data-value="SHOP01" onclick="chipPick(&#39;po-vault&#39;,&#39;SHOP01&#39;,&#39;onPoVaultChange&#39;)"><span class="chip-dot" style="background:#7c5cfc;"></span>JMD Pooja</button>
+        <button type="button" class="chip-tile" data-value="SHOP02" onclick="chipPick(&#39;po-vault&#39;,&#39;SHOP02&#39;,&#39;onPoVaultChange&#39;)"><span class="chip-dot" style="background:#06b6d4;"></span>SMS Pooja</button>
+        <button type="button" class="chip-tile" data-value="SHOP03" onclick="chipPick(&#39;po-vault&#39;,&#39;SHOP03&#39;,&#39;onPoVaultChange&#39;)"><span class="chip-dot" style="background:#22c55e;"></span>Stall</button>
+        <button type="button" class="chip-tile" data-value="SHOP04" onclick="chipPick(&#39;po-vault&#39;,&#39;SHOP04&#39;,&#39;onPoVaultChange&#39;)"><span class="chip-dot" style="background:#f59e0b;"></span>Graphics</button>
+      </div>
+    </div>
+    <div id="po-is-warn" style="display:none;background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.25);border-radius:7px;padding:9px 12px;font-size:11.5px;color:var(--warn);margin-bottom:12px;"><i class="fa-solid fa-triangle-exclamation" style="margin-right:5px;"></i>InterShop obligation ban jayegi</div>
+    <div style="display:flex;gap:10px;margin-top:6px;"><button class="btn btn-ghost" style="flex:1;" onclick="closeModal(&#39;modal-pay-outflow&#39;)">Cancel</button><button class="btn btn-warn" style="flex:2;" onclick="savePayOutflow()">Pay Bill</button></div>
+  </div>
+</div>
+
+<!-- Add InterShop -->
+<div class="modal-overlay" id="modal-add-intershop" onclick="modalBgClose(event,&#39;modal-add-intershop&#39;)">
+  <div class="modal-box">
+    <div class="modal-title">Add InterShop Transfer <button class="modal-close" onclick="closeModal(&#39;modal-add-intershop&#39;)">×</button></div>
+    <div class="fg"><div class="lbl">From Shop</div>
+      <div class="chip-group chip-shops" id="is-from" data-value="SHOP01">
+        <button type="button" class="chip-tile active" data-value="SHOP01" onclick="chipPick(&#39;is-from&#39;,&#39;SHOP01&#39;)"><span class="chip-dot" style="background:#7c5cfc;"></span>JMD Pooja</button>
+        <button type="button" class="chip-tile" data-value="SHOP02" onclick="chipPick(&#39;is-from&#39;,&#39;SHOP02&#39;)"><span class="chip-dot" style="background:#06b6d4;"></span>SMS Pooja</button>
+        <button type="button" class="chip-tile" data-value="SHOP03" onclick="chipPick(&#39;is-from&#39;,&#39;SHOP03&#39;)"><span class="chip-dot" style="background:#22c55e;"></span>Stall</button>
+        <button type="button" class="chip-tile" data-value="SHOP04" onclick="chipPick(&#39;is-from&#39;,&#39;SHOP04&#39;)"><span class="chip-dot" style="background:#f59e0b;"></span>Graphics</button>
+      </div>
+    </div>
+    <div class="fg"><div class="lbl">To Shop</div>
+      <div class="chip-group chip-shops" id="is-to" data-value="SHOP02">
+        <button type="button" class="chip-tile" data-value="SHOP01" onclick="chipPick(&#39;is-to&#39;,&#39;SHOP01&#39;)"><span class="chip-dot" style="background:#7c5cfc;"></span>JMD Pooja</button>
+        <button type="button" class="chip-tile active" data-value="SHOP02" onclick="chipPick(&#39;is-to&#39;,&#39;SHOP02&#39;)"><span class="chip-dot" style="background:#06b6d4;"></span>SMS Pooja</button>
+        <button type="button" class="chip-tile" data-value="SHOP03" onclick="chipPick(&#39;is-to&#39;,&#39;SHOP03&#39;)"><span class="chip-dot" style="background:#22c55e;"></span>Stall</button>
+        <button type="button" class="chip-tile" data-value="SHOP04" onclick="chipPick(&#39;is-to&#39;,&#39;SHOP04&#39;)"><span class="chip-dot" style="background:#f59e0b;"></span>Graphics</button>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div class="fg"><div class="lbl">Amount (₹)</div><input class="inp" id="is-amt" type="number" placeholder="0"></div>
+      <div class="fg"><div class="lbl">Date</div><input class="inp" id="is-date" type="date"></div>
+    </div>
+    <div class="fg"><div class="lbl">Reason</div><input class="inp" id="is-reason" placeholder="Kyun?"></div>
+    <div style="display:flex;gap:10px;margin-top:6px;"><button class="btn btn-ghost" style="flex:1;" onclick="closeModal(&#39;modal-add-intershop&#39;)">Cancel</button><button class="btn btn-primary" style="flex:2;" onclick="saveIntershop()">Add Transfer</button></div>
+  </div>
+</div>
+
+<!-- Add Loan -->
+<div class="modal-overlay" id="modal-add-loan" onclick="modalBgClose(event,&#39;modal-add-loan&#39;)">
+  <div class="modal-box">
+    <div class="modal-title">Loan / Udhaar Liya <button class="modal-close" onclick="closeModal(&#39;modal-add-loan&#39;)">×</button></div>
+    <div class="fg"><div class="lbl">Kisse Liya (Person Name)</div><input class="inp" id="al-from" placeholder="Papa, Bhai, Koi aur..."></div>
+    <div class="fg"><div class="lbl">Shop (Kis Ke Liye)</div>
+      <div class="chip-group chip-shops" id="al-shop" data-value="SHOP01">
+        <button type="button" class="chip-tile active" data-value="SHOP01" onclick="chipPick(&#39;al-shop&#39;,&#39;SHOP01&#39;)"><span class="chip-dot" style="background:#7c5cfc;"></span>JMD Pooja</button>
+        <button type="button" class="chip-tile" data-value="SHOP02" onclick="chipPick(&#39;al-shop&#39;,&#39;SHOP02&#39;)"><span class="chip-dot" style="background:#06b6d4;"></span>SMS Pooja</button>
+        <button type="button" class="chip-tile" data-value="SHOP03" onclick="chipPick(&#39;al-shop&#39;,&#39;SHOP03&#39;)"><span class="chip-dot" style="background:#22c55e;"></span>Stall</button>
+        <button type="button" class="chip-tile" data-value="SHOP04" onclick="chipPick(&#39;al-shop&#39;,&#39;SHOP04&#39;)"><span class="chip-dot" style="background:#f59e0b;"></span>Graphics</button>
+        <button type="button" class="chip-tile" data-value="GENERAL" onclick="chipPick(&#39;al-shop&#39;,&#39;GENERAL&#39;)"><span class="chip-dot" style="background:#8888a8;"></span>General</button>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div class="fg"><div class="lbl">Amount (₹)</div><input class="inp" id="al-amt" type="number" placeholder="0"></div>
+      <div class="fg"><div class="lbl">Date</div><input class="inp" id="al-date" type="date"></div>
+    </div>
+    <div class="fg"><div class="lbl">Purpose</div><input class="inp" id="al-purpose" placeholder="Kisliye?"></div>
+    <div style="display:flex;gap:10px;margin-top:6px;"><button class="btn btn-ghost" style="flex:1;" onclick="closeModal(&#39;modal-add-loan&#39;)">Cancel</button><button class="btn btn-primary" style="flex:2;" onclick="saveLoan()">Add Loan</button></div>
+  </div>
+</div>
+
+<!-- Repay Loan -->
+<div class="modal-overlay" id="modal-repay-loan" onclick="modalBgClose(event,&#39;modal-repay-loan&#39;)">
+  <div class="modal-box">
+    <div class="modal-title">Repay Loan <button class="modal-close" onclick="closeModal(&#39;modal-repay-loan&#39;)">×</button></div>
+    <div id="repay-info" style="background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:12px;margin-bottom:16px;"></div>
+    <div class="fg"><div class="lbl">Amount Repaying (₹)</div><input class="inp" id="rl-amt" type="number" placeholder="0"></div>
+    <div style="display:flex;gap:10px;margin-top:6px;"><button class="btn btn-ghost" style="flex:1;" onclick="closeModal(&#39;modal-repay-loan&#39;)">Cancel</button><button class="btn btn-good" style="flex:2;" onclick="saveRepayLoan()">Repay</button></div>
+  </div>
+</div>
+
+<!-- DC Detail Modal -->
+<div class="modal-overlay" id="modal-dc-detail" onclick="modalBgClose(event,&#39;modal-dc-detail&#39;)">
+  <div class="modal-box" style="max-width:500px;">
+    <div class="modal-title">Day Close Detail <button class="modal-close" onclick="closeModal(&#39;modal-dc-detail&#39;)">×</button></div>
+    <div id="dc-detail-body"></div>
+  </div>
+</div>
+
+<!-- Add Home Expense -->
+<div class="modal-overlay" id="modal-add-homeexp" onclick="modalBgClose(event,&#39;modal-add-homeexp&#39;)">
+  <div class="modal-box">
+    <div class="modal-title">Add Home Expense <button class="modal-close" onclick="closeModal(&#39;modal-add-homeexp&#39;)">×</button></div>
+    <div class="fg"><div class="lbl">Description</div><input class="inp" id="he-desc" placeholder="e.g. HDFC EMI, D-Mart grocery…"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div class="fg"><div class="lbl">Category</div>
+        <select class="inp" id="he-cat">
+          <option>EMI</option><option>Grocery</option><option>Electricity</option>
+          <option>Maintenance</option><option>Medical</option><option>Education</option>
+          <option>Fuel</option><option>Entertainment</option><option>Misc</option>
+        </select>
+      </div>
+      <div class="fg"><div class="lbl">Amount (₹)</div><input class="inp" id="he-amt" type="number" placeholder="0"></div>
+    </div>
+    <div class="fg"><div class="lbl">Date</div><input class="inp" id="he-date" type="date"></div>
+    <div class="fg"><div class="lbl">Paid Via</div>
+      <div class="chip-group" id="he-mode" data-value="Cash">
+        <button type="button" class="chip-tile active" data-value="Cash" onclick="chipPick(&#39;he-mode&#39;,&#39;Cash&#39;,&#39;setHeFromHint&#39;)"><i class="fa-solid fa-money-bill-wave"></i>Cash</button>
+        <button type="button" class="chip-tile" data-value="GPay" onclick="chipPick(&#39;he-mode&#39;,&#39;GPay&#39;,&#39;setHeFromHint&#39;)"><i class="fa-solid fa-mobile-screen"></i>GPay</button>
+        <button type="button" class="chip-tile" data-value="Bank Transfer" onclick="chipPick(&#39;he-mode&#39;,&#39;Bank Transfer&#39;,&#39;setHeFromHint&#39;)"><i class="fa-solid fa-building-columns"></i>Bank</button>
+        <button type="button" class="chip-tile" data-value="Credit Card" onclick="chipPick(&#39;he-mode&#39;,&#39;Credit Card&#39;,&#39;setHeFromHint&#39;)"><i class="fa-solid fa-credit-card"></i>Card</button>
+      </div>
+    </div>
+    <div class="fg"><div class="lbl">Paid From (Source)</div>
+      <div class="chip-group chip-shops" id="he-from" data-value="PERSONAL">
+        <button type="button" class="chip-tile active" data-value="PERSONAL" onclick="chipPick(&#39;he-from&#39;,&#39;PERSONAL&#39;,&#39;setHeFromHint&#39;)"><i class="fa-solid fa-wallet"></i>Personal</button>
+        <button type="button" class="chip-tile" data-value="SHOP01" onclick="chipPick(&#39;he-from&#39;,&#39;SHOP01&#39;,&#39;setHeFromHint&#39;)"><span class="chip-dot" style="background:#7c5cfc;"></span>JMD Pooja</button>
+        <button type="button" class="chip-tile" data-value="SHOP02" onclick="chipPick(&#39;he-from&#39;,&#39;SHOP02&#39;,&#39;setHeFromHint&#39;)"><span class="chip-dot" style="background:#06b6d4;"></span>SMS Pooja</button>
+        <button type="button" class="chip-tile" data-value="SHOP03" onclick="chipPick(&#39;he-from&#39;,&#39;SHOP03&#39;,&#39;setHeFromHint&#39;)"><span class="chip-dot" style="background:#22c55e;"></span>Stall</button>
+        <button type="button" class="chip-tile" data-value="SHOP04" onclick="chipPick(&#39;he-from&#39;,&#39;SHOP04&#39;,&#39;setHeFromHint&#39;)"><span class="chip-dot" style="background:#f59e0b;"></span>Graphics</button>
+      </div>
+    </div>
+    <div id="he-from-hint" style="font-size:11px;color:var(--muted);margin-top:-6px;margin-bottom:12px;min-height:14px;"></div>
+    <div class="fg"><div class="lbl">Note (optional)</div><input class="inp" id="he-note" placeholder="Any note?"></div>
+    <div style="display:flex;gap:10px;margin-top:6px;"><button class="btn btn-ghost" style="flex:1;" onclick="closeModal(&#39;modal-add-homeexp&#39;)">Cancel</button><button class="btn btn-primary" style="flex:2;" onclick="saveHomeExpense()">Add Expense</button></div>
+  </div>
+</div>
+
+<!-- Add / Edit Reminder -->
+<div class="modal-overlay" id="modal-add-reminder" onclick="modalBgClose(event,&#39;modal-add-reminder&#39;)">
+  <div class="modal-box">
+    <div class="modal-title" id="reminder-modal-title">Add Fixed Payment Reminder <button class="modal-close" onclick="closeModal(&#39;modal-add-reminder&#39;)">×</button></div>
+    <input type="hidden" id="rem-id">
+    <div class="fg"><div class="lbl">Payment Name</div><input class="inp" id="rem-name" placeholder="e.g. HDFC EMI, Shop Rent, Netflix"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div class="fg"><div class="lbl">Category</div>
+        <select class="inp" id="rem-cat">
+          <option>EMI</option><option>Rent</option><option>Electricity</option><option>Maintenance</option>
+          <option>Subscription</option><option>Insurance</option><option>Loan</option>
+          <option>Grocery</option><option>Fuel</option><option>Misc</option>
+        </select>
+      </div>
+      <div class="fg"><div class="lbl">Amount (₹)</div><input class="inp" id="rem-amt" type="number" placeholder="0"></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div class="fg"><div class="lbl">Next Due Date</div><input class="inp" id="rem-date" type="date"></div>
+      <div class="fg"><div class="lbl">Repeat</div>
+        <select class="inp" id="rem-repeat">
+          <option value="none">One-time</option>
+          <option value="monthly" selected="">Every Month</option>
+          <option value="quarterly">Every 3 Months</option>
+          <option value="yearly">Every Year</option>
+        </select>
+      </div>
+    </div>
+    <div class="fg"><div class="lbl">Note (optional)</div><input class="inp" id="rem-note" placeholder="Account no, remark..."></div>
+    <div style="display:flex;gap:10px;margin-top:6px;"><button class="btn btn-ghost" style="flex:1;" onclick="closeModal(&#39;modal-add-reminder&#39;)">Cancel</button><button class="btn btn-primary" style="flex:2;" onclick="saveReminder()">Save Reminder</button></div>
+  </div>
+</div>
+
+<!-- Mark Reminder Paid -->
+<div class="modal-overlay" id="modal-pay-reminder" onclick="modalBgClose(event,&#39;modal-pay-reminder&#39;)">
+  <div class="modal-box">
+    <div class="modal-title">Mark Payment Done <button class="modal-close" onclick="closeModal(&#39;modal-pay-reminder&#39;)">×</button></div>
+    <div id="pay-rem-info" style="background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:12px;margin-bottom:16px;"></div>
+    <div class="fg"><div class="lbl">Actual Amount (₹) <span style="color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0;">— override if different</span></div><input class="inp" id="pr-amt" type="number"></div>
+    <div class="fg"><div class="lbl">Paid Via</div>
+      <div class="chip-group" id="pr-mode" data-value="GPay">
+        <button type="button" class="chip-tile" data-value="Cash" onclick="chipPick(&#39;pr-mode&#39;,&#39;Cash&#39;)"><i class="fa-solid fa-money-bill-wave"></i>Cash</button>
+        <button type="button" class="chip-tile active" data-value="GPay" onclick="chipPick(&#39;pr-mode&#39;,&#39;GPay&#39;)"><i class="fa-solid fa-mobile-screen"></i>GPay</button>
+        <button type="button" class="chip-tile" data-value="Bank Transfer" onclick="chipPick(&#39;pr-mode&#39;,&#39;Bank Transfer&#39;)"><i class="fa-solid fa-building-columns"></i>Bank</button>
+        <button type="button" class="chip-tile" data-value="Credit Card" onclick="chipPick(&#39;pr-mode&#39;,&#39;Credit Card&#39;)"><i class="fa-solid fa-credit-card"></i>Card</button>
+      </div>
+    </div>
+    <div class="fg"><div class="lbl">Paid From (Source)</div>
+      <div class="chip-group chip-shops" id="pr-from" data-value="PERSONAL">
+        <button type="button" class="chip-tile active" data-value="PERSONAL" onclick="chipPick(&#39;pr-from&#39;,&#39;PERSONAL&#39;)"><i class="fa-solid fa-wallet"></i>Personal</button>
+        <button type="button" class="chip-tile" data-value="SHOP01" onclick="chipPick(&#39;pr-from&#39;,&#39;SHOP01&#39;)"><span class="chip-dot" style="background:#7c5cfc;"></span>JMD Pooja</button>
+        <button type="button" class="chip-tile" data-value="SHOP02" onclick="chipPick(&#39;pr-from&#39;,&#39;SHOP02&#39;)"><span class="chip-dot" style="background:#06b6d4;"></span>SMS Pooja</button>
+        <button type="button" class="chip-tile" data-value="SHOP03" onclick="chipPick(&#39;pr-from&#39;,&#39;SHOP03&#39;)"><span class="chip-dot" style="background:#22c55e;"></span>Stall</button>
+        <button type="button" class="chip-tile" data-value="SHOP04" onclick="chipPick(&#39;pr-from&#39;,&#39;SHOP04&#39;)"><span class="chip-dot" style="background:#f59e0b;"></span>Graphics</button>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:6px;"><button class="btn btn-ghost" style="flex:1;" onclick="closeModal(&#39;modal-pay-reminder&#39;)">Cancel</button><button class="btn btn-good" style="flex:2;" onclick="confirmReminderPaid()">Mark Paid &amp; Log Expense</button></div>
+  </div>
+</div>
+
+<!-- WhatsApp Share Modal -->
+<div class="modal-overlay" id="modal-wa-share" onclick="modalBgClose(event,&#39;modal-wa-share&#39;)">
+  <div class="modal-box" style="max-width:520px;">
+    <div class="modal-title"><span><i class="fa-brands fa-whatsapp" style="color:#25D366;margin-right:6px;"></i>Share Daily Summary</span><button class="modal-close" onclick="closeModal(&#39;modal-wa-share&#39;)">×</button></div>
+    <div class="fg">
+      <div class="lbl">Preview / Edit Message</div>
+      <textarea class="inp" id="wa-msg" rows="14" style="font-family:&#39;JetBrains Mono&#39;,monospace;font-size:12px;line-height:1.5;resize:vertical;min-height:280px;"></textarea>
+    </div>
+    <div class="fg" id="wa-contacts-wrap" style="display:none;">
+      <div class="lbl">Quick Send to Saved Contact</div>
+      <div id="wa-contacts-chips" style="display:flex;gap:6px;flex-wrap:wrap;"></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div class="fg">
+        <div class="lbl">Phone (with country code, optional)</div>
+        <input class="inp" id="wa-phone" placeholder="e.g. 919876543210">
+      </div>
+      <div class="fg" style="align-self:end;">
+        <button class="btn btn-ghost btn-sm" style="width:100%;" onclick="saveWaContact()"><i class="fa-solid fa-bookmark"></i> Save Contact</button>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:6px;">
+      <button class="btn btn-ghost" style="flex:1;" onclick="copyWaMessage()"><i class="fa-solid fa-copy"></i> Copy</button>
+      <button class="btn btn-good" style="flex:2;background:#25D366;border-color:#1ea952;color:#fff;" onclick="sendWhatsapp()"><i class="fa-brands fa-whatsapp"></i> Open in WhatsApp</button>
+    </div>
+    <div style="margin-top:10px;font-size:10.5px;color:var(--muted);line-height:1.5;">
+      <i class="fa-solid fa-circle-info"></i> Phone empty rakhoge to WhatsApp me contact select karna padega. Phone daaloge to seedha uss number pe khulega.
+    </div>
+  </div>
+</div>
+
+<!-- Toast container -->
+<div id="toast-container"></div>
+
+<script>
+'use strict';
+
+// ═══════════════════════════════════════════════════════════════════
+// ▼▼▼ INBUILT SHEET URL — Yahaan apna AppScript URL paste karke launch karo ▼▼▼
+// ═══════════════════════════════════════════════════════════════════
+// Jab ye set kar doge, sab users (partner/CA/staff) aapke saath same
+// Google Sheet ke saath auto-sync ho jayenge. Sabka data ek hi jagah.
+// Settings me URL field automatically hide/lock ho jayegi.
+//
+// Empty rakhoge to har user ko Settings me manually URL dalna hoga.
+const INBUILT_SHEET_URL = 'https://script.google.com/macros/s/AKfycbxFEYG-Qb5RE_RggX0VOTEjb37rn2NGp96i4ZCvarYTGRhvdgwbAKM4wdQwN4-4hf0X/exec'; // ← e.g. 'https://script.google.com/macros/s/AKfyc.../exec'
+// ═══════════════════════════════════════════════════════════════════
+
+// ─── Initial State ──────────────────────────────────────────────
+const DEFAULT_SHOPS = [
+  { id:'SHOP01', name:'JMD Pooja',  galla:0, online:0, profitPct:40 },
+  { id:'SHOP02', name:'SMS Pooja',  galla:0, online:0, profitPct:40 },
+  { id:'SHOP03', name:'Stall',      galla:0, online:0, profitPct:40 },
+  { id:'SHOP04', name:'Graphics',   galla:0, online:0, profitPct:40 },
+];
+
+// ─── Utilities (must be before STATE init) ──────────────────────
+const $ = id => document.getElementById(id);
+const todayStr = () => new Date().toISOString().split('T')[0];
+let idCounter = Date.now();
+const newId = prefix => prefix + '-' + (++idCounter).toString(36);
+
+const ACTION_COLORS = {
+  ADD_UDHAARI:'#7c5cfc', COLLECT_UDHAARI:'#22c55e', ADD_OUTFLOW:'#f59e0b',
+  SETTLE_OUTFLOW:'#06b6d4', DAY_CLOSE:'#a1a1aa', ADD_LOAN:'#f472b6',
+  REPAY_LOAN:'#22c55e', INTERSHOP:'#eab308', MANUAL_ADJUST:'#ef4444',
+  HOME_EXPENSE:'#f97316', TRANSFER:'#06b6d4', DELETE_DC:'#ef4444',
+  REMINDER:'#f59e0b'
+};
+const ACTION_ICONS = {
+  ADD_UDHAARI:'fa-plus', COLLECT_UDHAARI:'fa-hand-holding-dollar', ADD_OUTFLOW:'fa-file-invoice',
+  SETTLE_OUTFLOW:'fa-money-check', DAY_CLOSE:'fa-calendar-check', ADD_LOAN:'fa-money-bill-wave',
+  REPAY_LOAN:'fa-rotate-left', INTERSHOP:'fa-right-left', MANUAL_ADJUST:'fa-pen',
+  HOME_EXPENSE:'fa-house', TRANSFER:'fa-arrow-right-arrow-left', DELETE_DC:'fa-trash',
+  REMINDER:'fa-bell'
+};
+
+function defaultState() {
+  return {
+    pin: '1234',
+    shops: JSON.parse(JSON.stringify(DEFAULT_SHOPS)),
+    udhaari: [], outflows: [], intershop: [], dayClose: [], loans: [], audit: [],
+    homeExpenses: [], reminders: [], waContacts: [],
+    sheetUrl: '', filters: {}
+  };
+}
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem('jmd_state');
+    if (raw) {
+      const s = JSON.parse(raw);
+      if (!s.shops || s.shops.length < 4) s.shops = JSON.parse(JSON.stringify(DEFAULT_SHOPS));
+      if (!s.audit) s.audit = [];
+      if (!s.loans) s.loans = [];
+      if (!s.intershop) s.intershop = [];
+      if (!s.homeExpenses) s.homeExpenses = [];
+      if (!s.reminders) s.reminders = [];
+      if (!s.waContacts) s.waContacts = [];
+      if (!s.pin) s.pin = '1234';
+      // Inbuilt URL always overrides local setting
+      if (INBUILT_SHEET_URL) s.sheetUrl = INBUILT_SHEET_URL;
+      return s;
+    }
+  } catch(e){}
+  const st = defaultState();
+  if (INBUILT_SHEET_URL) st.sheetUrl = INBUILT_SHEET_URL;
+  return st;
+}
+
+// Effective URL used for all sync operations
+function effectiveSheetUrl() { return INBUILT_SHEET_URL || STATE.sheetUrl || ''; }
+
+let STATE = loadState();
+let activeUdhaariId = null, activeOutflowId = null, activeLoanId = null;
+let uFilter = 'all', oFilter = 'all', isFilter = 'all', lFilter = 'all';
+let sheetSyncTimer = null;
+
+function saveStateLocal() {
+  localStorage.setItem('jmd_state', JSON.stringify(STATE));
+  pushToSheet();
+}
+
+function fmt(n) {
+  n = parseFloat(n) || 0;
+  if (n === 0) return '₹0';
+  return '₹' + Math.abs(n).toLocaleString('en-IN');
+}
+function fmtNum(n){ return (parseFloat(n)||0).toLocaleString('en-IN'); }
+function fmtDate(d) {
+  if (!d) return '—';
+  const parts = d.split('-');
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return parts[2] + ' ' + months[parseInt(parts[1])-1] + ' ' + parts[0];
+}
+function shopName(id) { const s = STATE.shops.find(s=>s.id===id); return s ? s.name : id; }
+function shopColor(id) {
+  const colors = { SHOP01:'#7c5cfc', SHOP02:'#06b6d4', SHOP03:'#22c55e', SHOP04:'#f59e0b' };
+  return colors[id] || '#8888a8';
+}
+
+// ─── Chip Group Helpers (Modern selectors) ───────────────────
+function shopChips(groupId, defaultValue, opts) {
+  opts = opts || {};
+  const list = STATE.shops.map(s => ({ value: s.id, label: s.name, color: shopColor(s.id) }));
+  if (opts.includeGeneral) list.push({ value: 'GENERAL', label: 'General', color: '#8888a8' });
+  if (opts.includePersonal) list.unshift({ value: 'PERSONAL', label: 'Personal', color: '#a1a1aa' });
+  return `<div class="chip-group chip-shops" id="${groupId}" data-value="${defaultValue||''}">
+    ${list.map(o => `<button type="button" class="chip-tile ${o.value===defaultValue?'active':''}" data-value="${o.value}" onclick="chipPick('${groupId}','${o.value}'${opts.onChange?`,'${opts.onChange}'`:''})">
+      <span class="chip-dot" style="background:${o.color};"></span>${o.label}
+    </button>`).join('')}
+  </div>`;
+}
+
+function modeChips(groupId, defaultValue, options, extraCls) {
+  const opts = options || [
+    { value:'Cash', label:'Cash', icon:'fa-money-bill-wave' },
+    { value:'GPay', label:'GPay', icon:'fa-mobile-screen' }
+  ];
+  return `<div class="chip-group ${extraCls||''}" id="${groupId}" data-value="${defaultValue||opts[0].value}">
+    ${opts.map(o => `<button type="button" class="chip-tile ${o.value===defaultValue?'active':''}" data-value="${o.value}" onclick="chipPick('${groupId}','${o.value}')">
+      ${o.icon?`<i class="fa-solid ${o.icon}"></i>`:''}${o.label}
+    </button>`).join('')}
+  </div>`;
+}
+
+function chipPick(groupId, value, onChange) {
+  const g = $(groupId);
+  if (!g) return;
+  g.dataset.value = value;
+  g.querySelectorAll('.chip-tile').forEach(c => c.classList.toggle('active', c.dataset.value===value));
+  if (onChange && typeof window[onChange] === 'function') window[onChange]();
+}
+function chipValue(groupId) { return $(groupId)?.dataset?.value || ''; }
+function chipSet(groupId, value) { chipPick(groupId, value); }
+
+function isOverdue(u) { return u.status==='Active' && u.dueDate && u.dueDate < todayStr(); }
+function isOutflowOverdue(o) { return o.status==='Pending' && o.dueDate && o.dueDate < todayStr(); }
+
+function auditLog(action, summary) {
+  STATE.audit.unshift({ id: newId('A'), ts: new Date().toLocaleString('en-IN'), action, summary });
+  if (STATE.audit.length > 500) STATE.audit = STATE.audit.slice(0, 500);
+}
+
+// ─── Toast ──────────────────────────────────────────────────────
+function toast(msg, type='success') {
+  const icon = type==='success'?'fa-check-circle':type==='error'?'fa-circle-xmark':'fa-circle-info';
+  const color = type==='success'?'var(--good)':type==='error'?'var(--bad)':'var(--accent2)';
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.innerHTML = `<i class="fa-solid ${icon}" style="color:${color};font-size:15px;"></i><span>${msg}</span>`;
+  $('toast-container').appendChild(el);
+  setTimeout(() => { el.style.animation='toast-out 0.2s ease forwards'; setTimeout(()=>el.remove(),200); }, 3000);
+}
+
+// ─── PIN ──────────────────────────────────────────────────────
+let pinBuffer = '';
+function pinPress(d) {
+  if (pinBuffer.length >= 4) return;
+  pinBuffer += d;
+  updateDots();
+  if (pinBuffer.length === 4) setTimeout(verifyPin, 120);
+}
+function pinBack() { pinBuffer = pinBuffer.slice(0,-1); updateDots(); $('pin-error').textContent=''; }
+function updateDots() {
+  for (let i=0;i<4;i++) $('d'+i).classList.toggle('filled', i<pinBuffer.length);
+}
+function verifyPin() {
+  if (pinBuffer === (STATE.pin || '1234')) {
+    $('pin-screen').style.opacity='0';
+    setTimeout(() => { $('pin-screen').style.display='none'; $('app').style.display='block'; initApp(); }, 400);
+  } else {
+    $('pin-error').textContent='Wrong PIN. Try again.';
+    pinBuffer=''; updateDots();
+  }
+}
+function lockApp() {
+  pinBuffer=''; updateDots(); $('pin-error').textContent='';
+  $('pin-screen').style.opacity='1'; $('pin-screen').style.display='flex';
+  $('app').style.display='none';
+}
+
+// ─── Modal helpers ───────────────────────────────────────────────
+function openModal(id) { $(id).classList.add('open'); }
+function closeModal(id) { $(id).classList.remove('open'); }
+function modalBgClose(e, id) { if (e.target===e.currentTarget) closeModal(id); }
+
+// ─── Tab switching ───────────────────────────────────────────────
+const TAB_TITLES = {
+  dashboard:'Dashboard', dayclose:'Day Close', udhaari:'Market Udhaari',
+  outflows:'Outflows', intershop:'InterShop Cross-Audit', loans:'Loans / Udhaar Liye',
+  homeexp:'Home Expenses', audit:'Audit Log', settings:'Settings'
+};
+function switchTab(tab) {
+  document.querySelectorAll('.tab-section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.querySelectorAll('.bnav-item').forEach(n=>n.classList.remove('active'));
+  $('tab-'+tab).classList.add('active');
+  if ($('nav-'+tab)) $('nav-'+tab).classList.add('active');
+  if ($('bnav-'+tab)) $('bnav-'+tab).classList.add('active');
+  $('header-title').textContent = TAB_TITLES[tab] || tab;
+  if (tab==='settings') renderSettings();
+  else renderAll();
+}
+
+// ─── Init ────────────────────────────────────────────────────────
+function initApp() {
+  updateHeaderDate();
+  setInterval(updateHeaderDate, 60000);
+  initDcForms();
+  renderSettings();
+  renderAll();
+  pullFromSheet();
+}
+function updateHeaderDate() {
+  const d = new Date();
+  $('header-date').textContent = d.toLocaleDateString('en-IN',{weekday:'short',day:'2-digit',month:'long',year:'numeric'});
+}
+
+// ─── Render All ──────────────────────────────────────────────────
+function renderAll() {
+  renderDashboard();
+  renderUdhaari();
+  renderOutflows();
+  renderIntershop();
+  renderLoans();
+  renderAudit();
+  renderDcHistory();
+  renderHomeExpenses();
+  renderReminders();
+  updateBadges();
+}
+
+function updateBadges() {
+  const overU = STATE.udhaari.filter(u=>isOverdue(u)).length;
+  setbadge('badge-udhaari', overU, 'red');
+  const pendO = STATE.outflows.filter(o=>o.status==='Pending').length;
+  setbadge('badge-outflows', pendO, 'amber');
+  const openIS = STATE.intershop.filter(i=>i.status==='Open').length;
+  setbadge('badge-intershop', openIS, 'amber');
+  const pendL = STATE.loans.filter(l=>l.status==='Pending').length;
+  setbadge('badge-loans', pendL, 'red');
+  const dueRem = (STATE.reminders||[]).filter(r => daysUntil(r.dueDate) <= 3).length;
+  setbadge('badge-homeexp', dueRem, 'amber');
+}
+function setbadge(id, n, cls) {
+  const el = $(id); if(!el) return;
+  el.textContent = n||''; el.style.display = n?'':'none'; el.className='nav-badge '+cls;
+}
+
+// ─── Dashboard ───────────────────────────────────────────────────
+// Helper: cumulative cash-taken-home per shop (from non-deleted DCs) minus personal home expenses charged to that shop
+function shopHomeCash(shopId) {
+  return STATE.dayClose.filter(r=>r.shopId===shopId && !r.deleted).reduce((s,r)=>s+(r.cashHome||0), 0);
+}
+function personalWalletDrain() {
+  // Personal wallet expenses (paidFrom=PERSONAL) reduce the total home-cash pool
+  return (STATE.homeExpenses||[]).filter(e => (e.paidFrom||'PERSONAL')==='PERSONAL').reduce((s,e)=>s+(e.amount||0), 0);
+}
+
+function renderDashboard() {
+  const totalGalla  = STATE.shops.reduce((s,sh)=>s+sh.galla,0);         // counter cash (working capital, NOT net worth)
+  const totalOnline = STATE.shops.reduce((s,sh)=>s+sh.online,0);
+  const totalUd     = STATE.udhaari.filter(u=>u.status==='Active').reduce((s,u)=>s+(u.totalBill-u.received),0);
+  const totalLiab   = STATE.outflows.filter(o=>o.status==='Pending').reduce((s,o)=>s+(o.amount+o.lateFee-o.paid),0);
+  const totalHomeCash = STATE.shops.reduce((s,sh)=>s+shopHomeCash(sh.id), 0);
+  const persDrain   = personalWalletDrain();
+  const personalWallet = Math.max(0, totalHomeCash - persDrain);        // net home savings
+  const nw = personalWallet + totalOnline + totalUd - totalLiab;         // TRUE NET POSITION
+
+  $('nw-val').textContent = fmt(nw);
+  $('nw-galla').textContent  = fmt(personalWallet);
+  $('nw-online').textContent = fmt(totalOnline);
+  $('nw-udhaar').textContent = fmt(totalUd);
+  $('nw-liab').textContent   = fmt(totalLiab);
+
+  // Shop matrix
+  const shopUd = id => STATE.udhaari.filter(u=>u.shopId===id&&u.status==='Active').reduce((s,u)=>s+(u.totalBill-u.received),0);
+  const shopLiab = id => STATE.outflows.filter(o=>o.shopId===id&&o.status==='Pending').reduce((s,o)=>s+(o.amount+o.lateFee-o.paid),0);
+  // Shop-level "own money" = shop's home-cash cumulative + shop online + shop udhaari - shop bills (counter cash NOT counted)
+  const shopNet = id => {
+    const sh=STATE.shops.find(s=>s.id===id);
+    return shopHomeCash(id) + (sh?sh.online:0) + shopUd(id) - shopLiab(id);
+  };
+
+  let tbody = '';
+  STATE.shops.forEach(sh => {
+    const net = shopNet(sh.id);
+    const hc  = shopHomeCash(sh.id);
+    tbody += `<tr>
+      <td><span style="display:inline-flex;align-items:center;gap:8px;"><span style="width:8px;height:8px;border-radius:50%;background:${shopColor(sh.id)};"></span><strong>${sh.name}</strong></span></td>
+      <td><span class="mono" style="color:var(--accent);" title="Cumulative cash taken home from this shop">${fmt(hc)}</span></td>
+      <td><span class="mono editable-cell" style="color:var(--muted);font-size:11.5px;" ondblclick="inlineEdit(this,'${sh.id}','galla',${sh.galla})" title="Working capital in counter — dbl-click to edit">${fmt(sh.galla)}</span></td>
+      <td><span class="mono editable-cell" ondblclick="inlineEdit(this,'${sh.id}','online',${sh.online})" title="Double-click to edit">${fmt(sh.online)}</span></td>
+      <td><span class="mono" style="color:var(--warn);">${fmt(shopUd(sh.id))}</span></td>
+      <td><span class="mono" style="color:var(--bad);">${fmt(shopLiab(sh.id))}</span></td>
+      <td><span class="mono" style="color:${net>=0?'var(--good)':'var(--bad)'};font-weight:800;">${fmt(net)}</span></td>
+    </tr>`;
+  });
+  const totHc   = STATE.shops.reduce((s,sh)=>s+shopHomeCash(sh.id),0);
+  const totUd   = STATE.shops.reduce((s,sh)=>s+shopUd(sh.id),0);
+  const totLiab2= STATE.shops.reduce((s,sh)=>s+shopLiab(sh.id),0);
+  const totNet  = totHc + totalOnline + totUd - totLiab2;
+  tbody += `<tr><td>Total</td>
+    <td class="mono" style="color:var(--accent);">${fmt(totHc)}</td>
+    <td class="mono" style="color:var(--muted);font-size:11.5px;">${fmt(totalGalla)}</td>
+    <td class="mono">${fmt(totalOnline)}</td>
+    <td class="mono" style="color:var(--warn);">${fmt(totUd)}</td>
+    <td class="mono" style="color:var(--bad);">${fmt(totLiab2)}</td>
+    <td class="mono" style="color:${totNet>=0?'var(--good)':'var(--bad)'};font-weight:800;">${fmt(totNet)}</td>
+  </tr>`;
+  $('shop-tbody').innerHTML = tbody;
+
+  // Quick stats
+  const today = todayStr();
+  $('qs-today').textContent = STATE.udhaari.filter(u=>u.date===today).length;
+  const lastDC = STATE.dayClose.find(r=>!r.deleted);
+  $('qs-lastdc').textContent = lastDC ? fmtDate(lastDC.date) : '—';
+  $('qs-lastdc').style.fontSize = lastDC ? '14px' : '24px';
+  const pendLoanAmt = STATE.loans.filter(l=>l.status==='Pending').reduce((s,l)=>s+(l.amount-l.repaid),0);
+  $('qs-loans').textContent = fmt(pendLoanAmt);
+
+  renderPerfTracker();
+  renderSalesChart();
+}
+
+// ─── Sales Chart ─────────────────────────────────────────────────
+let _salesChart = null;
+function renderSalesChart() {
+  const canvas = $('sales-chart'); if (!canvas) return;
+  const shopFilter = $('chart-shop-filter')?.value || 'all';
+
+  // Gather last 7 distinct dates from dayClose (skip soft-deleted)
+  const activeDC = STATE.dayClose.filter(r=>!r.deleted);
+  const allDates = [...new Set(activeDC.map(r=>r.date))].sort().slice(-7);
+  if (!allDates.length) {
+    if (_salesChart) { _salesChart.destroy(); _salesChart = null; }
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.fillStyle = '#8888a8';
+    ctx.font = '12px Inter, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('No Day Close data yet', canvas.width/2, canvas.height/2);
+    return;
+  }
+
+  const shopsToShow = shopFilter === 'all' ? STATE.shops : STATE.shops.filter(s=>s.id===shopFilter);
+  const saleData = allDates.map(d =>
+    shopsToShow.reduce((sum, sh) => {
+      const rec = activeDC.find(r=>r.date===d&&r.shopId===sh.id);
+      return sum + (rec ? rec.sale : 0);
+    }, 0)
+  );
+  const profitData = allDates.map((d, i) => {
+    return shopsToShow.reduce((sum, sh) => {
+      const rec = activeDC.find(r=>r.date===d&&r.shopId===sh.id);
+      if (!rec) return sum;
+      const p = rec.profit != null ? rec.profit : Math.round(rec.sale * (sh.profitPct||40)/100);
+      return sum + p;
+    }, 0);
+  });
+
+  const labels = allDates.map(d => fmtDate(d));
+
+  if (_salesChart) { _salesChart.destroy(); _salesChart = null; }
+  _salesChart = new Chart(canvas, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [
+        { label: 'Sale', data: saleData, backgroundColor: 'rgba(34,197,94,0.6)', borderColor: 'rgba(34,197,94,0.9)', borderWidth: 1.5, borderRadius: 4 },
+        { label: 'Profit', data: profitData, backgroundColor: 'rgba(124,92,252,0.55)', borderColor: 'rgba(124,92,252,0.9)', borderWidth: 1.5, borderRadius: 4 }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { labels: { color: '#8888a8', font: { size: 11, family: 'Inter' }, boxWidth: 12, padding: 14 } } },
+      scales: {
+        x: { ticks: { color: '#8888a8', font: { size: 10 } }, grid: { color: 'rgba(35,35,52,0.6)' } },
+        y: { ticks: { color: '#8888a8', font: { size: 10 }, callback: v => '₹'+v.toLocaleString('en-IN') }, grid: { color: 'rgba(35,35,52,0.6)' } }
+      }
+    }
+  });
+}
+
+// ─── Transfer Funds ───────────────────────────────────────────────
+function executeTransfer() {
+  const shopId = $('tr-shop').value;
+  const type   = $('tr-type').value;
+  const amt    = parseFloat($('tr-amt').value) || 0;
+  if (!amt) { toast('Enter an amount first', 'error'); return; }
+  const sh = STATE.shops.find(s=>s.id===shopId);
+  if (!sh) return;
+
+  let desc = '';
+  if (type === 'deposit') {
+    if (sh.galla < amt) { toast(`${sh.name} counter cash sirf ${fmt(sh.galla)} hai`, 'error'); return; }
+    sh.galla -= amt;
+    desc = `${sh.name}: ${fmt(amt)} Counter → Bank Deposit`;
+  } else if (type === 'atm') {
+    sh.galla += amt;
+    desc = `${sh.name}: ${fmt(amt)} ATM/Bank → Counter Cash`;
+  } else if (type === 'g2c') {
+    if (sh.online < amt) { toast(`${sh.name} GPay balance sirf ${fmt(sh.online)} hai`, 'error'); return; }
+    sh.online -= amt;
+    sh.galla  += amt;
+    desc = `${sh.name}: ${fmt(amt)} GPay → Counter Cash`;
+  } else if (type === 'c2g') {
+    if (sh.galla < amt) { toast(`${sh.name} counter cash sirf ${fmt(sh.galla)} hai`, 'error'); return; }
+    sh.galla  -= amt;
+    sh.online += amt;
+    desc = `${sh.name}: ${fmt(amt)} Counter → GPay`;
+  }
+
+  auditLog('TRANSFER', desc);
+  saveStateLocal(); renderDashboard();
+  $('tr-amt').value = '';
+  $('tr-preview').textContent = '';
+  toast(desc, 'success');
+}
+
+// Live preview as user types
+function updateTransferPreview() {
+  const shopId = $('tr-shop').value;
+  const type   = $('tr-type').value;
+  const amt    = parseFloat($('tr-amt').value) || 0;
+  const sh = STATE.shops.find(s=>s.id===shopId);
+  if (!sh || !amt) { $('tr-preview').textContent = ''; return; }
+  const label = { deposit:'Counter Cash decreases', atm:'Counter Cash increases',
+                  g2c:'GPay ↓ Counter ↑', c2g:'Counter ↓ GPay ↑' }[type];
+  $('tr-preview').textContent = `${sh.name} — ${label} by ${fmt(amt)}  •  Current: Counter ${fmt(sh.galla)} · GPay ${fmt(sh.online)}`;
+}
+
+function inlineEdit(el, shopId, field, current) {
+  const inp = document.createElement('input');
+  inp.className='inp-inline'; inp.type='number'; inp.value=current; inp.style.width='100px';
+  el.replaceWith(inp); inp.focus(); inp.select();
+  function save() {
+    const val = parseFloat(inp.value)||0;
+    const sh = STATE.shops.find(s=>s.id===shopId);
+    if (sh) sh[field] = val;
+    const span = document.createElement('span');
+    span.className='mono editable-cell'; span.ondblclick=()=>inlineEdit(span,shopId,field,val);
+    span.setAttribute('title','Double-click to edit'); span.textContent=fmt(val);
+    inp.replaceWith(span);
+    auditLog('MANUAL_ADJUST',`${shopName(shopId)} → ${field==='galla'?'Counter Cash':'GPay/Online'} = ${fmt(val)}`);
+    saveStateLocal();
+    renderDashboard();
+    toast(`${shopName(shopId)} ${field==='galla'?'Counter Cash':'GPay/Online'} updated to ${fmt(val)}`);
+  }
+  inp.addEventListener('blur', save);
+  inp.addEventListener('keydown', e=>{if(e.key==='Enter')inp.blur();if(e.key==='Escape'){inp.value=current;inp.blur();}});
+}
+
+function renderPerfTracker() {
+  const allDC = STATE.dayClose.filter(r=>!r.deleted);
+  const maxSale = Math.max(1, ...STATE.shops.map(sh=>allDC.filter(r=>r.shopId===sh.id).reduce((s,r)=>s+(r.sale||0),0)));
+  const maxExp  = Math.max(1, ...STATE.shops.map(sh=>allDC.filter(r=>r.shopId===sh.id).reduce((s,r)=>s+(r.expense||0),0)));
+
+  $('perf-grid').innerHTML = STATE.shops.map(sh => {
+    const recs = allDC.filter(r=>r.shopId===sh.id);
+    const totalSale = recs.reduce((s,r)=>s+(r.sale||0),0);
+    const totalExp  = recs.reduce((s,r)=>s+(r.expense||0),0);
+    const totalProfit = recs.reduce((s,r)=>s+(r.profit!=null?r.profit:Math.round((r.sale||0)*sh.profitPct/100)),0);
+    const loanPend = STATE.loans.filter(l=>l.shopId===sh.id&&l.status==='Pending').reduce((s,l)=>s+(l.amount-l.repaid),0);
+    const salePct = Math.round(totalSale/maxSale*100);
+    const expPct  = Math.round(totalExp/maxExp*100);
+    return `<div class="perf-card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+        <div style="display:flex;align-items:center;gap:7px;">
+          <span style="width:9px;height:9px;border-radius:50%;background:${shopColor(sh.id)};"></span>
+          <span style="font-size:13.5px;font-weight:700;">${sh.name}</span>
+        </div>
+        <div style="font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:0.06em;">${recs.length} day${recs.length===1?'':'s'} recorded</div>
+      </div>
+      <div style="margin-bottom:8px;">
+        <div style="display:flex;justify-content:space-between;font-size:10.5px;color:var(--muted);margin-bottom:3px;"><span>SALE</span><span class="mono" style="color:var(--good);">${fmt(totalSale)}</span></div>
+        <div class="prog-track"><div class="prog-fill" style="width:${salePct}%;background:var(--good);"></div></div>
+      </div>
+      <div style="margin-bottom:10px;">
+        <div style="display:flex;justify-content:space-between;font-size:10.5px;color:var(--muted);margin-bottom:3px;"><span>EXPENSES</span><span class="mono" style="color:var(--bad);">${fmt(totalExp)}</span></div>
+        <div class="prog-track"><div class="prog-fill" style="width:${expPct}%;background:var(--bad);"></div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <div class="card2" style="padding:8px 10px;"><div style="font-size:9px;color:var(--muted);">TOTAL PROFIT</div><div class="mono" style="font-size:13px;font-weight:700;color:var(--accent);">${fmt(totalProfit)}</div></div>
+        <div class="card2" style="padding:8px 10px;"><div style="font-size:9px;color:var(--muted);">LOAN PENDING</div><div class="mono" style="font-size:13px;font-weight:700;color:${loanPend>0?'#f472b6':'var(--muted)'};">${fmt(loanPend)}</div></div>
+      </div>
+    </div>`;
+  }).join('') || '<div class="empty">Submit a Day Close first to see performance data</div>';
+}
+
+function updateProfitPct(shopId, val) {
+  const sh = STATE.shops.find(s=>s.id===shopId);
+  if (sh) sh.profitPct = Math.max(0, Math.min(100, parseFloat(val)||0));
+  saveStateLocal(); renderPerfTracker();
+}
+
+// ─── Day Close ───────────────────────────────────────────────────
+let activeDcShop = null;
+
+function initDcForms() {
+  const tabsEl = $('dc-shop-tabs');
+  const formsEl = $('dc-forms');
+  if (!tabsEl || !formsEl) return;
+
+  // Build tab buttons
+  tabsEl.innerHTML = STATE.shops.map((sh,i) => `
+    <button class="dc-shop-tab${i===0?' active':''}" id="dctab-${sh.id}" onclick="switchDcShop('${sh.id}')">
+      <span style="width:8px;height:8px;border-radius:50%;background:${shopColor(sh.id)};display:inline-block;"></span>
+      ${sh.name}
+    </button>`).join('');
+
+  // Build one form panel per shop, all hidden except first
+  formsEl.innerHTML = STATE.shops.map((sh, i) => {
+    const prevInfo = getPrevCounterForShop(sh.id);
+    const today = todayStr();
+    const todaysDc = STATE.dayClose.find(r=>r.shopId===sh.id && r.date===today && !r.deleted);
+    const activeList = STATE.dayClose.filter(r=>r.shopId===sh.id && !r.deleted);
+    const lastEntry = activeList[0];
+    // Prefill from today's DC (edit mode) if present
+    const pf = todaysDc || {};
+    return `<div class="dc-form-panel${i===0?' active':''}" id="dcpanel-${sh.id}">
+      <div class="card" style="padding:18px 20px;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;">
+          <span style="width:9px;height:9px;border-radius:50%;background:${shopColor(sh.id)};"></span>
+          <span style="font-size:14px;font-weight:700;">${sh.name}</span>
+          ${todaysDc?`<span class="badge badge-purple" style="margin-left:6px;"><i class="fa-solid fa-pen" style="margin-right:3px;font-size:8px;"></i>Editing today</span>`:''}
+          <span style="margin-left:auto;font-size:11px;color:var(--muted);">${lastEntry?'Last: '+fmtDate(lastEntry.date):'No entry yet'}</span>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+          <div class="fg">
+            <div class="lbl">Cash Taken Home (₹)</div>
+            <input class="inp" id="dc-home-${sh.id}" type="number" value="${pf.cashHome||''}" placeholder="Enter amount" oninput="updateDcCalc('${sh.id}')" onfocus="clearIfZero(this)" />
+          </div>
+          <div class="fg">
+            <div class="lbl">Counter Cash Kept (₹)</div>
+            <input class="inp" id="dc-counter-${sh.id}" type="number" value="${pf.counterCash||''}" placeholder="Enter amount" oninput="updateDcCalc('${sh.id}')" onfocus="clearIfZero(this)" />
+          </div>
+          <div class="fg">
+            <div class="lbl">GPay / Online (₹)</div>
+            <input class="inp" id="dc-gpay-${sh.id}" type="number" value="${pf.gpay||''}" placeholder="Enter amount" oninput="updateDcCalc('${sh.id}')" onfocus="clearIfZero(this)" />
+          </div>
+          <div class="fg">
+            <div class="lbl">Counter Expenses (₹)</div>
+            <input class="inp" id="dc-exp-${sh.id}" type="number" value="${pf.expense||''}" placeholder="Enter amount" oninput="updateDcCalc('${sh.id}')" onfocus="clearIfZero(this)" />
+          </div>
+        </div>
+        <div class="fg">
+          <div class="lbl">Yesterday's Counter Cash (₹) <span style="color:var(--accent2);font-weight:400;text-transform:none;letter-spacing:0;margin-left:6px;">${prevInfo.label}</span></div>
+          <input class="inp" id="dc-prev-${sh.id}" type="number" value="${todaysDc? (pf.prevCounter||0) : prevInfo.val}" placeholder="0" oninput="updateDcCalc('${sh.id}')" onfocus="clearIfZero(this)" />
+        </div>
+        <div class="formula-box" style="margin:12px 0;">
+          <div class="formula-line"><span class="fl-label">+ Cash Taken Home</span><span class="fl-val" style="color:var(--good);" id="dc-f-home-${sh.id}">₹0</span></div>
+          <div class="formula-line"><span class="fl-label">+ Counter Cash Kept</span><span class="fl-val" style="color:var(--good);" id="dc-f-counter-${sh.id}">₹0</span></div>
+          <div class="formula-line"><span class="fl-label">+ GPay / Online</span><span class="fl-val" style="color:var(--accent2);" id="dc-f-gpay-${sh.id}">₹0</span></div>
+          <div class="formula-line"><span class="fl-label">+ Counter Expenses</span><span class="fl-val" style="color:var(--warn);" id="dc-f-exp-${sh.id}">₹0</span></div>
+          <div class="formula-line"><span class="fl-label">− Yesterday's Counter</span><span class="fl-val" style="color:var(--bad);" id="dc-f-prev-${sh.id}">₹0</span></div>
+          <div class="formula-total"><span>= Today's Sale</span><span class="ft-val" id="dc-f-sale-${sh.id}">₹0</span></div>
+        </div>
+        <div class="profit-live-box">
+          <div>
+            <div style="font-size:9.5px;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:3px;">Today's Profit <span style="color:var(--accent2);text-transform:none;letter-spacing:0;">(direct amount — editable)</span></div>
+            <div style="font-size:11px;color:var(--muted);">Suggested: <span class="mono" id="dc-autoprof-${sh.id}" style="color:var(--accent);font-weight:600;">₹0</span></div>
+          </div>
+          <input class="inp-inline" id="dc-profit-${sh.id}" type="number" value="${pf.profit!=null?pf.profit:''}" placeholder="₹ enter" style="width:130px;color:var(--accent);font-weight:700;font-size:14px;" oninput="markProfitEdited('${sh.id}')" onfocus="clearIfZero(this)" />
+        </div>
+        <div class="fg" style="margin-top:12px;"><div class="lbl">Note / Remark</div><input class="inp" id="dc-note-${sh.id}" value="${(pf.note||'').replace(/"/g,'&quot;')}" placeholder="Any variance or note..." /></div>
+        <button class="btn ${todaysDc?'btn-warn':'btn-primary'}" style="width:100%;margin-top:6px;" id="dc-submit-btn-${sh.id}" onclick="submitDayClose('${sh.id}')">
+          <i class="fa-solid ${todaysDc?'fa-pen-to-square':'fa-calendar-check'}"></i> ${todaysDc?"Update Today's Day Close":"Submit Day Close"}
+        </button>
+      </div>
+    </div>`;
+  }).join('');
+
+  activeDcShop = STATE.shops[0]?.id;
+  STATE.shops.forEach(sh => updateDcCalc(sh.id));
+}
+
+function switchDcShop(shopId) {
+  activeDcShop = shopId;
+  STATE.shops.forEach(sh => {
+    const tab = $('dctab-'+sh.id), panel = $('dcpanel-'+sh.id);
+    if (tab) tab.classList.toggle('active', sh.id===shopId);
+    if (panel) panel.classList.toggle('active', sh.id===shopId);
+  });
+}
+
+function clearIfZero(inp) {
+  if (parseFloat(inp.value) === 0 || inp.value === '0') inp.value = '';
+}
+
+function updateDcCalc(shopId) {
+  const g = id => parseFloat($(id)?.value)||0;
+  const home    = g(`dc-home-${shopId}`);
+  const counter = g(`dc-counter-${shopId}`);
+  const gpay    = g(`dc-gpay-${shopId}`);
+  const exp     = g(`dc-exp-${shopId}`);
+  const prev    = g(`dc-prev-${shopId}`);
+  const sale = home + counter + gpay + exp - prev;
+
+  const set = (id, val) => { const el=$(id); if(el) el.textContent=fmt(val); };
+  set(`dc-f-home-${shopId}`, home);
+  set(`dc-f-counter-${shopId}`, counter);
+  set(`dc-f-gpay-${shopId}`, gpay);
+  set(`dc-f-exp-${shopId}`, exp);
+  set(`dc-f-prev-${shopId}`, prev);
+  const saleEl = $(`dc-f-sale-${shopId}`);
+  if (saleEl) { saleEl.textContent=fmt(sale); saleEl.style.color=sale>=0?'var(--good)':'var(--bad)'; }
+
+  // Live profit — auto = sale × profitPct, editable if user overrides
+  const sh = STATE.shops.find(s=>s.id===shopId);
+  const autoProfit = Math.round(sale * (sh?.profitPct||40)/100);
+  set(`dc-autoprof-${shopId}`, autoProfit);
+  const pInp = $(`dc-profit-${shopId}`);
+  if (pInp && !pInp.dataset.userEdited) {
+    pInp.value = sale ? autoProfit : '';
+    pInp.placeholder = 'auto';
+  }
+}
+
+function markProfitEdited(shopId) {
+  const pInp = $(`dc-profit-${shopId}`);
+  if (pInp) pInp.dataset.userEdited = '1';
+}
+
+function submitDayClose(shopId) {
+  const g = id => parseFloat($(id)?.value)||0;
+  const home    = g(`dc-home-${shopId}`);
+  const counter = g(`dc-counter-${shopId}`);
+  const gpay    = g(`dc-gpay-${shopId}`);
+  const exp     = g(`dc-exp-${shopId}`);
+  const prev    = g(`dc-prev-${shopId}`);
+  const sale = home + counter + gpay + exp - prev;
+  const sh = STATE.shops.find(s=>s.id===shopId);
+  const autoProfit = Math.round(sale * (sh?.profitPct||40)/100);
+  const profitVal  = $(`dc-profit-${shopId}`)?.value;
+  const profit     = (profitVal!=='' && profitVal!=null && !isNaN(parseFloat(profitVal))) ? parseFloat(profitVal) : autoProfit;
+  const note = $(`dc-note-${shopId}`)?.value?.trim() || '';
+  const today = todayStr();
+
+  // Check if today's DC already exists for this shop (edit-in-place)
+  const existing = STATE.dayClose.find(r => r.shopId===shopId && r.date===today && !r.deleted);
+  const isUpdate = !!existing;
+
+  if (isUpdate) {
+    // Revert previous effects on shop balances
+    if (sh) {
+      sh.online = Math.max(0, (sh.online||0) - (existing.gpay||0));
+      // Roll galla back to what it was before this DC
+      const priorDC = STATE.dayClose.find(x =>
+        x.shopId===shopId && !x.deleted && x.id!==existing.id && x.date<=existing.date
+      );
+      sh.galla = priorDC ? (priorDC.counterCash||0) : (existing.prevCounter||0);
+    }
+    // Update in place
+    Object.assign(existing, {
+      cashHome: home, counterCash: counter, gpay, expense: exp, prevCounter: prev,
+      sale, profit, autoProfit, note,
+      updatedAt: new Date().toISOString()
+    });
+    // Re-apply new effects
+    if (sh) {
+      sh.online = (sh.online||0) + gpay;
+      sh.galla  = counter;
+    }
+    auditLog('DAY_CLOSE', `[UPDATE] ${shopName(shopId)} — Sale ${fmt(sale)} · Profit ${fmt(profit)} · Counter ${fmt(counter)}`);
+    saveStateLocal();
+    initDcForms();  // rebuild so Update label reflects
+    renderDcHistory();
+    renderDashboard();
+    toast(`${shopName(shopId)} Today's Day Close updated — Sale ${fmt(sale)} · Profit ${fmt(profit)}`, 'success');
+    return;
+  }
+
+  // Create fresh entry
+  const entry = {
+    id: newId('DC'), shopId, shopName: shopName(shopId), date: today,
+    cashHome: home, counterCash: counter, gpay, expense: exp, prevCounter: prev,
+    sale, profit, autoProfit, note, deleted: false
+  };
+  STATE.dayClose.unshift(entry);
+  if (sh) {
+    sh.galla = counter;
+    sh.online = (sh.online||0) + gpay;
+  }
+  auditLog('DAY_CLOSE', `${shopName(shopId)} — Sale ${fmt(sale)} · Profit ${fmt(profit)} · Counter ${fmt(counter)} · GPay ${fmt(gpay)}`);
+  saveStateLocal();
+  initDcForms();
+  renderDcHistory();
+  renderDashboard();
+  toast(`${shopName(shopId)} Day Close done — Sale ${fmt(sale)} · Profit ${fmt(profit)}`, 'success');
+}
+
+// Date-aware previous counter — checks actual yesterday first, then falls back to last entry
+function getPrevCounterForShop(shopId) {
+  const y = new Date(); y.setDate(y.getDate()-1);
+  const yStr = y.toISOString().split('T')[0];
+  const yEntry = STATE.dayClose.find(r => r.shopId===shopId && r.date===yStr && !r.deleted);
+  if (yEntry) return { val: yEntry.counterCash, label: `Yesterday (${fmtDate(yStr)})` };
+  const last = STATE.dayClose.find(r => r.shopId===shopId && !r.deleted);
+  if (last) return { val: last.counterCash, label: `Last entry (${fmtDate(last.date)})` };
+  return { val: '', label: 'No prior entry' };
+}
+
+function renderDcHistory() {
+  const hist = STATE.dayClose;
+  const el = $('dc-history');
+  if (!el) return;
+  const visible = hist.filter(r=>!r.hidden);
+  if (!visible.length) {
+    el.style.display = '';
+    el.innerHTML = '<div class="empty"><div class="empty-icon"><i class="fa-solid fa-calendar-xmark"></i></div>No history yet — submit a Day Close entry first</div>';
+    return;
+  }
+  el.style.display = 'block';
+  el.innerHTML = visible.map(r => {
+    const sh = STATE.shops.find(s=>s.id===r.shopId);
+    const profit = r.profit != null ? r.profit : Math.round((r.sale||0) * (sh?.profitPct||40)/100);
+    const del = !!r.deleted;
+    return `<div class="dc-row-card ${del?'dc-deleted':''}" onclick="openDcDetail('${r.id}')">
+      <span style="width:9px;height:9px;border-radius:50%;background:${shopColor(r.shopId)};flex-shrink:0;"></span>
+      <div style="flex:1;min-width:0;">
+        <span style="font-size:13px;font-weight:700;${del?'text-decoration:line-through;':''}">${r.shopName||shopName(r.shopId)}</span>
+        <span style="font-size:11px;color:var(--muted);margin-left:8px;">${fmtDate(r.date)}</span>
+        ${del?`<span class="badge badge-red" style="margin-left:6px;">DELETED</span>`:''}
+      </div>
+      <div style="display:flex;align-items:center;gap:14px;flex-shrink:0;">
+        <div style="text-align:right;">
+          <div style="font-size:9.5px;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;">Sale</div>
+          <div class="mono" style="font-size:13px;font-weight:700;color:${(r.sale||0)>=0?'var(--good)':'var(--bad)'};${del?'text-decoration:line-through;':''}">${fmt(r.sale)}</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:9.5px;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;">Profit</div>
+          <div class="mono" style="font-size:13px;font-weight:700;color:var(--accent);${del?'text-decoration:line-through;':''}">${fmt(profit)}</div>
+        </div>
+        ${del
+          ? `<button class="btn btn-good btn-xs" style="flex-shrink:0;" onclick="event.stopPropagation();restoreDayClose('${r.id}')"><i class="fa-solid fa-rotate-left"></i> Undo</button>
+             <button class="btn btn-bad btn-xs" style="flex-shrink:0;" onclick="event.stopPropagation();hardDeleteDayClose('${r.id}')"><i class="fa-solid fa-xmark"></i></button>`
+          : `<button class="btn btn-bad btn-xs" style="flex-shrink:0;" onclick="event.stopPropagation();deleteDayClose('${r.id}')"><i class="fa-solid fa-trash"></i></button>`}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openDcDetail(id) {
+  const r = STATE.dayClose.find(x=>x.id===id); if(!r) return;
+  const sh = STATE.shops.find(s=>s.id===r.shopId);
+  const profit = r.profit != null ? r.profit : Math.round(r.sale * (sh?.profitPct||40)/100);
+  $('dc-detail-body').innerHTML = `
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;">
+      <span style="width:10px;height:10px;border-radius:50%;background:${shopColor(r.shopId)};"></span>
+      <span style="font-size:15px;font-weight:700;">${r.shopName||shopName(r.shopId)}</span>
+      <span class="badge badge-gray" style="margin-left:auto;">${fmtDate(r.date)}</span>
+    </div>
+    <div class="formula-box">
+      <div class="formula-line"><span class="fl-label">+ Cash Taken Home</span><span class="fl-val" style="color:var(--good);">${fmt(r.cashHome)}</span></div>
+      <div class="formula-line"><span class="fl-label">+ Counter Cash Kept</span><span class="fl-val" style="color:var(--good);">${fmt(r.counterCash)}</span></div>
+      <div class="formula-line"><span class="fl-label">+ GPay / Online</span><span class="fl-val" style="color:var(--accent2);">${fmt(r.gpay)}</span></div>
+      <div class="formula-line"><span class="fl-label">+ Counter Expenses</span><span class="fl-val" style="color:var(--warn);">${fmt(r.expense)}</span></div>
+      <div class="formula-line"><span class="fl-label">− Yesterday's Counter</span><span class="fl-val" style="color:var(--bad);">${fmt(r.prevCounter)}</span></div>
+      <div class="formula-total"><span>= Total Sale</span><span class="ft-val">${fmt(r.sale)}</span></div>
+    </div>
+    <div style="margin-top:12px;background:rgba(124,92,252,0.08);border:1px solid rgba(124,92,252,0.2);border-radius:9px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;">
+      <div>
+        <div style="font-size:9.5px;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">Est. Profit (${sh?.profitPct||40}%)</div>
+        <div class="mono" style="font-size:18px;font-weight:800;color:var(--accent);">${fmt(profit)}</div>
+      </div>
+      ${r.note?`<div style="font-size:12px;color:var(--muted);max-width:200px;text-align:right;"><i class="fa-solid fa-note-sticky" style="margin-right:4px;"></i>${r.note}</div>`:''}
+    </div>`;
+  openModal('modal-dc-detail');
+}
+
+function deleteDayClose(id) {
+  const r = STATE.dayClose.find(x=>x.id===id);
+  if (!r || r.deleted) return;
+  if (!confirm(`Delete Day Close of ${r.shopName||shopName(r.shopId)} — ${fmtDate(r.date)}?\n\nShop balances will be rolled back. You can restore from history.`)) return;
+  r.deleted = true;
+
+  // Soft rollback: reverse this DC's effect on shop balances
+  const sh = STATE.shops.find(s=>s.id===r.shopId);
+  if (sh) {
+    sh.online = Math.max(0, (sh.online||0) - (r.gpay||0));
+    // Restore galla to the most recent non-deleted prior DC's counter (or its prevCounter if none)
+    const priorDC = STATE.dayClose.find(x =>
+      x.shopId===r.shopId && !x.deleted && x.id!==r.id &&
+      (x.date < r.date || (x.date===r.date && STATE.dayClose.indexOf(x) > STATE.dayClose.indexOf(r)))
+    );
+    sh.galla = priorDC ? (priorDC.counterCash||0) : (r.prevCounter||0);
+  }
+  auditLog('DELETE_DC', `Soft-deleted DC: ${r.shopName||shopName(r.shopId)} — ${fmtDate(r.date)} — Sale ${fmt(r.sale)} (rollback applied)`);
+  saveStateLocal(); renderDcHistory(); renderDashboard(); initDcForms();
+  toast(`Deleted — balances rolled back. Undo from history.`, 'info');
+}
+
+function restoreDayClose(id) {
+  const r = STATE.dayClose.find(x=>x.id===id);
+  if (!r || !r.deleted) return;
+  r.deleted = false;
+  const sh = STATE.shops.find(s=>s.id===r.shopId);
+  if (sh) {
+    sh.online = (sh.online||0) + (r.gpay||0);
+    // If this is the newest non-deleted entry for the shop, set galla to its counter
+    const newest = STATE.dayClose.find(x => x.shopId===r.shopId && !x.deleted);
+    if (newest && newest.id === r.id) sh.galla = r.counterCash||0;
+  }
+  auditLog('DAY_CLOSE', `Restored DC: ${r.shopName||shopName(r.shopId)} — ${fmtDate(r.date)}`);
+  saveStateLocal(); renderDcHistory(); renderDashboard(); initDcForms();
+  toast(`Restored — ${r.shopName||shopName(r.shopId)} ${fmtDate(r.date)}`, 'success');
+}
+
+function hardDeleteDayClose(id) {
+  const idx = STATE.dayClose.findIndex(x=>x.id===id);
+  if (idx < 0) return;
+  const r = STATE.dayClose[idx];
+  if (!confirm(`Permanently remove this record?\n${r.shopName||shopName(r.shopId)} — ${fmtDate(r.date)}`)) return;
+  STATE.dayClose.splice(idx, 1);
+  auditLog('DELETE_DC', `Purged: ${r.shopName||shopName(r.shopId)} — ${fmtDate(r.date)}`);
+  saveStateLocal(); renderDcHistory();
+  toast(`Record purged`, 'info');
+}
+
+// ─── Udhaari ────────────────────────────────────────────────────
+function setUFilter(f) {
+  uFilter = f;
+  ['all','active','overdue','settle'].forEach(x=>{const el=$('uf-'+x);if(el)el.classList.toggle('on',x===f);});
+  renderUdhaari();
+}
+
+function renderUdhaari() {
+  let list = [...STATE.udhaari];
+  if (uFilter==='active') list=list.filter(u=>u.status==='Active'&&!isOverdue(u));
+  else if(uFilter==='overdue') list=list.filter(isOverdue);
+  else if(uFilter==='settle') list=list.filter(u=>u.status==='Settle');
+  const sf = $('uf-shop')?.value||'all';
+  if(sf!=='all') list=list.filter(u=>u.shopId===sf);
+  list.sort((a,b)=>a.status==='Settle'?1:b.status==='Settle'?-1:0);
+
+  $('udhaari-cards').innerHTML = list.length ? list.map(u => {
+    const pending = u.totalBill - u.received;
+    const over = isOverdue(u);
+    const pct = Math.min(100,Math.round(u.received/Math.max(1,u.totalBill)*100));
+    const settled = u.status==='Settle';
+    return `<div class="rec-card${over?' overdue':''}${settled?' settled':''}">
+      <div class="rec-head">
+        <div>
+          <div class="rec-name">${u.customer}</div>
+          <div style="margin-top:3px;display:flex;gap:6px;align-items:center;">
+            <span class="badge" style="background:${shopColor(u.shopId)}22;color:${shopColor(u.shopId)};border:1px solid ${shopColor(u.shopId)}44;">${shopName(u.shopId)}</span>
+            ${over?`<span class="badge badge-red">Overdue</span>`:''}
+            ${settled?`<span class="badge badge-green">Settled</span>`:`<span class="badge badge-amber">Active</span>`}
+          </div>
+        </div>
+      </div>
+      <div class="rec-meta">
+        <div class="rec-cell"><div class="k">Total Bill</div><div class="v">${fmt(u.totalBill)}</div></div>
+        <div class="rec-cell"><div class="k">Received</div><div class="v" style="color:var(--good);">${fmt(u.received)}</div></div>
+        <div class="rec-cell"><div class="k">Pending</div><div class="v" style="color:${pending>0?'var(--bad)':'var(--good)'};">${fmt(pending)}</div></div>
+      </div>
+      <div>
+        <div style="display:flex;justify-content:space-between;font-size:10.5px;color:var(--muted);margin-bottom:3px;"><span>Recovery</span><span>${pct}%</span></div>
+        <div class="prog-track"><div class="prog-fill" style="width:${pct}%;background:var(--good);"></div></div>
+      </div>
+      <div class="rec-foot">
+        <span class="meta-info"><i class="fa-solid fa-calendar"></i> Due: ${fmtDate(u.dueDate)||'—'}</span>
+        ${!settled?`<button class="btn btn-good btn-sm" onclick="openCollect('${u.id}')">Collect</button>`:''}
+      </div>
+    </div>`;
+  }).join('') : `<div class="empty" style="grid-column:1/-1;"><div class="empty-icon"><i class="fa-solid fa-users-slash"></i></div>No udhaari — all clear 👍</div>`;
+}
+
+function saveUdhaari() {
+  const cust=$('au-cust').value.trim(), shop=chipValue('au-shop');
+  const amt=parseFloat($('au-amt').value)||0, date=$('au-date').value, due=$('au-due').value, note=$('au-note').value.trim();
+  if(!cust||!amt){ toast('Customer naam aur amount dono chahiye','error'); return; }
+  if(!date||!due){ toast('Date aur due date dono chahiye','error'); return; }
+  const entry={ id:newId('U'), customer:cust, shopId:shop, date, dueDate:due, totalBill:amt, received:0, status:'Active', note };
+  STATE.udhaari.unshift(entry);
+  auditLog('ADD_UDHAARI',`${cust} se ${shopName(shop)} — ${fmt(amt)} due ${fmtDate(due)}`);
+  saveStateLocal(); renderUdhaari(); updateBadges();
+  closeModal('modal-add-udhaari');
+  $('au-cust').value=''; $('au-amt').value=''; $('au-note').value='';
+  toast(`Udhaari add kiya — ${cust} ${fmt(amt)}`);
+}
+
+function openCollect(uid) {
+  const u=STATE.udhaari.find(x=>x.id===uid); if(!u) return;
+  activeUdhaariId=uid;
+  const pending=u.totalBill-u.received;
+  $('collect-info').innerHTML=`
+    <div class="rec-cell"><div class="k">Bill</div><div class="v">${fmt(u.totalBill)}</div></div>
+    <div class="rec-cell"><div class="k">Received</div><div class="v" style="color:var(--good);">${fmt(u.received)}</div></div>
+    <div class="rec-cell"><div class="k">Pending</div><div class="v" style="color:var(--bad);">${fmt(pending)}</div></div>`;
+  $('cu-amt').value=''; chipPick('cu-mode', 'Cash'); openModal('modal-collect-udhaari');
+}
+
+function saveCollect() {
+  const u=STATE.udhaari.find(x=>x.id===activeUdhaariId); if(!u) return;
+  const amt=parseFloat($('cu-amt').value)||0;
+  const mode = chipValue('cu-mode') || 'Cash';
+  if(amt<=0){ toast('Amount enter karo','error'); return; }
+  u.received=Math.min(u.totalBill, u.received+amt);
+  if(u.received>=u.totalBill) u.status='Settle';
+  // Add received money to shop's balance (Cash → galla, GPay → online)
+  const sh = STATE.shops.find(s=>s.id===u.shopId);
+  if (sh) {
+    if (mode==='GPay') sh.online = (sh.online||0) + amt;
+    else               sh.galla  = (sh.galla||0)  + amt;
+  }
+  auditLog('COLLECT_UDHAARI',`${u.customer} se ${fmt(amt)} collect via ${mode} — pending ${fmt(u.totalBill-u.received)}`);
+  saveStateLocal(); renderUdhaari(); updateBadges(); renderDashboard();
+  closeModal('modal-collect-udhaari');
+  toast(`${u.customer} se ${fmt(amt)} collect${u.status==='Settle'?' — fully settled!':''}`);
+}
+
+// ─── Outflows ────────────────────────────────────────────────────
+function setOFilter(f) {
+  oFilter=f;
+  ['all','pending','paid'].forEach(x=>{const el=$('of-'+x);if(el)el.classList.toggle('on',x===f);});
+  renderOutflows();
+}
+function renderOutflows() {
+  let list=[...STATE.outflows];
+  if(oFilter==='pending') list=list.filter(o=>o.status==='Pending');
+  else if(oFilter==='paid') list=list.filter(o=>o.status==='Paid');
+  const sf=$('of-shop')?.value||'all';
+  if(sf!=='all') list=list.filter(o=>o.shopId===sf);
+
+  $('outflow-cards').innerHTML=list.length?list.map(o=>{
+    const pending=o.amount+o.lateFee-o.paid;
+    const over=isOutflowOverdue(o);
+    const pct=Math.min(100,Math.round(o.paid/Math.max(1,o.amount+o.lateFee)*100));
+    const paid=o.status==='Paid';
+    return `<div class="rec-card${over?' overdue':''}${paid?' settled':''}">
+      <div class="rec-head">
+        <div>
+          <div class="rec-name">${o.payee}</div>
+          <div style="margin-top:3px;display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
+            <span class="badge" style="background:${shopColor(o.shopId)}22;color:${shopColor(o.shopId)};border:1px solid ${shopColor(o.shopId)}44;">${shopName(o.shopId)}</span>
+            <span class="badge badge-gray">${o.category}</span>
+            ${over?`<span class="badge badge-red">Overdue</span>`:''}
+            ${paid?`<span class="badge badge-green">Paid</span>`:`<span class="badge badge-amber">Pending</span>`}
+            ${o.recurring?`<span class="badge badge-purple"><i class="fa-solid fa-rotate" style="margin-right:3px;font-size:8px;"></i>Recurring</span>`:''}
+          </div>
+        </div>
+      </div>
+      <div class="rec-meta">
+        <div class="rec-cell"><div class="k">Bill</div><div class="v">${fmt(o.amount)}</div></div>
+        <div class="rec-cell"><div class="k">Paid</div><div class="v" style="color:var(--good);">${fmt(o.paid)}</div></div>
+        <div class="rec-cell"><div class="k">Pending</div><div class="v" style="color:${pending>0?'var(--bad)':'var(--good)'};">${fmt(pending)}</div></div>
+      </div>
+      <div>
+        <div class="prog-track"><div class="prog-fill" style="width:${pct}%;background:${paid?'var(--good)':'var(--warn)'};"></div></div>
+      </div>
+      <div class="rec-foot">
+        <span class="meta-info"><i class="fa-solid fa-calendar"></i> Due: ${fmtDate(o.dueDate)}</span>
+        ${!paid?`<button class="btn btn-warn btn-sm" onclick="openPayOutflow('${o.id}')">Pay Bill</button>`:''}
+      </div>
+    </div>`;
+  }).join(''):`<div class="empty" style="grid-column:1/-1;"><div class="empty-icon"><i class="fa-solid fa-receipt"></i></div>No outflows recorded</div>`;
+}
+
+function saveOutflow() {
+  const payee=$('ao-payee').value.trim(), shop=chipValue('ao-shop'), cat=$('ao-cat').value;
+  const amt=parseFloat($('ao-amt').value)||0, due=$('ao-due').value, recur=$('ao-recur').checked;
+  if(!payee||!amt||!due){ toast('Payee, amount, aur due date chahiye','error'); return; }
+  const entry={id:newId('O'),payee,shopId:shop,category:cat,dueDate:due,amount:amt,lateFee:0,paid:0,status:'Pending',recurring:recur};
+  STATE.outflows.unshift(entry);
+  auditLog('ADD_OUTFLOW',`${payee} — ${fmt(amt)} due ${fmtDate(due)} [${shopName(shop)}]`);
+  saveStateLocal(); renderOutflows(); updateBadges();
+  closeModal('modal-add-outflow');
+  $('ao-payee').value=''; $('ao-amt').value='';
+  toast(`Outflow add kiya — ${payee} ${fmt(amt)}`);
+}
+
+function openPayOutflow(oid) {
+  const o=STATE.outflows.find(x=>x.id===oid); if(!o) return;
+  activeOutflowId=oid;
+  const pending=o.amount+o.lateFee-o.paid;
+  $('pay-info').innerHTML=`
+    <div class="rec-cell"><div class="k">Bill</div><div class="v">${fmt(o.amount)}</div></div>
+    <div class="rec-cell"><div class="k">Paid</div><div class="v" style="color:var(--good);">${fmt(o.paid)}</div></div>
+    <div class="rec-cell"><div class="k">Pending</div><div class="v" style="color:var(--bad);">${fmt(pending)}</div></div>`;
+  $('po-amt').value=''; $('po-latefee').value='0';
+  chipPick('po-mode','Cash');
+  chipPick('po-vault', o.shopId);
+  openModal('modal-pay-outflow');
+  $('po-is-warn').style.display='none';
+}
+
+// Called by chipPick when vault (Cash From shop) changes
+function onPoVaultChange() {
+  const o = STATE.outflows.find(x=>x.id===activeOutflowId); if(!o) return;
+  const vault = chipValue('po-vault');
+  $('po-is-warn').style.display = vault!==o.shopId ? 'block' : 'none';
+}
+
+function savePayOutflow() {
+  const o=STATE.outflows.find(x=>x.id===activeOutflowId); if(!o) return;
+  const amt=parseFloat($('po-amt').value)||0, lf=parseFloat($('po-latefee').value)||0;
+  const vault=chipValue('po-vault');
+  const mode =chipValue('po-mode') || 'Cash';
+  if(amt<=0){ toast('Amount enter karo','error'); return; }
+  o.paid=Math.min(o.amount+o.lateFee+lf, o.paid+amt);
+  o.lateFee+=lf;
+  if(o.paid>=o.amount+o.lateFee) o.status='Paid';
+  // Deduct from vault shop's balance (galla for Cash, online for GPay)
+  const vsh = STATE.shops.find(s=>s.id===vault);
+  if (vsh) {
+    if (mode==='GPay') vsh.online = Math.max(0, (vsh.online||0) - amt);
+    else               vsh.galla  = Math.max(0, (vsh.galla||0)  - amt);
+  }
+  if(vault!==o.shopId){
+    STATE.intershop.unshift({id:newId('IS'),fromShop:vault,toShop:o.shopId,date:todayStr(),amount:amt,reason:`Outflow: ${o.payee}`,status:'Open'});
+    auditLog('INTERSHOP',`${shopName(vault)} → ${shopName(o.shopId)} ${fmt(amt)} for ${o.payee}`);
+  }
+  auditLog('SETTLE_OUTFLOW',`${o.payee} — ${fmt(amt)} paid via ${mode}${lf>0?` + ${fmt(lf)} late fee`:''}`);
+  saveStateLocal(); renderOutflows(); renderIntershop(); updateBadges(); renderDashboard();
+  closeModal('modal-pay-outflow');
+  toast(`${o.payee} — ${fmt(amt)} paid${o.status==='Paid'?' — Fully Cleared!':''}`);
+}
+
+// ─── InterShop ───────────────────────────────────────────────────
+function setISFilter(f) {
+  isFilter=f;
+  ['all','open','settled'].forEach(x=>{const el=$('isf-'+x);if(el)el.classList.toggle('on',x===f);});
+  renderIntershop();
+}
+function renderIntershop() {
+  let list=[...STATE.intershop];
+  if(isFilter==='open') list=list.filter(i=>i.status==='Open');
+  else if(isFilter==='settled') list=list.filter(i=>i.status==='Settled');
+
+  $('intershop-cards').innerHTML=list.length?list.map(i=>`
+    <div class="rec-card${i.status==='Settled'?' settled':''}">
+      <div class="rec-head">
+        <div class="arrow-shops">
+          <span style="font-size:13px;font-weight:700;color:${shopColor(i.fromShop)};">${shopName(i.fromShop)}</span>
+          <span class="arrow">→</span>
+          <span style="font-size:13px;font-weight:700;color:${shopColor(i.toShop)};">${shopName(i.toShop)}</span>
+        </div>
+        ${i.status==='Open'?`<span class="badge badge-amber">Open</span>`:`<span class="badge badge-green">Settled</span>`}
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;background:var(--panel2);border-radius:7px;padding:10px 12px;">
+        <div style="flex:1;"><div class="k" style="font-size:9.5px;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:2px;">Amount</div><div class="mono" style="font-size:15px;font-weight:700;">${fmt(i.amount)}</div></div>
+        <div style="flex:1;"><div class="k" style="font-size:9.5px;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:2px;">Reason</div><div style="font-size:12px;">${i.reason||'—'}</div></div>
+      </div>
+      <div class="rec-foot">
+        <span class="meta-info"><i class="fa-solid fa-calendar"></i> ${fmtDate(i.date)}</span>
+        ${i.status==='Open'?`<button class="btn btn-good btn-sm" onclick="settleIntershop('${i.id}')">Settle</button>`:''}
+      </div>
+    </div>
+  `).join(''):`<div class="empty" style="grid-column:1/-1;"><div class="empty-icon"><i class="fa-solid fa-right-left"></i></div>Koi intershop transfer nahi</div>`;
+}
+
+function saveIntershop() {
+  const from=chipValue('is-from'), to=chipValue('is-to');
+  const amt=parseFloat($('is-amt').value)||0, date=$('is-date').value, reason=$('is-reason').value.trim();
+  if(from===to){ toast('From aur To alag shop chahiye','error'); return; }
+  if(!amt||!date){ toast('Amount aur date chahiye','error'); return; }
+  STATE.intershop.unshift({id:newId('IS'),fromShop:from,toShop:to,date,amount:amt,reason,status:'Open'});
+  auditLog('INTERSHOP',`${shopName(from)} → ${shopName(to)} ${fmt(amt)}${reason?' — '+reason:''}`);
+  saveStateLocal(); renderIntershop(); updateBadges();
+  closeModal('modal-add-intershop');
+  $('is-amt').value=''; $('is-reason').value='';
+  toast(`Transfer recorded — ${shopName(from)} → ${shopName(to)} ${fmt(amt)}`);
+}
+
+function settleIntershop(iid) {
+  const i=STATE.intershop.find(x=>x.id===iid); if(!i) return;
+  i.status='Settled';
+  auditLog('INTERSHOP',`Settled: ${shopName(i.fromShop)} → ${shopName(i.toShop)} ${fmt(i.amount)}`);
+  saveStateLocal(); renderIntershop(); updateBadges();
+  toast(`InterShop settled — ${fmt(i.amount)}`);
+}
+
+// ─── Loans ───────────────────────────────────────────────────────
+function setLFilter(f) {
+  lFilter=f;
+  ['all','pending','repaid'].forEach(x=>{const el=$('lf-'+x);if(el)el.classList.toggle('on',x===f);});
+  renderLoans();
+}
+function renderLoans() {
+  let list=[...STATE.loans];
+  if(lFilter==='pending') list=list.filter(l=>l.status==='Pending');
+  else if(lFilter==='repaid') list=list.filter(l=>l.status==='Repaid');
+
+  $('loan-cards').innerHTML=list.length?list.map(l=>{
+    const pending=l.amount-l.repaid;
+    const pct=Math.min(100,Math.round(l.repaid/Math.max(1,l.amount)*100));
+    const done=l.status==='Repaid';
+    return `<div class="loan-card${done?' repaid':''}">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+        <div>
+          <div style="font-size:14px;font-weight:700;">${l.from}</div>
+          <div style="margin-top:3px;display:flex;gap:6px;align-items:center;">
+            <span class="badge" style="background:${shopColor(l.shopId)}22;color:${shopColor(l.shopId)};border:1px solid ${shopColor(l.shopId)}44;">${l.shopId==='GENERAL'?'General':shopName(l.shopId)}</span>
+            ${done?`<span class="badge badge-green">Repaid</span>`:`<span class="badge badge-red">Pending</span>`}
+          </div>
+        </div>
+        <div class="mono" style="font-size:16px;font-weight:800;color:${done?'var(--muted)':'var(--bad)'};">${fmt(l.amount)}</div>
+      </div>
+      ${l.purpose?`<div style="font-size:12px;color:var(--muted);margin-bottom:8px;"><i class="fa-solid fa-tag" style="margin-right:4px;font-size:10px;"></i>${l.purpose}</div>`:''}
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;background:var(--panel2);border-radius:7px;padding:9px 11px;margin-bottom:8px;">
+        <div class="rec-cell"><div class="k">Total</div><div class="v">${fmt(l.amount)}</div></div>
+        <div class="rec-cell"><div class="k">Repaid</div><div class="v" style="color:var(--good);">${fmt(l.repaid)}</div></div>
+        <div class="rec-cell"><div class="k">Pending</div><div class="v" style="color:${pending>0?'var(--bad)':'var(--good)'};">${fmt(pending)}</div></div>
+      </div>
+      <div class="prog-track"><div class="prog-fill" style="width:${pct}%;background:${done?'var(--good)':'var(--bad)'};"></div></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px;">
+        <span class="meta-info" style="font-size:11px;color:var(--muted);"><i class="fa-solid fa-calendar"></i> ${fmtDate(l.date)}</span>
+        ${!done?`<button class="btn btn-good btn-sm" onclick="openRepayLoan('${l.id}')">Repay</button>`:''}
+      </div>
+    </div>`;
+  }).join(''):`<div class="empty" style="grid-column:1/-1;"><div class="empty-icon"><i class="fa-solid fa-piggy-bank"></i></div>No loans — all money is yours 💪</div>`;
+}
+
+function saveLoan() {
+  const from=$('al-from').value.trim(), shop=chipValue('al-shop');
+  const amt=parseFloat($('al-amt').value)||0, purpose=$('al-purpose').value.trim(), date=$('al-date').value;
+  if(!from||!amt||!date){ toast('Naam, amount, aur date chahiye','error'); return; }
+  const entry={id:newId('L'),from,shopId:shop,purpose,date,amount:amt,repaid:0,status:'Pending'};
+  STATE.loans.unshift(entry);
+  auditLog('ADD_LOAN',`${from} se ${fmt(amt)} liya — ${shop==='GENERAL'?'General':shopName(shop)}${purpose?' for '+purpose:''}`);
+  saveStateLocal(); renderLoans(); updateBadges();
+  closeModal('modal-add-loan');
+  $('al-from').value=''; $('al-amt').value=''; $('al-purpose').value='';
+  toast(`Loan add kiya — ${from} ${fmt(amt)}`);
+}
+
+function openRepayLoan(lid) {
+  const l=STATE.loans.find(x=>x.id===lid); if(!l) return;
+  activeLoanId=lid;
+  $('repay-info').innerHTML=`<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;">
+    <div class="rec-cell"><div class="k">Total</div><div class="v">${fmt(l.amount)}</div></div>
+    <div class="rec-cell"><div class="k">Repaid</div><div class="v" style="color:var(--good);">${fmt(l.repaid)}</div></div>
+    <div class="rec-cell"><div class="k">Pending</div><div class="v" style="color:var(--bad);">${fmt(l.amount-l.repaid)}</div></div>
+  </div>
+  <div style="margin-top:8px;font-size:12px;color:var(--muted);">Borrowed from: <strong style="color:var(--jtext);">${l.from}</strong></div>`;
+  $('rl-amt').value='';
+  openModal('modal-repay-loan');
+}
+
+function saveRepayLoan() {
+  const l=STATE.loans.find(x=>x.id===activeLoanId); if(!l) return;
+  const amt=parseFloat($('rl-amt').value)||0;
+  if(amt<=0){ toast('Amount enter karo','error'); return; }
+  l.repaid=Math.min(l.amount, l.repaid+amt);
+  if(l.repaid>=l.amount) l.status='Repaid';
+  auditLog('REPAY_LOAN',`${l.from} ko ${fmt(amt)} wapas kiya — remaining ${fmt(l.amount-l.repaid)}`);
+  saveStateLocal(); renderLoans(); updateBadges();
+  closeModal('modal-repay-loan');
+  toast(`${l.from} ko ${fmt(amt)} wapas kiya${l.status==='Repaid'?' — Fully Repaid!':''}`);
+}
+
+// ─── Home / Personal Expenses ──────────────────────────────────
+const HE_CAT_COLORS = {
+  EMI:'#7c5cfc', Grocery:'#22c55e', Electricity:'#f59e0b', Maintenance:'#06b6d4',
+  Medical:'#ef4444', Education:'#3b82f6', Fuel:'#f472b6', Entertainment:'#eab308', Misc:'#8888a8'
+};
+const HE_MODE_ICONS = {
+  Cash:'fa-money-bill-wave', GPay:'fa-mobile-screen',
+  'Bank Transfer':'fa-building-columns', 'Credit Card':'fa-credit-card'
+};
+
+function openHomeExpModal() {
+  // Reset default state, then open
+  if (!$('he-date').value) $('he-date').value = todayStr();
+  chipPick('he-mode', 'Cash');
+  chipPick('he-from', 'PERSONAL');
+  setHeFromHint();
+  openModal('modal-add-homeexp');
+}
+
+function saveHomeExpense() {  const desc = $('he-desc').value.trim();
+  const cat  = $('he-cat').value;
+  const amt  = parseFloat($('he-amt').value)||0;
+  const date = $('he-date').value;
+  const mode = chipValue('he-mode') || 'Cash';
+  const from = chipValue('he-from') || 'PERSONAL';
+  const note = $('he-note').value.trim();
+  if (!desc || !amt || !date) { toast('Description, amount aur date chahiye', 'error'); return; }
+
+  // If paid from a shop, deduct from shop's balance
+  if (from !== 'PERSONAL') {
+    const sh = STATE.shops.find(s=>s.id===from);
+    if (!sh) { toast('Shop not found', 'error'); return; }
+    const useGpay = (mode==='GPay' || mode==='Bank Transfer');
+    const available = useGpay ? sh.online : sh.galla;
+    if (available < amt) {
+      if (!confirm(`${sh.name} ${useGpay?'GPay':'Counter Cash'} me sirf ${fmt(available)} hai. Phir bhi log karein?`)) return;
+    }
+    if (useGpay) sh.online = Math.max(0, (sh.online||0) - amt);
+    else sh.galla = Math.max(0, (sh.galla||0) - amt);
+  }
+
+  const entry = { id:newId('HE'), desc, category:cat, amount:amt, date, mode, paidFrom:from, note };
+  STATE.homeExpenses.unshift(entry);
+  auditLog('HOME_EXPENSE', `${desc} (${cat}) — ${fmt(amt)} via ${mode} from ${from==='PERSONAL'?'Personal':shopName(from)}`);
+  saveStateLocal(); renderHomeExpenses(); renderDashboard();
+  closeModal('modal-add-homeexp');
+  $('he-desc').value=''; $('he-amt').value=''; $('he-note').value=''; chipPick('he-from','PERSONAL'); setHeFromHint();
+  toast(`Home expense add — ${desc} ${fmt(amt)}`);
+}
+
+function setHeFromHint() {
+  const from = chipValue('he-from');
+  const mode = chipValue('he-mode') || 'Cash';
+  const hint = $('he-from-hint');
+  if (!hint) return;
+  if (from === 'PERSONAL') { hint.textContent = 'Personal wallet se paid — shop balances par koi asar nahi'; hint.style.color='var(--muted)'; return; }
+  const sh = STATE.shops.find(s=>s.id===from);
+  if (!sh) { hint.textContent = ''; return; }
+  const useGpay = (mode==='GPay' || mode==='Bank Transfer');
+  const bal = useGpay ? sh.online : sh.galla;
+  hint.innerHTML = `<i class="fa-solid fa-triangle-exclamation" style="margin-right:4px;color:var(--warn);"></i>${sh.name} ${useGpay?'GPay/Online':'Counter Cash'} available: <strong style="color:var(--jtext);">${fmt(bal)}</strong> — expense amount deducted from shop`;
+  hint.style.color = 'var(--muted)';
+}
+
+function deleteHomeExpense(id) {
+  const idx = STATE.homeExpenses.findIndex(x=>x.id===id);
+  if (idx < 0) return;
+  const r = STATE.homeExpenses[idx];
+  if (!confirm(`Delete "${r.desc}" — ${fmt(r.amount)}?`)) return;
+  STATE.homeExpenses.splice(idx,1);
+  auditLog('HOME_EXPENSE', `Deleted: ${r.desc} — ${fmt(r.amount)}`);
+  saveStateLocal(); renderHomeExpenses();
+  toast('Expense delete');
+}
+
+function renderHomeExpenses() {
+  const list = STATE.homeExpenses || [];
+  const now = new Date();
+  const ym = now.toISOString().slice(0,7); // YYYY-MM
+  const thisMonth = list.filter(e => (e.date||'').startsWith(ym));
+  const monthTotal = thisMonth.reduce((s,e)=>s+(e.amount||0),0);
+  const emiTotal   = thisMonth.filter(e=>e.category==='EMI').reduce((s,e)=>s+(e.amount||0),0);
+  const utilTotal  = thisMonth.filter(e=>['Electricity','Maintenance','Fuel'].includes(e.category)).reduce((s,e)=>s+(e.amount||0),0);
+  const otherTotal = monthTotal - emiTotal - utilTotal;
+
+  const sum = $('he-summary');
+  if (sum) {
+    sum.innerHTML = `
+      <div class="stat-tile"><div class="st-label"><i class="fa-solid fa-calendar-days" style="color:var(--accent);"></i>This Month</div><div class="st-val">${fmt(monthTotal)}</div></div>
+      <div class="stat-tile"><div class="st-label"><i class="fa-solid fa-building" style="color:${HE_CAT_COLORS.EMI};"></i>EMI</div><div class="st-val" style="color:${HE_CAT_COLORS.EMI};">${fmt(emiTotal)}</div></div>
+      <div class="stat-tile"><div class="st-label"><i class="fa-solid fa-bolt" style="color:${HE_CAT_COLORS.Electricity};"></i>Utilities</div><div class="st-val" style="color:${HE_CAT_COLORS.Electricity};">${fmt(utilTotal)}</div></div>
+      <div class="stat-tile"><div class="st-label"><i class="fa-solid fa-basket-shopping" style="color:var(--good);"></i>Other</div><div class="st-val" style="color:var(--good);">${fmt(otherTotal)}</div></div>`;
+  }
+
+  const cont = $('homeexp-list');
+  if (!cont) return;
+  // Render donut chart every time
+  renderHomeExpenseDonut();
+  if (!list.length) {
+    cont.innerHTML = `<div class="empty"><div class="empty-icon"><i class="fa-solid fa-house-chimney"></i></div>Koi home expense nahi — Add karke start karo</div>`;
+    return;
+  }
+  // Group by month
+  const groups = {};
+  list.forEach(e => {
+    const key = (e.date||'').slice(0,7) || 'unknown';
+    (groups[key] = groups[key] || []).push(e);
+  });
+  const monthKeys = Object.keys(groups).sort().reverse();
+  const monthName = ymk => {
+    if (ymk==='unknown') return 'Unknown';
+    const [y,m] = ymk.split('-');
+    return ['January','February','March','April','May','June','July','August','September','October','November','December'][parseInt(m)-1] + ' ' + y;
+  };
+
+  cont.innerHTML = monthKeys.map(mk => {
+    const items = groups[mk].slice().sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+    const total = items.reduce((s,e)=>s+(e.amount||0),0);
+    return `
+      <div style="margin-bottom:18px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;padding:0 4px;">
+          <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;">${monthName(mk)}</div>
+          <div class="mono" style="font-size:12px;font-weight:700;color:var(--bad);">${fmt(total)}</div>
+        </div>
+        ${items.map(e => `
+          <div class="he-row">
+            <span class="he-cat-dot" style="background:${HE_CAT_COLORS[e.category]||'#8888a8'};"></span>
+            <div style="flex:1;min-width:0;">
+              <div style="font-size:13px;font-weight:600;">${e.desc}</div>
+              <div style="font-size:10.5px;color:var(--muted);margin-top:2px;display:flex;gap:8px;flex-wrap:wrap;">
+                <span><i class="fa-solid ${HE_MODE_ICONS[e.mode]||'fa-money-bill'}" style="margin-right:3px;"></i>${e.mode}</span>
+                <span><i class="fa-solid fa-calendar" style="margin-right:3px;"></i>${fmtDate(e.date)}</span>
+                <span class="badge" style="background:${HE_CAT_COLORS[e.category]||'#8888a8'}22;color:${HE_CAT_COLORS[e.category]||'#8888a8'};border:1px solid ${HE_CAT_COLORS[e.category]||'#8888a8'}44;padding:1px 6px;">${e.category}</span>
+                ${e.paidFrom && e.paidFrom!=='PERSONAL'
+                  ? `<span class="badge" style="background:${shopColor(e.paidFrom)}22;color:${shopColor(e.paidFrom)};border:1px solid ${shopColor(e.paidFrom)}44;padding:1px 6px;"><i class="fa-solid fa-store" style="margin-right:3px;font-size:8px;"></i>${shopName(e.paidFrom)}</span>`
+                  : `<span class="badge badge-gray" style="padding:1px 6px;">Personal</span>`}
+                ${e.note?`<span title="${e.note}"><i class="fa-solid fa-note-sticky"></i></span>`:''}
+              </div>
+            </div>
+            <div class="mono" style="font-size:14px;font-weight:700;color:var(--bad);flex-shrink:0;">${fmt(e.amount)}</div>
+            <button class="btn btn-bad btn-xs" style="flex-shrink:0;" onclick="deleteHomeExpense('${e.id}')" title="Delete"><i class="fa-solid fa-trash"></i></button>
+          </div>`).join('')}
+      </div>`;
+  }).join('');
+}
+
+// ─── WhatsApp Daily Summary Share ─────────────────────────────
+function buildDailySummary() {
+  const today = todayStr();
+  const todayFmt = new Date().toLocaleDateString('en-IN', { weekday:'short', day:'2-digit', month:'long', year:'numeric' });
+
+  const totalGalla  = STATE.shops.reduce((s,sh)=>s+sh.galla,0);
+  const totalOnline = STATE.shops.reduce((s,sh)=>s+sh.online,0);
+  const totalUd = STATE.udhaari.filter(u=>u.status==='Active').reduce((s,u)=>s+(u.totalBill-u.received),0);
+  const totalLiab = STATE.outflows.filter(o=>o.status==='Pending').reduce((s,o)=>s+(o.amount+o.lateFee-o.paid),0);
+  const pendLoanAmt = STATE.loans.filter(l=>l.status==='Pending').reduce((s,l)=>s+(l.amount-l.repaid),0);
+  const totHc = STATE.shops.reduce((s,sh)=>s+shopHomeCash(sh.id), 0);
+  const persDrain = personalWalletDrain();
+  const personalWallet = Math.max(0, totHc - persDrain);
+  const netPos = personalWallet + totalOnline + totalUd - totalLiab;
+
+  // Today's DCs
+  const todayDCs = STATE.dayClose.filter(r => r.date===today && !r.deleted);
+  const totalSale = todayDCs.reduce((s,r)=>s+(r.sale||0),0);
+  const totalProfit = todayDCs.reduce((s,r)=>s+(r.profit||0),0);
+
+  const nf = n => '₹' + (parseFloat(n)||0).toLocaleString('en-IN');
+
+  const remDueToday = (STATE.reminders||[]).filter(r => daysUntil(r.dueDate) <= 0);
+  const remDue7 = (STATE.reminders||[]).filter(r => { const d = daysUntil(r.dueDate); return d > 0 && d <= 7; });
+  const overdueBills = STATE.outflows.filter(o => o.status==='Pending' && o.dueDate && o.dueDate < today).length;
+
+  let msg = `📊 *JMD Traders — Daily Summary*\n📅 ${todayFmt}\n\n`;
+
+  if (todayDCs.length) {
+    msg += `━━━ TODAY'S DAY CLOSE ━━━\n`;
+    todayDCs.forEach(r => {
+      msg += `🛍️ ${r.shopName||shopName(r.shopId)}: Sale ${nf(r.sale)} | Profit ${nf(r.profit||0)}\n`;
+    });
+    msg += `━━━━━━━━━━━━━━━━━\n📈 Total Sale: *${nf(totalSale)}*\n💰 Total Profit: *${nf(totalProfit)}*\n\n`;
+  } else {
+    msg += `━━━ TODAY'S DAY CLOSE ━━━\n_No day close submitted yet_\n\n`;
+  }
+
+  msg += `━━━ APNA PAISA ━━━\n`;
+  msg += `👛 Personal Wallet: ${nf(personalWallet)}\n`;
+  msg += `📱 GPay / Online: ${nf(totalOnline)}\n`;
+  msg += `👥 Udhaari Due: ${nf(totalUd)}\n`;
+  msg += `📄 Bills Pending: ${nf(totalLiab)}\n`;
+  msg += `🏦 Loans Pending: ${nf(pendLoanAmt)}\n`;
+  msg += `_💵 Counter Cash (working capital): ${nf(totalGalla)}_\n\n`;
+
+  if (remDueToday.length || remDue7.length || overdueBills) {
+    msg += `━━━ ALERTS ━━━\n`;
+    if (remDueToday.length) msg += `🔴 Payments due today/overdue: ${remDueToday.length}\n`;
+    if (remDue7.length)     msg += `🟡 Due in next 7 days: ${remDue7.length}\n`;
+    if (overdueBills)       msg += `⚠️ Overdue bills: ${overdueBills}\n`;
+    // Details of first 3 due-today reminders
+    if (remDueToday.length) {
+      msg += `\n_Urgent:_\n`;
+      remDueToday.slice(0,5).forEach(r => {
+        const du = daysUntil(r.dueDate);
+        const label = du===0 ? 'due today' : `${Math.abs(du)}d overdue`;
+        msg += `• ${r.name} — ${nf(r.amount)} (${label})\n`;
+      });
+    }
+    msg += `\n`;
+  }
+
+  msg += `💼 *Net Position: ${nf(netPos)}*\n\n`;
+  msg += `_Sent from JMD Traders Command Center_`;
+
+  return msg;
+}
+
+function openWaShareModal() {
+  const msg = buildDailySummary();
+  $('wa-msg').value = msg;
+  // Populate saved contacts
+  const chipWrap = $('wa-contacts-chips');
+  const contacts = STATE.waContacts || [];
+  if (contacts.length) {
+    $('wa-contacts-wrap').style.display = '';
+    chipWrap.innerHTML = contacts.map((c,i) => `
+      <button class="btn btn-ghost btn-xs" style="display:inline-flex;align-items:center;gap:5px;" onclick="pickWaContact('${c.phone}')">
+        <i class="fa-brands fa-whatsapp" style="color:#25D366;"></i> ${c.name||c.phone}
+        <span class="modal-close" style="font-size:14px;margin-left:4px;padding:0 4px;" onclick="event.stopPropagation();removeWaContact(${i})">×</span>
+      </button>`).join('');
+  } else {
+    $('wa-contacts-wrap').style.display = 'none';
+    chipWrap.innerHTML = '';
+  }
+  $('wa-phone').value = '';
+  openModal('modal-wa-share');
+}
+
+function pickWaContact(phone) { $('wa-phone').value = phone; }
+
+function saveWaContact() {
+  const phone = ($('wa-phone').value||'').replace(/[^0-9]/g,'');
+  if (!phone) { toast('Phone number enter karo', 'error'); return; }
+  const name = prompt('Contact ka naam kya rakhe?', 'Partner');
+  if (!name) return;
+  STATE.waContacts = STATE.waContacts || [];
+  if (STATE.waContacts.find(c=>c.phone===phone)) { toast('Ye number pehle se saved hai', 'info'); return; }
+  STATE.waContacts.unshift({ name, phone });
+  saveStateLocal();
+  toast(`Saved: ${name}`);
+  openWaShareModal(); // refresh chips
+}
+
+function removeWaContact(idx) {
+  if (!STATE.waContacts) return;
+  const c = STATE.waContacts[idx];
+  if (!c) return;
+  if (!confirm(`Remove ${c.name}?`)) return;
+  STATE.waContacts.splice(idx,1);
+  saveStateLocal();
+  openWaShareModal();
+}
+
+function copyWaMessage() {
+  const txt = $('wa-msg').value;
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(txt).then(
+      () => toast('Message copied — paste anywhere', 'success'),
+      () => fallbackCopy(txt)
+    );
+  } else fallbackCopy(txt);
+}
+function fallbackCopy(txt) {
+  const ta = document.createElement('textarea');
+  ta.value = txt; document.body.appendChild(ta); ta.select();
+  try { document.execCommand('copy'); toast('Message copied', 'success'); }
+  catch(e){ toast('Copy failed — please copy manually', 'error'); }
+  ta.remove();
+}
+
+function sendWhatsapp() {
+  const msg   = $('wa-msg').value;
+  const phone = ($('wa-phone').value||'').replace(/[^0-9]/g,'');
+  const encoded = encodeURIComponent(msg);
+  const url = phone ? `https://wa.me/${phone}?text=${encoded}` : `https://wa.me/?text=${encoded}`;
+  window.open(url, '_blank');
+  closeModal('modal-wa-share');
+  toast('WhatsApp opened — recipient select karo aur send karo', 'success');
+}
+
+// ─── Home Expenses Donut Chart ────────────────────────────────
+let _heDonut = null;
+function renderHomeExpenseDonut() {
+  const canvas = $('he-donut'); if (!canvas || typeof Chart === 'undefined') return;
+  const ym = new Date().toISOString().slice(0,7);
+  const monthList = (STATE.homeExpenses||[]).filter(e => (e.date||'').startsWith(ym));
+  if (_heDonut) { _heDonut.destroy(); _heDonut = null; }
+  if (!monthList.length) {
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.fillStyle = '#8888a8'; ctx.font = '12px Inter, sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText('No expenses this month', canvas.width/2, canvas.height/2);
+    const tc = $('he-top-cats'); if (tc) tc.innerHTML = '<div style="font-size:11px;color:var(--muted);text-align:center;padding:24px 0;">No data yet</div>';
+    return;
+  }
+  const byCat = {};
+  monthList.forEach(e => {
+    byCat[e.category] = (byCat[e.category]||0) + (e.amount||0);
+  });
+  const cats = Object.keys(byCat).sort((a,b)=>byCat[b]-byCat[a]);
+  const values = cats.map(c => byCat[c]);
+  const colors = cats.map(c => HE_CAT_COLORS[c] || '#8888a8');
+  const total = values.reduce((s,v)=>s+v,0);
+
+  _heDonut = new Chart(canvas, {
+    type: 'doughnut',
+    data: {
+      labels: cats,
+      datasets: [{
+        data: values,
+        backgroundColor: colors,
+        borderColor: '#13131a',
+        borderWidth: 2,
+        hoverOffset: 6
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false, cutout: '65%',
+      plugins: {
+        legend: { position: 'right', labels: { color:'#8888a8', font:{size:11,family:'Inter'}, boxWidth:10, padding:8 } },
+        tooltip: {
+          callbacks: {
+            label: (ctx) => {
+              const v = ctx.parsed;
+              const pct = total ? Math.round(v/total*100) : 0;
+              return `${ctx.label}: ₹${v.toLocaleString('en-IN')} (${pct}%)`;
+            }
+          }
+        }
+      }
+    }
+  });
+
+  // Top categories list
+  const tc = $('he-top-cats');
+  if (tc) {
+    tc.innerHTML = cats.slice(0,5).map(c => {
+      const v = byCat[c];
+      const pct = total ? Math.round(v/total*100) : 0;
+      return `<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid rgba(35,35,52,0.5);">
+        <span style="width:10px;height:10px;border-radius:50%;background:${HE_CAT_COLORS[c]||'#8888a8'};flex-shrink:0;"></span>
+        <span style="font-size:12.5px;font-weight:600;flex:1;">${c}</span>
+        <span class="mono" style="font-size:12px;color:var(--bad);">${fmt(v)}</span>
+        <span class="badge badge-gray" style="padding:1px 6px;min-width:36px;text-align:center;">${pct}%</span>
+      </div>`;
+    }).join('') + `<div style="display:flex;justify-content:space-between;padding:10px 0 2px;">
+        <span style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;">Total</span>
+        <span class="mono" style="font-size:14px;font-weight:800;color:var(--bad);">${fmt(total)}</span>
+      </div>`;
+  }
+}
+
+// ─── Reminders (Fixed Payments) ─────────────────────────────────
+const REM_CAT_COLORS = {
+  EMI:'#7c5cfc', Rent:'#f97316', Electricity:'#f59e0b', Maintenance:'#06b6d4',
+  Subscription:'#a855f7', Insurance:'#3b82f6', Loan:'#ef4444',
+  Grocery:'#22c55e', Fuel:'#f472b6', Misc:'#8888a8'
+};
+
+function daysUntil(dateStr) {
+  if (!dateStr) return null;
+  const today = new Date(); today.setHours(0,0,0,0);
+  const d = new Date(dateStr); d.setHours(0,0,0,0);
+  return Math.round((d - today) / 86400000);
+}
+
+function openAddReminderModal(id) {
+  $('rem-id').value = id || '';
+  $('reminder-modal-title').firstChild.textContent = id ? 'Edit Reminder ' : 'Add Fixed Payment Reminder ';
+  if (id) {
+    const r = STATE.reminders.find(x=>x.id===id);
+    if (r) {
+      $('rem-name').value = r.name;
+      $('rem-cat').value  = r.category;
+      $('rem-amt').value  = r.amount;
+      $('rem-date').value = r.dueDate;
+      $('rem-repeat').value = r.repeat || 'monthly';
+      $('rem-note').value = r.note||'';
+    }
+  } else {
+    $('rem-name').value=''; $('rem-amt').value=''; $('rem-note').value='';
+    $('rem-cat').value='EMI'; $('rem-repeat').value='monthly';
+    if (!$('rem-date').value) $('rem-date').value = todayStr();
+  }
+  openModal('modal-add-reminder');
+}
+
+function saveReminder() {
+  const id   = $('rem-id').value;
+  const name = $('rem-name').value.trim();
+  const cat  = $('rem-cat').value;
+  const amt  = parseFloat($('rem-amt').value)||0;
+  const date = $('rem-date').value;
+  const rep  = $('rem-repeat').value;
+  const note = $('rem-note').value.trim();
+  if (!name || !amt || !date) { toast('Name, amount aur due date chahiye', 'error'); return; }
+
+  if (id) {
+    const r = STATE.reminders.find(x=>x.id===id);
+    if (r) Object.assign(r, { name, category:cat, amount:amt, dueDate:date, repeat:rep, note });
+    auditLog('REMINDER', `[UPDATE] ${name} — ${fmt(amt)} due ${fmtDate(date)}`);
+  } else {
+    STATE.reminders.unshift({ id:newId('R'), name, category:cat, amount:amt, dueDate:date, repeat:rep, note });
+    auditLog('REMINDER', `Added: ${name} — ${fmt(amt)} due ${fmtDate(date)} [${rep}]`);
+  }
+  saveStateLocal(); renderReminders(); updateBadges();
+  closeModal('modal-add-reminder');
+  toast(id ? `Reminder updated — ${name}` : `Reminder added — ${name}`);
+}
+
+function deleteReminder(id) {
+  const idx = STATE.reminders.findIndex(x=>x.id===id);
+  if (idx < 0) return;
+  const r = STATE.reminders[idx];
+  if (!confirm(`Delete reminder "${r.name}"?`)) return;
+  STATE.reminders.splice(idx,1);
+  auditLog('REMINDER', `Deleted: ${r.name} — ${fmt(r.amount)}`);
+  saveStateLocal(); renderReminders(); updateBadges();
+  toast('Reminder delete');
+}
+
+let activeReminderId = null;
+function openPayReminderModal(id) {
+  const r = STATE.reminders.find(x=>x.id===id); if(!r) return;
+  activeReminderId = id;
+  const du = daysUntil(r.dueDate);
+  const dueLabel = du===0?'Today':du<0?`${Math.abs(du)} days overdue`:`in ${du} days`;
+  $('pay-rem-info').innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;">
+      <div>
+        <div style="font-size:14px;font-weight:700;">${r.name}</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:3px;display:flex;gap:8px;">
+          <span class="badge" style="background:${REM_CAT_COLORS[r.category]||'#8888a8'}22;color:${REM_CAT_COLORS[r.category]||'#8888a8'};border:1px solid ${REM_CAT_COLORS[r.category]||'#8888a8'}44;padding:1px 6px;">${r.category}</span>
+          <span><i class="fa-solid fa-calendar"></i> ${fmtDate(r.dueDate)} <span style="color:${du<0?'var(--bad)':du<=3?'var(--warn)':'var(--muted)'};">(${dueLabel})</span></span>
+        </div>
+      </div>
+      <div class="mono" style="font-size:18px;font-weight:800;color:var(--bad);">${fmt(r.amount)}</div>
+    </div>`;
+  $('pr-amt').value = r.amount;
+  chipPick('pr-mode', 'GPay');
+  chipPick('pr-from', 'PERSONAL');
+  openModal('modal-pay-reminder');
+}
+
+function confirmReminderPaid() {
+  const r = STATE.reminders.find(x=>x.id===activeReminderId); if(!r) return;
+  const amt  = parseFloat($('pr-amt').value)||r.amount;
+  const mode = chipValue('pr-mode') || 'GPay';
+  const from = chipValue('pr-from') || 'PERSONAL';
+  if (amt<=0) { toast('Amount enter karo', 'error'); return; }
+
+  // Deduct from shop if needed
+  if (from !== 'PERSONAL') {
+    const sh = STATE.shops.find(s=>s.id===from);
+    if (sh) {
+      const useGpay = (mode==='GPay' || mode==='Bank Transfer');
+      const available = useGpay ? sh.online : sh.galla;
+      if (available < amt && !confirm(`${sh.name} ${useGpay?'GPay':'Cash'} sirf ${fmt(available)} — phir bhi log karein?`)) return;
+      if (useGpay) sh.online = Math.max(0, sh.online - amt);
+      else sh.galla = Math.max(0, sh.galla - amt);
+    }
+  }
+
+  // Create expense record
+  STATE.homeExpenses.unshift({
+    id:newId('HE'), desc:r.name, category:r.category, amount:amt,
+    date: todayStr(), mode, paidFrom:from, note:`Auto from reminder: ${r.name}`
+  });
+  auditLog('HOME_EXPENSE', `[REMINDER PAID] ${r.name} — ${fmt(amt)} via ${mode} from ${from==='PERSONAL'?'Personal':shopName(from)}`);
+
+  // Advance recurring dueDate, else remove
+  if (r.repeat && r.repeat !== 'none') {
+    const d = new Date(r.dueDate);
+    if (r.repeat==='monthly')      d.setMonth(d.getMonth()+1);
+    else if (r.repeat==='quarterly') d.setMonth(d.getMonth()+3);
+    else if (r.repeat==='yearly')  d.setFullYear(d.getFullYear()+1);
+    r.dueDate = d.toISOString().split('T')[0];
+    r.lastPaidOn = todayStr();
+  } else {
+    const idx = STATE.reminders.findIndex(x=>x.id===r.id);
+    if (idx>=0) STATE.reminders.splice(idx,1);
+  }
+
+  saveStateLocal(); renderReminders(); renderHomeExpenses(); renderDashboard(); updateBadges();
+  closeModal('modal-pay-reminder');
+  toast(`${r.name} paid — ${fmt(amt)} logged as expense`);
+}
+
+function renderReminders() {
+  const list = (STATE.reminders||[]).slice().sort((a,b)=>(a.dueDate||'').localeCompare(b.dueDate||''));
+  // Summary tiles: due today, this week, monthly total
+  const dueToday = list.filter(r => daysUntil(r.dueDate) <= 0).length;
+  const dueSoon  = list.filter(r => { const d = daysUntil(r.dueDate); return d > 0 && d <= 7; }).length;
+  const monthlyCommitment = list.filter(r=>r.repeat==='monthly').reduce((s,r)=>s+(r.amount||0),0);
+  const summary = $('reminder-summary');
+  if (summary) {
+    summary.innerHTML = `
+      <div class="stat-tile" style="border-left:3px solid var(--bad);">
+        <div class="st-label"><i class="fa-solid fa-triangle-exclamation" style="color:var(--bad);"></i>Due Today/Overdue</div>
+        <div class="st-val" style="color:var(--bad);">${dueToday}</div>
+      </div>
+      <div class="stat-tile" style="border-left:3px solid var(--warn);">
+        <div class="st-label"><i class="fa-solid fa-clock" style="color:var(--warn);"></i>Next 7 Days</div>
+        <div class="st-val" style="color:var(--warn);">${dueSoon}</div>
+      </div>
+      <div class="stat-tile" style="border-left:3px solid var(--accent);">
+        <div class="st-label"><i class="fa-solid fa-repeat" style="color:var(--accent);"></i>Monthly Commitment</div>
+        <div class="st-val" style="color:var(--accent);">${fmt(monthlyCommitment)}</div>
+      </div>`;
+  }
+
+  const cont = $('reminder-list');
+  if (!cont) return;
+  if (!list.length) {
+    cont.innerHTML = `<div class="empty" style="padding:24px 20px;"><div class="empty-icon"><i class="fa-solid fa-bell-slash"></i></div>Koi fixed payment reminder set nahi — "Add Reminder" click karke start karo</div>`;
+    return;
+  }
+  cont.innerHTML = list.map(r => {
+    const du = daysUntil(r.dueDate);
+    const cls = du < 0 ? 'overdue' : du === 0 ? 'due-today' : du <= 7 ? 'due-soon' : '';
+    const badgeCls = du < 0 ? 'style="background:rgba(239,68,68,0.18);color:var(--bad);"' :
+                     du === 0 ? 'style="background:rgba(239,68,68,0.18);color:var(--bad);"' :
+                     du <= 3 ? 'style="background:rgba(245,158,11,0.18);color:var(--warn);"' :
+                     du <= 7 ? 'style="background:rgba(245,158,11,0.12);color:var(--warn);"' :
+                     'style="background:rgba(136,136,168,0.15);color:var(--muted);"';
+    const badgeText = du < 0 ? `${Math.abs(du)}d overdue` : du === 0 ? 'DUE TODAY' : `in ${du}d`;
+    return `<div class="rem-card ${cls}">
+      <span style="width:9px;height:9px;border-radius:50%;background:${REM_CAT_COLORS[r.category]||'#8888a8'};flex-shrink:0;"></span>
+      <div style="flex:1;min-width:0;">
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span style="font-size:13px;font-weight:700;">${r.name}</span>
+          <span class="badge" style="background:${REM_CAT_COLORS[r.category]||'#8888a8'}22;color:${REM_CAT_COLORS[r.category]||'#8888a8'};border:1px solid ${REM_CAT_COLORS[r.category]||'#8888a8'}44;padding:1px 6px;">${r.category}</span>
+          ${r.repeat && r.repeat!=='none' ? `<span class="badge badge-purple" style="padding:1px 6px;"><i class="fa-solid fa-repeat" style="font-size:8px;margin-right:3px;"></i>${r.repeat}</span>` : ''}
+        </div>
+        <div style="font-size:10.5px;color:var(--muted);margin-top:3px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+          <span><i class="fa-solid fa-calendar" style="margin-right:3px;"></i>${fmtDate(r.dueDate)}</span>
+          <span class="rem-days-badge" ${badgeCls}>${badgeText}</span>
+          ${r.note?`<span title="${r.note}"><i class="fa-solid fa-note-sticky"></i> ${r.note.length>30?r.note.slice(0,30)+'…':r.note}</span>`:''}
+        </div>
+      </div>
+      <div class="mono" style="font-size:15px;font-weight:800;color:${du<=3?'var(--bad)':'var(--jtext)'};flex-shrink:0;text-align:right;min-width:80px;">${fmt(r.amount)}</div>
+      <div style="display:flex;gap:5px;flex-shrink:0;">
+        <button class="btn btn-good btn-xs" onclick="openPayReminderModal('${r.id}')" title="Mark as paid"><i class="fa-solid fa-check"></i> Paid</button>
+        <button class="btn btn-ghost btn-xs" onclick="openAddReminderModal('${r.id}')" title="Edit"><i class="fa-solid fa-pen"></i></button>
+        <button class="btn btn-bad btn-xs" onclick="deleteReminder('${r.id}')" title="Delete"><i class="fa-solid fa-trash"></i></button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ─── Audit ───────────────────────────────────────────────────────
+function renderAudit() {
+  const filter=$('audit-filter')?.value||'all';
+  let list=[...STATE.audit];
+  if(filter!=='all') list=list.filter(a=>a.action===filter);
+  $('audit-list').innerHTML = list.length ? list.map(a => {
+    const c=ACTION_COLORS[a.action]||'#8888a8';
+    const icon=ACTION_ICONS[a.action]||'fa-circle-info';
+    return `<div class="audit-row">
+      <div class="audit-icon" style="background:${c}1a;border:1px solid ${c}40;">
+        <i class="fa-solid ${icon}" style="color:${c};"></i>
+      </div>
+      <div class="audit-body">
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:3px;">
+          <span class="audit-action" style="background:${c}1a;color:${c};border:1px solid ${c}40;">${a.action}</span>
+          <span class="audit-ts">${a.ts}</span>
+        </div>
+        <div class="audit-summary">${a.summary}</div>
+      </div>
+    </div>`;
+  }).join('') : '<div class="empty">No audit records yet</div>';
+}
+
+// ─── Settings ────────────────────────────────────────────────────
+function renderSettings() {
+  const inp=$('sheet-url-inp'); if(inp) inp.value=STATE.sheetUrl||'';
+  const managed = $('settings-managed');
+  const editable = $('settings-editable');
+  if (INBUILT_SHEET_URL) {
+    if (managed)  managed.style.display  = '';
+    if (editable) editable.style.display = 'none';
+    const mv = $('settings-managed-url');
+    if (mv) mv.textContent = INBUILT_SHEET_URL.length > 60
+        ? INBUILT_SHEET_URL.slice(0, 30) + '…' + INBUILT_SHEET_URL.slice(-20)
+        : INBUILT_SHEET_URL;
+  } else {
+    if (managed)  managed.style.display  = 'none';
+    if (editable) editable.style.display = '';
+  }
+}
+function saveSheetUrl() {
+  const url=$('sheet-url-inp').value.trim();
+  STATE.sheetUrl=url;
+  saveStateLocal(); updateSyncUI(); toast(url?'Sheet URL save ho gayi':'Sheet URL clear ho gayi');
+}
+function clearSheetUrl() { $('sheet-url-inp').value=''; STATE.sheetUrl=''; saveStateLocal(); updateSyncUI(); toast('Sheet URL clear'); }
+async function testSheetConnection() {
+  const url = effectiveSheetUrl();
+  if(!url){ toast('Pehle URL save karo','error'); return; }
+  try {
+    const res=await fetch(url+'?action=ping');
+    const json=await res.json();
+    toast(json.success?'Connection OK — Sheet connected!':'Sheet error: '+json.error, json.success?'success':'error');
+  } catch(e){ toast('Connection fail — URL check karo','error'); }
+}
+function changePin() {
+  const cur=$('cur-pin').value, newp=$('new-pin').value;
+  if(cur!==(STATE.pin||'1234')){ toast('Current PIN galat hai','error'); return; }
+  if(newp.length<4){ toast('PIN 4 digit ka hona chahiye','error'); return; }
+  STATE.pin=newp; saveStateLocal(); $('cur-pin').value=''; $('new-pin').value='';
+  toast('PIN change ho gaya!');
+}
+function resetAll() { STATE=defaultState(); saveStateLocal(); location.reload(); }
+
+// ─── Google Sheet Sync ───────────────────────────────────────────
+function updateSyncUI() {
+  const dot=$('sync-dot'), lbl=$('sync-label');
+  const url = effectiveSheetUrl();
+  if(!url){ dot.className='sync-dot'; dot.style.background='#444460'; lbl.textContent='No Sheet'; return; }
+  dot.className='sync-dot'; dot.style.background='var(--good)';
+  lbl.textContent = INBUILT_SHEET_URL ? 'Team Sync' : 'Connected';
+}
+let syncTimer=null;
+function pushToSheet() {
+  const url = effectiveSheetUrl();
+  if(!url) return;
+  clearTimeout(syncTimer);
+  syncTimer=setTimeout(async()=>{
+    const dot=$('sync-dot'), lbl=$('sync-label');
+    dot.className='sync-dot syncing'; lbl.textContent='Syncing...';
+    try {
+      await fetch(url,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'save',data:STATE}),mode:'no-cors'});
+      dot.className='sync-dot'; dot.style.background='var(--good)';
+      lbl.textContent = INBUILT_SHEET_URL ? 'Team Synced' : 'Synced';
+    } catch(e){ dot.className='sync-dot error'; lbl.textContent='Sync Error'; }
+  }, 800);
+}
+async function pullFromSheet() {
+  const url = effectiveSheetUrl();
+  if(!url) return;
+  try {
+    const res=await fetch(url+'?action=load');
+    const json=await res.json();
+    if(json&&json.data){
+      Object.assign(STATE,json.data);
+      if (INBUILT_SHEET_URL) STATE.sheetUrl = INBUILT_SHEET_URL; // preserve override
+      localStorage.setItem('jmd_state',JSON.stringify(STATE));
+      initDcForms(); renderAll();
+      toast('Sheet se latest data load hua','info');
+    }
+  } catch(e){}
+  updateSyncUI();
+}
+function manualSync() {
+  const icon=$('sync-icon');
+  icon.style.animation='spin 0.8s linear infinite';
+  if(!document.getElementById('_spin')){ const s=document.createElement('style'); s.id='_spin'; s.textContent='@keyframes spin{to{transform:rotate(360deg)}}'; document.head.appendChild(s); }
+  setTimeout(()=>{ icon.style.animation=''; toast('Synced!','info'); },1000);
+  pushToSheet();
+}
+
+// ─── Set today's date on date inputs ────────────────────────────
+window.addEventListener('DOMContentLoaded', () => {
+  const today=todayStr();
+  document.querySelectorAll('input[type="date"]').forEach(el=>{ if(!el.value) el.value=today; });
+  $('pin-screen').style.display='flex'; $('app').style.display='none';
+  updateSyncUI();
+});
+</script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a189100effe40e6e',t:'MTc4MzYxODI5MQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><iframe height="1" width="1" style="position: absolute; top: 0px; left: 0px; border-width: medium; border-style: none; border-color: currentcolor; border-image: initial; visibility: hidden;" src="./JMD Traders — Command Center_files/saved_resource.html"></iframe><script defer="" src="./JMD Traders — Command Center_files/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon="{&quot;version&quot;:&quot;2024.11.0&quot;,&quot;token&quot;:&quot;7f7b0fd8732c4326aae4b9d58d5c514a&quot;,&quot;server_timing&quot;:{&quot;name&quot;:{&quot;cfCacheStatus&quot;:true,&quot;cfEdge&quot;:true,&quot;cfExtPri&quot;:true,&quot;cfL4&quot;:true,&quot;cfOrigin&quot;:true,&quot;cfSpeedBrain&quot;:true},&quot;location_startswith&quot;:null}}" crossorigin="anonymous"></script>
+
+
+<div id="give-freely-root-ejkiikneibegknkgimmihdpcbcedgmpo" class="give-freely-root" data-extension-id="ejkiikneibegknkgimmihdpcbcedgmpo" data-extension-name="Volume Booster" style="display: block;"><template shadowrootmode="open"><style>
+  :host {
+    all: initial;
+  }
+
+  .gf-scroll-remove::-webkit-scrollbar {
+    border-radius-bottom-right: 15px;
+  }
+
+  button {
+    cursor: pointer;
+    transition: transform 0.1s ease;
+  }
+
+  button:active {
+    transform: scale(0.98);
+  }
+
+  .give-freely-close-button:hover {
+    opacity: 0.7;
+  }
+
+  input[type="radio"] {
+    margin-right: 8px;
+  }
+
+  hr {
+    border: none;
+    border-top: 1px solid #e5e5e5;
+    margin: 1em 0;
+  }
+
+  @media (max-width: 600px), (max-height: 480px) {
+    #give-freely-checkout-popup {
+      display: none !important;
+    }
+  }
+</style><div><div class="gf-app"></div></div></template></div><iframe frameborder="0" scrolling="no" style="background-color: transparent; border: 0px; display: none;" src="./JMD Traders — Command Center_files/saved_resource(1).html"></iframe><div id="GOOGLE_INPUT_CHEXT_FLAG" input="" input_stat="{&quot;tlang&quot;:true,&quot;tsbc&quot;:true,&quot;pun&quot;:true,&quot;mk&quot;:true,&quot;ss&quot;:true}" style="display: none;"></div><div style="position: relative;" id="zp-16-0-1-licdn-root-apollo_everywhere"><template shadowrootmode="open"><div class="zp apolloio-css-vars-reset x_lAIzV x_ktWFc" dir="ltr" data-has-tooltip-listener=""><div class="x_BJJxg" data-disable-focus-trap="true" data-testid="toast-container-bottom"></div><div class="x_KfhZL" aria-live="polite" aria-atomic="true" data-disable-focus-trap="true" data-testid="toast-container-top"></div><span data-name="tooltip-listener" aria-hidden="true" style="display: none;"></span></div> </template></div></body></html>
