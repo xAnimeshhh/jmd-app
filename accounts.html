@@ -1,15 +1,17 @@
 <!DOCTYPE html>
 <!-- saved from url=(0055)https://hi-chat-2581.preview.emergentagent.com/jmd.html -->
-<html lang="en" crxlauncher=""><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>JMD Traders — Command Center</title>
 <link rel="preconnect" href="https://fonts.googleapis.com/">
 <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
-<link href="./JMD Traders — Command Center_files/css2" rel="stylesheet">
-<script src="./JMD Traders — Command Center_files/saved_resource"></script><link type="text/css" rel="stylesheet" id="dark-mode-custom-link"><link type="text/css" rel="stylesheet" id="dark-mode-general-link"><style lang="en" type="text/css" id="dark-mode-custom-style"></style><style lang="en" type="text/css" id="dark-mode-native-style"></style><style lang="en" type="text/css" id="dark-mode-native-sheet"></style>
-<script src="./JMD Traders — Command Center_files/chart.umd.min.js.download"></script>
-<link rel="stylesheet" href="./JMD Traders — Command Center_files/all.min.css" crossorigin="anonymous">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js" onerror="var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js';document.head.appendChild(s);"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 <style>
 :root {
   --bg: #0a0a0f;
@@ -73,32 +75,22 @@ body { background: var(--bg); color: var(--jtext); font-family: 'Inter', sans-se
 .inp:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(124,92,252,0.15); }
 .inp::placeholder { color: #444460; }
 
-/* ── Custom Select Styling ── */
-select.inp {
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  cursor: pointer;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path fill='%237c5cfc' d='M0 0h10L5 6z'/></svg>");
-  background-repeat: no-repeat;
-  background-position: right 12px center;
-  padding-right: 30px;
-  transition: border-color 0.15s, box-shadow 0.15s;
-}
-select.inp:hover { border-color: var(--accent); }
-select.inp:focus { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path fill='%237c5cfc' d='M0 6h10L5 0z'/></svg>"); }
-select.inp option {
-  background: var(--panel2);
-  color: var(--jtext);
-  padding: 10px 12px;
-  font-family: 'Inter', sans-serif;
-  font-size: 13px;
-  border: none;
-}
-select.inp option:checked, select.inp option:hover {
-  background: linear-gradient(0deg, rgba(124,92,252,0.35), rgba(124,92,252,0.35));
-  color: #fff;
-}
+/* ── Custom Dropdown (replaces native <select> UI) ── */
+select.csel-native { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+.csel-wrap { position: relative; display: inline-block; }
+.csel-wrap.csel-block { display: block; width: 100%; }
+.csel-trigger { display: flex; align-items: center; justify-content: space-between; gap: 10px; cursor: pointer; text-align: left; font-family: 'Inter', sans-serif; white-space: nowrap; }
+.csel-trigger-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+.csel-trigger i { font-size: 9px; color: var(--accent); transition: transform 0.15s; flex-shrink: 0; }
+.csel-wrap.open .csel-trigger { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(124,92,252,0.15); }
+.csel-wrap.open .csel-trigger i { transform: rotate(180deg); }
+.csel-menu { position: absolute; top: calc(100% + 6px); left: 0; min-width: max(100%, 170px); width: max-content; max-width: min(300px, 90vw); max-height: 240px; overflow-y: auto; background: var(--panel); border: 1px solid var(--line); border-radius: 9px; box-shadow: 0 12px 32px rgba(0,0,0,0.45); z-index: 80; padding: 5px; display: none; }
+.csel-wrap.open .csel-menu { display: block; animation: csel-in 0.12s ease; }
+@keyframes csel-in { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+.csel-item { padding: 8px 10px; font-size: 12.5px; font-weight: 500; color: var(--jtext); border-radius: 6px; cursor: pointer; white-space: nowrap; display: flex; align-items: center; justify-content: space-between; gap: 8px; transition: background 0.1s; }
+.csel-item:hover { background: rgba(124,92,252,0.12); }
+.csel-item.on { color: var(--accent); font-weight: 700; background: rgba(124,92,252,0.1); }
+.csel-item.on::after { content: '\2713'; font-size: 11px; }
 
 /* ── Chip / Pill Toggle Group (Modern selectors) ── */
 .chip-group {
@@ -185,6 +177,37 @@ select.inp option:checked, select.inp option:hover {
 .stat-tile { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; }
 .stat-tile .st-label { font-size: 10px; color: var(--muted); font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 7px; display: flex; align-items: center; gap: 6px; }
 .stat-tile .st-val { font-family: 'JetBrains Mono', monospace; font-size: 20px; font-weight: 700; letter-spacing: -0.02em; }
+
+/* Monthly Summary card */
+.ms-card { overflow: hidden; background: linear-gradient(180deg, rgba(124,92,252,0.05), transparent 60%), var(--panel); }
+.ms-card-head { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; padding: 14px 18px; border-bottom: 1px solid var(--line); }
+.ms-title { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.07em; display: flex; align-items: center; gap: 7px; }
+.ms-title i { color: var(--accent); }
+.ms-monthnav { display: flex; align-items: center; gap: 10px; background: var(--panel2); border: 1px solid var(--line); border-radius: 8px; padding: 4px 6px; }
+.ms-monthnav button { background: none; border: none; color: var(--jtext); width: 24px; height: 24px; border-radius: 5px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 10px; transition: all 0.12s; }
+.ms-monthnav button:hover:not(:disabled) { background: rgba(124,92,252,0.16); color: var(--accent); }
+.ms-monthnav button:disabled { opacity: 0.28; cursor: not-allowed; }
+.ms-monthnav span { font-size: 12px; font-weight: 700; color: var(--jtext); min-width: 78px; text-align: center; }
+.ms-card-controls { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; padding: 12px 18px; border-bottom: 1px solid var(--line); }
+.ms-shop-tabs { display: flex; gap: 6px; flex-wrap: wrap; }
+.ms-shop-tab { background: transparent; border: 1px solid var(--line); border-radius: 20px; color: var(--muted); padding: 5px 13px; font-size: 11.5px; font-weight: 600; cursor: pointer; transition: all 0.12s; font-family: 'Inter', sans-serif; }
+.ms-shop-tab:hover { color: var(--jtext); border-color: var(--accent); }
+.ms-shop-tab.on { color: #fff; border-color: transparent; }
+.ms-mode-toggle { display: flex; gap: 3px; background: var(--panel2); border: 1px solid var(--line); border-radius: 8px; padding: 3px; }
+.ms-mode-btn { background: transparent; border: none; border-radius: 6px; color: var(--muted); padding: 5px 12px; font-size: 11px; font-weight: 700; cursor: pointer; transition: all 0.12s; font-family: 'Inter', sans-serif; }
+.ms-mode-btn:hover { color: var(--jtext); }
+.ms-mode-btn.on { background: var(--accent); color: #fff; }
+.ms-card-body { padding: 16px 18px; }
+.ms-hero { background: rgba(124,92,252,0.08); border: 1px solid rgba(124,92,252,0.24); border-radius: 10px; padding: 13px 16px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; }
+.ms-hero-label { font-size: 9.5px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px; font-weight: 700; }
+.ms-hero-val { font-size: 24px; font-weight: 800; color: var(--accent); letter-spacing: -0.02em; }
+.ms-hero-icon { font-size: 28px; color: rgba(124,92,252,0.35); }
+.ms-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+.ms-tile { background: var(--panel2); border: 1px solid var(--line); border-radius: 9px; padding: 12px 14px; }
+.ms-tile-label { font-size: 10px; color: var(--muted); font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 7px; display: flex; align-items: center; gap: 6px; }
+.ms-tile-val { font-family: 'JetBrains Mono', monospace; font-size: 19px; font-weight: 700; letter-spacing: -0.02em; }
+.ms-tile-sub { font-size: 10.5px; color: var(--muted); margin-top: 8px; border-top: 1px solid var(--line); padding-top: 7px; }
+@media (max-width: 640px) { .ms-grid { grid-template-columns: 1fr; } }
 
 /* ── Modal ── */
 .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); z-index: 100; display: none; align-items: center; justify-content: center; padding: 16px; }
@@ -316,6 +339,7 @@ select.inp option:checked, select.inp option:hover {
 /* ── Stat grid compact ── */
 .stat-grid-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 16px; }
 @media(max-width:640px){ .stat-grid-3 { grid-template-columns: repeat(2,1fr); } }
+@media(max-width:640px){ #profit-shop-breakdown { grid-template-columns: repeat(2,1fr) !important; } }
 .stat-tile { background: var(--panel); border: 1px solid var(--line); border-radius: 9px; padding: 11px 14px; }
 .stat-tile .st-label { font-size: 9.5px; color: var(--muted); font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 5px; display: flex; align-items: center; gap: 5px; }
 .stat-tile .st-val { font-family: 'JetBrains Mono', monospace; font-size: 18px; font-weight: 700; letter-spacing: -0.02em; }
@@ -359,12 +383,35 @@ hr.divider { border: none; border-top: 1px solid var(--line); margin: 14px 0; }
 .rem-card.due-today { border-left-color: var(--bad); background: linear-gradient(90deg, rgba(239,68,68,0.08), transparent 40%); }
 .rem-card.overdue { border-left-color: var(--bad); background: linear-gradient(90deg, rgba(239,68,68,0.12), transparent 45%); }
 .rem-days-badge { font-size: 10px; font-weight: 800; padding: 3px 8px; border-radius: 6px; letter-spacing: 0.04em; text-transform: uppercase; }
+
+/* ── Responsive Overflow Fixes ──────────────────────────────────── */
+html,body{overflow-x:hidden;max-width:100%;}
+#main{overflow-x:hidden;}
+.tr-inner-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;align-items:flex-end;}
+@media(max-width:768px){.tr-inner-grid{grid-template-columns:1fr 1fr;}}
+@media(max-width:768px){.tr-inner-grid>.tr-btn-cell{grid-column:1/-1;}}
+@media(max-width:480px){.tr-inner-grid{grid-template-columns:1fr;}}
+@media(max-width:640px){#he-chart-wrap{grid-template-columns:1fr!important;}}
+@media(max-width:480px){#he-summary{grid-template-columns:1fr 1fr!important;}#reminder-summary{grid-template-columns:1fr 1fr!important;}}
+
+/* ── Custom Confirm / Prompt Modals ─────────────────────────────── */
+.jmd-modal{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(10,8,20,.78);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);opacity:0;pointer-events:none;transition:opacity .18s ease;}
+.jmd-modal.open{opacity:1;pointer-events:all;}
+.jmd-modal-box{background:linear-gradient(145deg,#1e1a38,#131029);border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:28px 24px 22px;max-width:360px;width:calc(100% - 32px);box-shadow:0 32px 80px rgba(0,0,0,.65),0 0 0 1px rgba(140,90,255,.12),inset 0 1px 0 rgba(255,255,255,.06);animation:jmd-pop .22s cubic-bezier(.34,1.56,.64,1) both;}
+@keyframes jmd-pop{from{transform:scale(.86) translateY(12px);opacity:0;}to{transform:scale(1) translateY(0);opacity:1;}}
+.jmd-modal-icon{font-size:40px;text-align:center;margin-bottom:12px;line-height:1;filter:drop-shadow(0 4px 14px rgba(255,190,60,.35));}
+.jmd-modal-title{font-size:16px;font-weight:800;text-align:center;margin-bottom:8px;color:#ede8ff;letter-spacing:-.01em;}
+.jmd-modal-msg{font-size:13px;color:#9f96c0;line-height:1.65;text-align:center;margin-bottom:22px;}
+.jmd-modal-msg strong{color:#e0d8ff;}
+.jmd-modal-row{display:flex;gap:10px;}
+.jmd-modal-row .btn{flex:1;height:40px;font-size:13px;font-weight:700;min-width:0;}
+.jmd-modal-input{width:100%;box-sizing:border-box;margin-bottom:16px;background:rgba(255,255,255,.06)!important;border-color:rgba(255,255,255,.15)!important;}
 </style>
-<style>*, ::before, ::after{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/* ! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com */*,::after,::before{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}::after,::before{--tw-content:''}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0;padding:0}legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}</style><style></style><link href="chrome-extension://alhgpfoeiimagjlnfekdhkjlkiomcapa/js/css/inject.css" rel="stylesheet" type="text/css" data-apio="true"><link data-apio="true" rel="stylesheet" type="text/css" href="chrome-extension://alhgpfoeiimagjlnfekdhkjlkiomcapa/js/css/a_chrome-extension_inject_global_module_scss.css"><link data-apio="true" rel="stylesheet" type="text/css" href="chrome-extension://alhgpfoeiimagjlnfekdhkjlkiomcapa/js/css/a_chrome-extension_inject_core_components_OpenPopupButton_tsx.css"></head>
+<style>*, ::before, ::after{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/* ! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com */*,::after,::before{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}::after,::before{--tw-content:''}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0;padding:0}legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}</style></head>
 <body>
 
 <!-- ═══════════════ PIN SCREEN ═══════════════ -->
-<div class="zp-open-popup-button"><div class="zp apolloio-css-vars-reset x_lAIzV x_ktWFc" dir="ltr"><div class="x_R61yl zp-16-0-1-zp-fixed"><img alt="Apollo.io" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgZmlsbD0ibm9uZSIgdmlld0JveD0iMCAwIDQwIDQwIj48cGF0aCBmaWxsPSIjZWJmMjEyIiBkPSJtMjEuNDY2IDUuMDcxLjAwNCAxMC45MTVjLjAwMSAxLjcyNS0xLjgzNCAyLjgzLTMuMzU4IDIuMDI0TDcuMTcgMTIuMjIzYTE1LjEgMTUuMSAwIDAgMSAzLjEtMy42NGw4LjU4MiA3LjkzMmMuNDU1LjQyIDEuMTcyLS4wMzYuOTg1LS42MjZMMTYuNTA5IDUuNDFhMTUgMTUgMCAwIDEgNC45NTYtLjMzOE0xOC40OTYgMzQuOTI1bC0uMDA1LTEwLjg2YzAtMS43MjQgMS44MzQtMi44MyAzLjM1OS0yLjAyM2wxMC45NDYgNS43OWExNSAxNSAwIDAgMS0zLjExNiAzLjYyNmwtOC41Ny03LjkyMWMtLjQ1NS0uNDItMS4xNzIuMDM1LS45ODUuNjI1bDMuMzE2IDEwLjQ0MWExNSAxNSAwIDAgMS00Ljk0NS4zMjJNMjMuNDkyIDE4Ljg5OCAzMS40NCAxMC4zYTE1IDE1IDAgMCAwLTMuNjQtMy4xMTNsLTUuODA0IDEwLjk3MmMtLjgwNiAxLjUyNC4zIDMuMzU5IDIuMDI0IDMuMzU4bDEwLjkwNS0uMDA1YTE1LjIgMTUuMiAwIDAgMC0uMzI0LTQuOTU4bC0xMC40ODQgMy4zM2MtLjU5LjE4Ny0xLjA0NS0uNTMtLjYyNS0uOTg1TTUuMDcgMTguNTRsMTAuODcyLS4wMDRjMS43MjUgMCAyLjgzIDEuODM0IDIuMDI0IDMuMzU4TDEyLjE5MiAzMi44MWExNSAxNSAwIDAgMS0zLjYyNy0zLjEwM2w3LjkwNi04LjU1M2MuNDItLjQ1NS0uMDM2LTEuMTcyLS42MjYtLjk4NUw1LjQwOCAyMy40ODRhMTUgMTUgMCAwIDEtLjMzNy00Ljk0MyIvPjwvc3ZnPg==" class="x_kJtSQ"></div></div></div><div id="pin-screen" style="display: flex;">
+<div id="pin-screen" style="display: flex;">
   <div style="text-align:center;">
     <div style="font-size:24px;font-weight:800;letter-spacing:-0.03em;margin-bottom:4px;">JMD Traders</div>
     <div style="font-size:12px;color:var(--muted);margin-bottom:32px;">Enter PIN to access</div>
@@ -489,6 +536,75 @@ hr.divider { border: none; border-top: 1px solid var(--line); margin: 14px 0; }
           </div>
         </div>
 
+        <!-- Overall Profit -->
+        <div class="chart-card">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px;">
+            <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.07em;"><i class="fa-solid fa-sack-dollar" style="margin-right:5px;color:var(--accent);"></i>Overall Profit</div>
+            <div style="display:flex;gap:6px;" id="profit-period-toggle">
+              <button class="filter-btn on" data-period="today" onclick="setProfitPeriod('today')">Daily</button>
+              <button class="filter-btn" data-period="week" onclick="setProfitPeriod('week')">Weekly</button>
+              <button class="filter-btn" data-period="month" onclick="setProfitPeriod('month')">Monthly</button>
+              <button class="filter-btn" data-period="year" onclick="setProfitPeriod('year')">Yearly</button>
+            </div>
+          </div>
+          <div style="background:rgba(124,92,252,0.07);border:1px solid rgba(124,92,252,0.22);border-radius:9px;padding:12px 14px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;">
+            <div>
+              <div style="font-size:9.5px;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:3px;" id="profit-period-label">Today's Total Profit</div>
+              <div class="mono" style="font-size:22px;font-weight:800;color:var(--accent);" id="profit-total-val">₹0</div>
+            </div>
+            <i class="fa-solid fa-chart-line" style="font-size:26px;color:rgba(124,92,252,0.35);"></i>
+          </div>
+          <div id="profit-shop-breakdown" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;"></div>
+        </div>
+
+        <!-- Monthly Summary (consolidated, per-shop, data-bounded month nav) -->
+        <div class="card ms-card" style="margin-bottom:18px;">
+          <div class="ms-card-head">
+            <div class="ms-title"><i class="fa-solid fa-chart-column"></i> Monthly Summary</div>
+            <div class="ms-monthnav">
+              <button type="button" id="ms-prev-btn" onclick="msShiftMonth(-1)" title="Previous month with data"><i class="fa-solid fa-chevron-left"></i></button>
+              <span class="mono" id="ms-month-label-main">—</span>
+              <button type="button" id="ms-next-btn" onclick="msShiftMonth(1)" title="Next month with data"><i class="fa-solid fa-chevron-right"></i></button>
+            </div>
+          </div>
+          <div class="ms-card-controls">
+            <div class="ms-shop-tabs" id="ms-shop-tabs"></div>
+            <div class="ms-mode-toggle" id="ms-mode-toggle">
+              <button type="button" class="ms-mode-btn on" data-mode="Full" onclick="msSetMode('Full')">Full</button>
+              <button type="button" class="ms-mode-btn" data-mode="Home" onclick="msSetMode('Home')">Home</button>
+              <button type="button" class="ms-mode-btn" data-mode="GP" onclick="msSetMode('GP')">GPay</button>
+            </div>
+          </div>
+          <div class="ms-card-body">
+            <div class="ms-hero">
+              <div>
+                <div class="ms-hero-label" id="ms-sale-label">Monthly Sale — All Shops</div>
+                <div class="ms-hero-val mono" id="ms-sale-val">₹0</div>
+              </div>
+              <i class="fa-solid fa-cash-register ms-hero-icon"></i>
+            </div>
+            <div class="ms-grid">
+              <div class="ms-tile">
+                <div class="ms-tile-label"><i class="fa-solid fa-scale-balanced" style="color:var(--accent2);"></i> Net Bal (Home | Bank)</div>
+                <div class="ms-tile-val" style="font-size:16px;"><span id="ms-home-val" style="color:var(--warn);">₹0</span> <span style="color:var(--muted);font-size:13px;">|</span> <span id="ms-bank-val" style="color:var(--accent2);">₹0</span></div>
+                <div class="ms-tile-sub">Adjustment: <span class="mono" id="ms-adj-val">₹0</span></div>
+              </div>
+              <div class="ms-tile">
+                <div class="ms-tile-label"><i class="fa-solid fa-file-invoice-dollar" style="color:var(--bad);"></i> Monthly Expenses</div>
+                <div class="ms-tile-val" id="ms-exp-val" style="color:var(--bad);">₹0</div>
+              </div>
+              <div class="ms-tile">
+                <div class="ms-tile-label"><i class="fa-solid fa-piggy-bank" style="color:var(--good);"></i> Cash Savings (40%)</div>
+                <div class="ms-tile-val" id="ms-cashsave-val" style="color:var(--good);">₹0</div>
+              </div>
+              <div class="ms-tile">
+                <div class="ms-tile-label"><i class="fa-solid fa-building-columns" style="color:var(--accent2);"></i> Bank Savings (40%)</div>
+                <div class="ms-tile-val" id="ms-banksave-val" style="color:var(--accent2);">₹0</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- Sales Chart -->
         <div class="chart-card">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
@@ -501,7 +617,7 @@ hr.divider { border: none; border-top: 1px solid var(--line); margin: 14px 0; }
               <option value="SHOP04">Graphics</option>
             </select>
           </div>
-          <div style="position:relative;height:180px;"><canvas id="sales-chart"></canvas></div>
+          <div style="position:relative;height:220px;"><canvas id="sales-chart"></canvas></div>
         </div>
 
         <!-- Cash Transfer Panel -->
@@ -509,7 +625,7 @@ hr.divider { border: none; border-top: 1px solid var(--line); margin: 14px 0; }
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
             <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.07em;"><i class="fa-solid fa-arrow-right-arrow-left" style="margin-right:5px;"></i>Transfer / Move Funds</div>
           </div>
-          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;align-items:flex-end;">
+          <div class="tr-inner-grid">
             <div class="fg" style="margin:0;">
               <div class="lbl">Shop</div>
               <select class="inp" id="tr-shop" style="padding:7px 10px;font-size:12px;" onchange="updateTransferPreview()">
@@ -530,7 +646,7 @@ hr.divider { border: none; border-top: 1px solid var(--line); margin: 14px 0; }
               <div class="lbl">Amount (₹)</div>
               <input class="inp" id="tr-amt" type="number" placeholder="0" style="padding:7px 10px;font-size:12px;" oninput="updateTransferPreview()" onfocus="clearIfZero(this)">
             </div>
-            <button class="btn btn-primary" style="height:36px;" onclick="executeTransfer()"><i class="fa-solid fa-arrow-right-arrow-left"></i> Transfer</button>
+            <div class="tr-btn-cell"><button class="btn btn-primary" style="height:36px;width:100%;" onclick="executeTransfer()"><i class="fa-solid fa-arrow-right-arrow-left"></i> Transfer</button></div>
           </div>
           <div id="tr-preview" style="margin-top:10px;font-size:11.5px;color:var(--muted);min-height:16px;"></div>
         </div>
@@ -741,8 +857,19 @@ hr.divider { border: none; border-top: 1px solid var(--line); margin: 14px 0; }
         </div>
 
         <div class="settings-section">
+          <h3><i class="fa-solid fa-file-export"></i> Export Data</h3>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="btn btn-good btn-sm" onclick="exportExcelReport()"><i class="fa-solid fa-file-excel"></i> Export Excel</button>
+            <button class="btn btn-primary btn-sm" onclick="exportPdfReport()"><i class="fa-solid fa-file-pdf"></i> Export PDF</button>
+          </div>
+          <div style="font-size:11px;color:var(--muted);margin-top:8px;line-height:1.5;">
+            Excel me sab sheets (Day Close, Udhaari, Outflows, Loans, InterShop, Home Expenses, Daily Expenses, Reminders) alag alag tabs me. PDF me formatted report with headers and totals.
+          </div>
+        </div>
+
+        <div class="settings-section">
           <h3><i class="fa-solid fa-trash"></i> Danger Zone</h3>
-          <button class="btn btn-bad btn-sm" onclick="if(confirm(&#39;Sab data delete ho jayega! Sure ho?&#39;)) resetAll()">Reset All Data</button>
+          <button class="btn btn-bad btn-sm" onclick="showConfirm({title:'Reset All Data?',msg:'Sab data <strong>permanently delete</strong> ho jayega — yeh action undo nahi hogi!',icon:'🗑️',yesText:'Haan, Reset Karo',yesCls:'btn-bad',onYes:resetAll})">Reset All Data</button>
         </div>
       </div>
 
@@ -1027,7 +1154,12 @@ hr.divider { border: none; border-top: 1px solid var(--line); margin: 14px 0; }
   <div class="modal-box" style="max-width:520px;">
     <div class="modal-title"><span><i class="fa-brands fa-whatsapp" style="color:#25D366;margin-right:6px;"></i>Share Daily Summary</span><button class="modal-close" onclick="closeModal(&#39;modal-wa-share&#39;)">×</button></div>
     <div class="fg">
-      <div class="lbl">Preview / Edit Message</div>
+      <div class="lbl">Per-Shop Summary (separate WhatsApp messages)</div>
+      <div id="wa-shop-btns" style="display:flex;gap:6px;flex-wrap:wrap;"></div>
+    </div>
+    <hr class="divider">
+    <div class="fg">
+      <div class="lbl">Combined Summary (all shops)</div>
       <textarea class="inp" id="wa-msg" rows="14" style="font-family:&#39;JetBrains Mono&#39;,monospace;font-size:12px;line-height:1.5;resize:vertical;min-height:280px;"></textarea>
     </div>
     <div class="fg" id="wa-contacts-wrap" style="display:none;">
@@ -1048,11 +1180,36 @@ hr.divider { border: none; border-top: 1px solid var(--line); margin: 14px 0; }
       <button class="btn btn-good" style="flex:2;background:#25D366;border-color:#1ea952;color:#fff;" onclick="sendWhatsapp()"><i class="fa-brands fa-whatsapp"></i> Open in WhatsApp</button>
     </div>
     <div style="margin-top:10px;font-size:10.5px;color:var(--muted);line-height:1.5;">
-      <i class="fa-solid fa-circle-info"></i> Phone empty rakhoge to WhatsApp me contact select karna padega. Phone daaloge to seedha uss number pe khulega.
+      <i class="fa-solid fa-circle-info"></i> Per-Shop buttons se har shop ka alag message jaayega. Combined message neeche textarea se edit karke bhejo.
     </div>
   </div>
 </div>
 
+<!-- Custom Confirm Modal -->
+<div class="jmd-modal" id="jmd-confirm-modal" onclick="if(event.target===this)_jmdNo()" role="dialog" aria-modal="true" aria-labelledby="jmd-ct">
+  <div class="jmd-modal-box">
+    <div class="jmd-modal-icon" id="jmd-ci">⚠️</div>
+    <div class="jmd-modal-title" id="jmd-ct">Confirm</div>
+    <div class="jmd-modal-msg" id="jmd-cm"></div>
+    <div class="jmd-modal-row">
+      <button class="btn btn-ghost" onclick="_jmdNo()" id="jmd-cn">Cancel</button>
+      <button class="btn btn-bad" onclick="_jmdYes()" id="jmd-cy" style="flex:2;">Confirm</button>
+    </div>
+  </div>
+</div>
+<!-- Custom Prompt Modal -->
+<div class="jmd-modal" id="jmd-prompt-modal" onclick="if(event.target===this)_jmdPromptCancel()" role="dialog" aria-modal="true" aria-labelledby="jmd-pt">
+  <div class="jmd-modal-box">
+    <div class="jmd-modal-icon" id="jmd-pi">✏️</div>
+    <div class="jmd-modal-title" id="jmd-pt">Input</div>
+    <div class="jmd-modal-msg" id="jmd-pm"></div>
+    <input class="inp jmd-modal-input" id="jmd-pinput" placeholder="" onkeydown="if(event.key==='Enter')_jmdPromptOk()">
+    <div class="jmd-modal-row">
+      <button class="btn btn-ghost" onclick="_jmdPromptCancel()">Cancel</button>
+      <button class="btn btn-primary" onclick="_jmdPromptOk()" style="flex:2;">OK</button>
+    </div>
+  </div>
+</div>
 <!-- Toast container -->
 <div id="toast-container"></div>
 
@@ -1067,7 +1224,10 @@ hr.divider { border: none; border-top: 1px solid var(--line); margin: 14px 0; }
 // Settings me URL field automatically hide/lock ho jayegi.
 //
 // Empty rakhoge to har user ko Settings me manually URL dalna hoga.
-const INBUILT_SHEET_URL = 'https://script.google.com/macros/s/AKfycbxFEYG-Qb5RE_RggX0VOTEjb37rn2NGp96i4ZCvarYTGRhvdgwbAKM4wdQwN4-4hf0X/exec'; // ← e.g. 'https://script.google.com/macros/s/AKfyc.../exec'
+const INBUILT_SHEET_URL = 'https://script.google.com/macros/s/AKfycby8gpEujStcKd8D0XF8-2cvsOlZq9Ns_Sv1fX4AcTHK3Cv432Fzw0YSUTVsyVHe8Eg5/exec'; // ← e.g. 'https://script.google.com/macros/s/AKfyc.../exec'
+// ═══════════════════════════════════════════════════════════════════
+// Auth token — must match AUTH_TOKEN in Code.gs. Leave empty to disable.
+const SHEET_AUTH_TOKEN = 'JMD-2026-1707'; // ← must match Code.gs AUTH_TOKEN
 // ═══════════════════════════════════════════════════════════════════
 
 // ─── Initial State ──────────────────────────────────────────────
@@ -1104,7 +1264,7 @@ function defaultState() {
     pin: '1234',
     shops: JSON.parse(JSON.stringify(DEFAULT_SHOPS)),
     udhaari: [], outflows: [], intershop: [], dayClose: [], loans: [], audit: [],
-    homeExpenses: [], reminders: [], waContacts: [],
+    homeExpenses: [], reminders: [], waContacts: [], dailyExpenses: [],
     sheetUrl: '', filters: {}
   };
 }
@@ -1119,6 +1279,7 @@ function loadState() {
       if (!s.loans) s.loans = [];
       if (!s.intershop) s.intershop = [];
       if (!s.homeExpenses) s.homeExpenses = [];
+      if (!s.dailyExpenses) s.dailyExpenses = [];
       if (!s.reminders) s.reminders = [];
       if (!s.waContacts) s.waContacts = [];
       if (!s.pin) s.pin = '1234';
@@ -1144,6 +1305,26 @@ function saveStateLocal() {
   localStorage.setItem('jmd_state', JSON.stringify(STATE));
   pushToSheet();
 }
+
+// ─── Global Auto Title-Case for all text inputs/textareas ─────────
+// Every word's first letter gets capitalized as the user types.
+// Add class "no-titlecase" to any input to opt it out.
+function autoTitleCase(el) {
+  const start = el.selectionStart, end = el.selectionEnd;
+  const val = el.value;
+  const newVal = val.replace(/(^|[\s\-\/])([a-z])/g, (m, sep, ch) => sep + ch.toUpperCase());
+  if (newVal !== val) {
+    el.value = newVal;
+    try { el.setSelectionRange(start, end); } catch (e) {}
+  }
+}
+document.addEventListener('input', function (e) {
+  const el = e.target;
+  if (el.classList && el.classList.contains('no-titlecase')) return;
+  if (el.tagName === 'TEXTAREA' || (el.tagName === 'INPUT' && (el.type === 'text' || !el.getAttribute('type')))) {
+    autoTitleCase(el);
+  }
+}, true);
 
 function fmt(n) {
   n = parseFloat(n) || 0;
@@ -1267,11 +1448,85 @@ function switchTab(tab) {
   else renderAll();
 }
 
+// ─── Custom Dropdown (progressive enhancement over native <select>) ──
+// Keeps the real <select> in the DOM (hidden) so every existing $('id').value
+// read and onchange="" handler keeps working untouched — we just draw a
+// nicer UI on top of it and keep the two in sync.
+function enhanceCustomSelects() {
+  document.querySelectorAll('select.inp').forEach(buildCustomSelect);
+}
+function buildCustomSelect(select) {
+  if (select.dataset.enhanced) return;
+  select.dataset.enhanced = '1';
+
+  const inlineStyle = select.getAttribute('style') || '';
+  const isAutoWidth = /width:\s*auto/.test(inlineStyle);
+
+  const wrap = document.createElement('div');
+  wrap.className = 'csel-wrap' + (isAutoWidth ? '' : ' csel-block');
+  select.parentNode.insertBefore(wrap, select);
+  wrap.appendChild(select);
+  select.classList.add('csel-native');
+  select.tabIndex = -1;
+
+  const trigger = document.createElement('button');
+  trigger.type = 'button';
+  trigger.className = 'inp csel-trigger';
+  if (inlineStyle) trigger.setAttribute('style', inlineStyle);
+  trigger.innerHTML = `<span class="csel-trigger-label"></span><i class="fa-solid fa-chevron-down"></i>`;
+  wrap.appendChild(trigger);
+
+  const menu = document.createElement('div');
+  menu.className = 'csel-menu';
+  wrap.appendChild(menu);
+
+  function renderOptions() {
+    menu.innerHTML = '';
+    Array.from(select.options).forEach(opt => {
+      const item = document.createElement('div');
+      item.className = 'csel-item' + (opt.value === select.value ? ' on' : '');
+      item.textContent = opt.textContent;
+      item.onclick = (e) => {
+        e.stopPropagation();
+        if (select.value !== opt.value) {
+          select.value = opt.value;
+          select.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+        syncTrigger();
+        closeMenu();
+      };
+      menu.appendChild(item);
+    });
+  }
+  function syncTrigger() {
+    const opt = select.options[select.selectedIndex];
+    trigger.querySelector('.csel-trigger-label').textContent = opt ? opt.textContent : '';
+    menu.querySelectorAll('.csel-item').forEach((it, i) => it.classList.toggle('on', select.options[i] && select.options[i].value === select.value));
+  }
+  function openMenu() { closeAllCustomSelects(); renderOptions(); wrap.classList.add('open'); }
+  function closeMenu() { wrap.classList.remove('open'); }
+
+  trigger.onclick = (e) => { e.stopPropagation(); wrap.classList.contains('open') ? closeMenu() : openMenu(); };
+
+  syncTrigger();
+  select._cselSync = syncTrigger;
+}
+function closeAllCustomSelects() {
+  document.querySelectorAll('.csel-wrap.open').forEach(w => w.classList.remove('open'));
+}
+document.addEventListener('click', closeAllCustomSelects);
+// Call after any code sets a select's .value programmatically, so the visible UI stays in sync.
+function syncSelectUI(id) {
+  const s = $(id);
+  if (s && s._cselSync) s._cselSync();
+}
+
 // ─── Init ────────────────────────────────────────────────────────
 function initApp() {
   updateHeaderDate();
   setInterval(updateHeaderDate, 60000);
   initDcForms();
+  enhanceCustomSelects();
   renderSettings();
   renderAll();
   pullFromSheet();
@@ -1282,17 +1537,15 @@ function updateHeaderDate() {
 }
 
 // ─── Render All ──────────────────────────────────────────────────
+// Each piece renders independently — if one throws (e.g. a CDN library failed
+// to load), the rest of the app still renders instead of the whole page freezing.
 function renderAll() {
-  renderDashboard();
-  renderUdhaari();
-  renderOutflows();
-  renderIntershop();
-  renderLoans();
-  renderAudit();
-  renderDcHistory();
-  renderHomeExpenses();
-  renderReminders();
-  updateBadges();
+  const steps = [renderDashboard, renderUdhaari, renderOutflows, renderIntershop,
+                 renderLoans, renderAudit, renderDcHistory, renderHomeExpenses,
+                 renderReminders, updateBadges];
+  steps.forEach(fn => {
+    try { fn(); } catch (e) { console.error(`renderAll: ${fn.name} failed`, e); }
+  });
 }
 
 function updateBadges() {
@@ -1315,11 +1568,32 @@ function setbadge(id, n, cls) {
 // ─── Dashboard ───────────────────────────────────────────────────
 // Helper: cumulative cash-taken-home per shop (from non-deleted DCs) minus personal home expenses charged to that shop
 function shopHomeCash(shopId) {
-  return STATE.dayClose.filter(r=>r.shopId===shopId && !r.deleted).reduce((s,r)=>s+(r.cashHome||0), 0);
+  const brought = STATE.dayClose.filter(r=>r.shopId===shopId && !r.deleted).reduce((s,r)=>s+(r.cashHome||0), 0);
+  const spent   = (STATE.dailyExpenses||[]).filter(e=>e.shopId===shopId && e.source==='HOME' && !e.deleted).reduce((s,e)=>s+(e.amount||0), 0);
+  return brought - spent;
 }
 function personalWalletDrain() {
   // Personal wallet expenses (paidFrom=PERSONAL) reduce the total home-cash pool
   return (STATE.homeExpenses||[]).filter(e => (e.paidFrom||'PERSONAL')==='PERSONAL').reduce((s,e)=>s+(e.amount||0), 0);
+}
+
+// Recompute all shop balances from scratch (safer than incremental inc/dec)
+function recomputeShopBalances() {
+  STATE.shops.forEach(sh => {
+    // GPay/Online: sum of all non-deleted DC gpay entries
+    sh.online = STATE.dayClose
+      .filter(r => r.shopId===sh.id && !r.deleted)
+      .reduce((s,r) => s+(r.gpay||0), 0);
+    // Add udhaari collections via GPay
+    STATE.udhaari.filter(u => u.shopId===sh.id).forEach(u => {
+      // We can't easily determine mode per-collection, so skip for now
+    });
+    // Counter cash (galla): latest non-deleted DC's counterCash
+    const latestDc = STATE.dayClose
+      .filter(r => r.shopId===sh.id && !r.deleted)
+      .sort((a,b) => b.date.localeCompare(a.date))[0];
+    sh.galla = latestDc ? (latestDc.counterCash || 0) : 0;
+  });
 }
 
 function renderDashboard() {
@@ -1385,13 +1659,193 @@ function renderDashboard() {
   $('qs-loans').textContent = fmt(pendLoanAmt);
 
   renderPerfTracker();
-  renderSalesChart();
+  try { renderSalesChart(); } catch (e) { console.error('renderSalesChart failed', e); }
+  renderProfitBox();
+  renderMonthlySummary();
 }
+
+// ─── Overall Profit Box (Daily/Weekly/Monthly/Yearly) ──────────────
+let _profitPeriod = 'today';
+function getProfitPeriodFilter(period) {
+  const todayS = todayStr();
+  if (period === 'week') {
+    const d = new Date(); d.setDate(d.getDate() - 6);
+    const startS = d.toISOString().split('T')[0];
+    return dt => dt >= startS && dt <= todayS;
+  }
+  if (period === 'month') {
+    const ym = todayS.slice(0, 7);
+    return dt => dt.slice(0, 7) === ym;
+  }
+  if (period === 'year') {
+    const y = todayS.slice(0, 4);
+    return dt => dt.slice(0, 4) === y;
+  }
+  return dt => dt === todayS; // today
+}
+function setProfitPeriod(period) {
+  _profitPeriod = period;
+  document.querySelectorAll('#profit-period-toggle .filter-btn').forEach(b => b.classList.toggle('on', b.dataset.period === period));
+  renderProfitBox();
+}
+function renderProfitBox() {
+  const totalEl = $('profit-total-val'); if (!totalEl) return;
+  const filterFn = getProfitPeriodFilter(_profitPeriod);
+  const activeDC = STATE.dayClose.filter(r => !r.deleted && filterFn(r.date));
+  const labelMap = { today: "Today's Total Profit", week: "This Week's Total Profit (Last 7 Days)", month: "This Month's Total Profit", year: "This Year's Total Profit" };
+  $('profit-period-label').textContent = labelMap[_profitPeriod];
+
+  let total = 0, html = '';
+  STATE.shops.forEach(sh => {
+    const recs = activeDC.filter(r => r.shopId === sh.id);
+    const shopProfit = recs.reduce((s, r) => s + (r.profit != null ? r.profit : Math.round((r.sale || 0) * (sh.profitPct || 40) / 100)), 0);
+    total += shopProfit;
+    html += `<div class="card2" style="padding:9px 10px;">
+      <div style="display:flex;align-items:center;gap:5px;margin-bottom:4px;">
+        <span style="width:7px;height:7px;border-radius:50%;background:${shopColor(sh.id)};flex-shrink:0;"></span>
+        <span style="font-size:9px;color:var(--muted);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${sh.name}</span>
+      </div>
+      <div class="mono" style="font-size:13px;font-weight:700;color:${shopProfit >= 0 ? 'var(--good)' : 'var(--bad)'};">${fmt(shopProfit)}</div>
+    </div>`;
+  });
+  $('profit-shop-breakdown').innerHTML = html;
+  totalEl.textContent = fmt(total);
+}
+
+// ─── Monthly Summary box (all shops or single shop, data-bounded months) ───
+let _msMonthOffset = 0;           // 0 = latest month with data, -1 = one back, etc.
+let _msMode = 'Full';             // 'Full' | 'Home' | 'GP'
+let _msShopFilter = 'ALL';        // 'ALL' or a shop id
+const MS_MODES = ['Full', 'Home', 'GP'];
+
+// Only months that actually have Day Close or expense entries — no scrolling through empty months.
+function msAvailableMonths() {
+  const set = new Set();
+  (STATE.dayClose || []).forEach(r => { if (!r.deleted && r.date) set.add(r.date.slice(0, 7)); });
+  (STATE.dailyExpenses || []).forEach(e => { if (!e.deleted && e.date) set.add(e.date.slice(0, 7)); });
+  const list = [...set].sort(); // ascending YYYY-MM
+  return list.length ? list : [todayStr().slice(0, 7)];
+}
+function msTargetYm() {
+  const months = msAvailableMonths();
+  const idx = Math.max(0, Math.min(months.length - 1, months.length - 1 + _msMonthOffset));
+  return months[idx];
+}
+function msShiftMonth(dir) {
+  const months = msAvailableMonths();
+  const curIdx = months.length - 1 + _msMonthOffset;
+  const newIdx = curIdx + dir;
+  if (newIdx < 0 || newIdx > months.length - 1) return; // bounded — nothing to show beyond real data
+  _msMonthOffset += dir;
+  renderMonthlySummary();
+}
+function msSetMode(mode) {
+  _msMode = mode;
+  renderMonthlySummary();
+}
+function msSelectShop(id) {
+  _msShopFilter = id;
+  renderMonthlySummary();
+}
+function roundTo100(n) { return Math.round(n / 100) * 100; }
+
+function renderMsShopTabs() {
+  const wrap = $('ms-shop-tabs'); if (!wrap) return;
+  let html = `<button type="button" class="ms-shop-tab ${_msShopFilter==='ALL'?'on':''}" style="${_msShopFilter==='ALL'?'background:var(--accent);border-color:var(--accent);':''}" onclick="msSelectShop('ALL')">All Shops</button>`;
+  STATE.shops.forEach(s => {
+    const c = shopColor(s.id);
+    const active = _msShopFilter === s.id;
+    html += `<button type="button" class="ms-shop-tab ${active?'on':''}" style="${active?`background:${c};border-color:${c};`:''}" onclick="msSelectShop('${s.id}')">${s.name}</button>`;
+  });
+  wrap.innerHTML = html;
+}
+
+function renderMonthlySummary() {
+  const saleEl = $('ms-sale-val'); if (!saleEl) return;
+  renderMsShopTabs();
+
+  const months = msAvailableMonths();
+  const ym = msTargetYm();
+  const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const [ymY, ymM] = ym.split('-');
+  $('ms-month-label-main').textContent = `${monthNames[parseInt(ymM)-1]} ${ymY}`;
+
+  const curIdx = months.indexOf(ym);
+  const atStart = curIdx <= 0, atEnd = curIdx >= months.length - 1;
+  $('ms-prev-btn').disabled = atStart;
+  $('ms-next-btn').disabled = atEnd;
+
+  document.querySelectorAll('#ms-mode-toggle .ms-mode-btn').forEach(btn => {
+    btn.classList.toggle('on', btn.dataset.mode === _msMode);
+  });
+
+  const shopName = _msShopFilter === 'ALL' ? 'All Shops' : (STATE.shops.find(s => s.id === _msShopFilter)?.name || '');
+  $('ms-sale-label').textContent = `Monthly Sale — ${shopName}`;
+
+  let recs = STATE.dayClose.filter(r => !r.deleted && (r.date || '').slice(0, 7) === ym);
+  let exps = (STATE.dailyExpenses || []).filter(e => !e.deleted && (e.date || '').slice(0, 7) === ym);
+  if (_msShopFilter !== 'ALL') {
+    recs = recs.filter(r => r.shopId === _msShopFilter);
+    exps = exps.filter(e => e.shopId === _msShopFilter);
+  }
+
+  const totalSale  = recs.reduce((s, r) => s + (r.sale || 0), 0);
+  const gpaySale    = recs.reduce((s, r) => s + (r.gpay || 0), 0);
+  const cashSale    = totalSale - gpaySale;
+  const shownSale = _msMode === 'Full' ? totalSale : (_msMode === 'Home' ? cashSale : gpaySale);
+  saleEl.textContent = fmt(shownSale);
+
+  // Actual cash physically brought home / received via GPay this month, net of Home/GP-source itemized expenses
+  const actualHome = recs.reduce((s, r) => s + (r.cashHome || 0), 0)
+    - exps.filter(e => e.source === 'HOME').reduce((s, e) => s + (e.amount || 0), 0);
+  const actualBank = gpaySale
+    - exps.filter(e => e.source === 'GP').reduce((s, e) => s + (e.amount || 0), 0);
+  $('ms-home-val').textContent = fmt(actualHome);
+  $('ms-bank-val').textContent = fmt(actualBank);
+
+  // 40% savings targets, rounded to nearest ₹100 — cash & GPay portions calculated separately
+  const cashSavings = roundTo100(cashSale * 0.4);
+  const bankSavings = roundTo100(gpaySale * 0.4);
+  $('ms-cashsave-val').textContent = fmt(cashSavings);
+  $('ms-banksave-val').textContent = fmt(bankSavings);
+
+  // Adjustment: shortfall between the cash-savings target and what was actually brought home this
+  // month — this shortfall is carried against the shop(s)' previously accumulated home balance.
+  const adjustment = Math.max(0, cashSavings - actualHome);
+  $('ms-adj-val').textContent = fmt(adjustment);
+  $('ms-adj-val').style.color = adjustment > 0 ? 'var(--bad)' : 'var(--muted)';
+
+  // Monthly expenses = Counter expenses (Day Close) + Home-source + GP-source itemized daily expenses
+  const counterExp = recs.reduce((s, r) => s + (r.expense || 0), 0);
+  const itemExp = exps.filter(e => e.source !== 'COUNTER').reduce((s, e) => s + (e.amount || 0), 0);
+  $('ms-exp-val').textContent = fmt(counterExp + itemExp);
+}
+
 
 // ─── Sales Chart ─────────────────────────────────────────────────
 let _salesChart = null;
 function renderSalesChart() {
   const canvas = $('sales-chart'); if (!canvas) return;
+  // If the Dashboard tab isn't visible right now, skip — Chart.js can't size a hidden (0x0)
+  // canvas correctly, and the chart stays broken even after the tab becomes visible again.
+  // It gets re-rendered properly the moment switchTab('dashboard') runs.
+  if (canvas.offsetParent === null) return;
+  if (typeof Chart === 'undefined') {
+    // Chart.js CDN hasn't finished loading yet (or got blocked by something on this
+    // network/browser). Show a friendly placeholder and retry shortly instead of
+    // throwing — an uncaught error here used to silently break the rest of the app.
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = '#8888a8';
+    ctx.font = '600 12.5px Inter, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('Loading chart…', canvas.width / 2, canvas.height / 2);
+    if (!window._chartRetryScheduled) {
+      window._chartRetryScheduled = true;
+      setTimeout(() => { window._chartRetryScheduled = false; renderSalesChart(); }, 700);
+    }
+    return;
+  }
   const shopFilter = $('chart-shop-filter')?.value || 'all';
 
   // Gather last 7 distinct dates from dayClose (skip soft-deleted)
@@ -1402,9 +1856,9 @@ function renderSalesChart() {
     const ctx = canvas.getContext('2d');
     ctx.clearRect(0,0,canvas.width,canvas.height);
     ctx.fillStyle = '#8888a8';
-    ctx.font = '12px Inter, sans-serif';
+    ctx.font = '600 12.5px Inter, sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('No Day Close data yet', canvas.width/2, canvas.height/2);
+    ctx.fillText('No Day Close entries yet — add one to see the chart', canvas.width/2, canvas.height/2);
     return;
   }
 
@@ -1427,21 +1881,41 @@ function renderSalesChart() {
   const labels = allDates.map(d => fmtDate(d));
 
   if (_salesChart) { _salesChart.destroy(); _salesChart = null; }
+  const ctx2d = canvas.getContext('2d');
+  const saleGrad = ctx2d.createLinearGradient(0, 0, 0, 220);
+  saleGrad.addColorStop(0, 'rgba(34,197,94,0.85)');
+  saleGrad.addColorStop(1, 'rgba(34,197,94,0.25)');
+  const profitGrad = ctx2d.createLinearGradient(0, 0, 0, 220);
+  profitGrad.addColorStop(0, 'rgba(124,92,252,0.85)');
+  profitGrad.addColorStop(1, 'rgba(124,92,252,0.25)');
+
   _salesChart = new Chart(canvas, {
     type: 'bar',
     data: {
       labels,
       datasets: [
-        { label: 'Sale', data: saleData, backgroundColor: 'rgba(34,197,94,0.6)', borderColor: 'rgba(34,197,94,0.9)', borderWidth: 1.5, borderRadius: 4 },
-        { label: 'Profit', data: profitData, backgroundColor: 'rgba(124,92,252,0.55)', borderColor: 'rgba(124,92,252,0.9)', borderWidth: 1.5, borderRadius: 4 }
+        { label: 'Sale', data: saleData, backgroundColor: saleGrad, borderColor: '#22c55e', borderWidth: 1.5, borderRadius: 6, borderSkipped: false, maxBarThickness: 34 },
+        { label: 'Profit', data: profitData, backgroundColor: profitGrad, borderColor: '#7c5cfc', borderWidth: 1.5, borderRadius: 6, borderSkipped: false, maxBarThickness: 34 }
       ]
     },
     options: {
       responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { labels: { color: '#8888a8', font: { size: 11, family: 'Inter' }, boxWidth: 12, padding: 14 } } },
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { position: 'top', align: 'end', labels: { color: '#8888a8', font: { size: 11, weight: '600', family: 'Inter' }, boxWidth: 10, boxHeight: 10, usePointStyle: true, pointStyle: 'circle', padding: 16 } },
+        tooltip: {
+          backgroundColor: '#13131a', borderColor: '#232334', borderWidth: 1, padding: 10,
+          titleColor: '#f0f0f4', titleFont: { size: 12, weight: '700', family: 'Inter' },
+          bodyColor: '#8888a8', bodyFont: { size: 11.5, family: 'Inter' },
+          boxPadding: 5, cornerRadius: 8, displayColors: true,
+          callbacks: {
+            label: ctx => ` ${ctx.dataset.label}: ₹${(ctx.parsed.y || 0).toLocaleString('en-IN')}`
+          }
+        }
+      },
       scales: {
-        x: { ticks: { color: '#8888a8', font: { size: 10 } }, grid: { color: 'rgba(35,35,52,0.6)' } },
-        y: { ticks: { color: '#8888a8', font: { size: 10 }, callback: v => '₹'+v.toLocaleString('en-IN') }, grid: { color: 'rgba(35,35,52,0.6)' } }
+        x: { ticks: { color: '#8888a8', font: { size: 10.5, weight: '600' } }, grid: { display: false }, border: { color: '#232334' } },
+        y: { ticks: { color: '#8888a8', font: { size: 10 }, callback: v => '₹'+v.toLocaleString('en-IN'), maxTicksLimit: 5 }, grid: { color: 'rgba(35,35,52,0.5)' }, border: { display: false }, beginAtZero: true }
       }
     }
   });
@@ -1591,6 +2065,10 @@ function initDcForms() {
           ${todaysDc?`<span class="badge badge-purple" style="margin-left:6px;"><i class="fa-solid fa-pen" style="margin-right:3px;font-size:8px;"></i>Editing today</span>`:''}
           <span style="margin-left:auto;font-size:11px;color:var(--muted);">${lastEntry?'Last: '+fmtDate(lastEntry.date):'No entry yet'}</span>
         </div>
+        <div class="fg" style="margin-bottom:14px;">
+          <div class="lbl">Date <span style="color:var(--accent2);text-transform:none;letter-spacing:0;font-weight:400;">(kis din ki entry?)</span></div>
+          <input class="inp" id="dc-date-${sh.id}" type="date" value="${pf.date || today}" max="${today}" onchange="onDcDateChange('${sh.id}')" style="max-width:220px;" />
+        </div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
           <div class="fg">
             <div class="lbl">Cash Taken Home (₹)</div>
@@ -1605,10 +2083,37 @@ function initDcForms() {
             <input class="inp" id="dc-gpay-${sh.id}" type="number" value="${pf.gpay||''}" placeholder="Enter amount" oninput="updateDcCalc('${sh.id}')" onfocus="clearIfZero(this)" />
           </div>
           <div class="fg">
-            <div class="lbl">Counter Expenses (₹)</div>
+            <div class="lbl">Counter Expenses (₹) <span style="color:var(--accent2);font-weight:400;text-transform:none;letter-spacing:0;margin-left:6px;">auto from below</span></div>
             <input class="inp" id="dc-exp-${sh.id}" type="number" value="${pf.expense||''}" placeholder="Enter amount" oninput="updateDcCalc('${sh.id}')" onfocus="clearIfZero(this)" />
           </div>
         </div>
+
+        <!-- Daily Expense (Counter / Home / GP) -->
+        <div class="card2" style="padding:14px 16px;margin-bottom:14px;">
+          <div class="lbl" style="margin-bottom:8px;"><i class="fa-solid fa-receipt" style="margin-right:5px;color:var(--warn);"></i>Daily Expense (Counter / Home / GP)</div>
+          <div class="fg" style="margin-bottom:8px;">
+            <input class="inp" id="de-desc-${sh.id}" placeholder="Kya Khareeda? (e.g. Dudh)" />
+          </div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;">
+            <button type="button" class="chip-tile no-titlecase" onclick="deSetDesc('${sh.id}','Nariyal')">Nariyal</button>
+            <button type="button" class="chip-tile no-titlecase" onclick="deSetDesc('${sh.id}','Pathpeti')">Pathpeti</button>
+          </div>
+          <div class="chip-group" id="de-source-${sh.id}" data-value="COUNTER" style="margin-bottom:10px;">
+            <button type="button" class="chip-tile active" data-value="COUNTER" onclick="chipPick('de-source-${sh.id}','COUNTER')"><i class="fa-solid fa-cash-register"></i>Counter</button>
+            <button type="button" class="chip-tile" data-value="HOME" onclick="chipPick('de-source-${sh.id}','HOME')"><i class="fa-solid fa-house"></i>Home</button>
+            <button type="button" class="chip-tile" data-value="GP" onclick="chipPick('de-source-${sh.id}','GP')"><i class="fa-solid fa-mobile-screen"></i>GP</button>
+          </div>
+          <div style="display:flex;gap:8px;align-items:flex-end;">
+            <div class="fg" style="flex:1;margin-bottom:0;">
+              <div class="lbl">₹ Kitna Paisa Diya?</div>
+              <input class="inp no-titlecase" id="de-amt-${sh.id}" type="number" placeholder="0" onkeydown="if(event.key==='Enter'){event.preventDefault();addDailyExpense('${sh.id}');}" />
+            </div>
+            <button class="btn btn-primary" style="padding:0 16px;height:38px;" onclick="addDailyExpense('${sh.id}')"><i class="fa-solid fa-plus"></i> Add</button>
+          </div>
+          <div id="de-list-${sh.id}" style="display:flex;flex-direction:column;gap:6px;margin-top:10px;"></div>
+          <div id="de-summary-${sh.id}" style="font-size:11px;color:var(--muted);margin-top:8px;"></div>
+        </div>
+
         <div class="fg">
           <div class="lbl">Yesterday's Counter Cash (₹) <span style="color:var(--accent2);font-weight:400;text-transform:none;letter-spacing:0;margin-left:6px;">${prevInfo.label}</span></div>
           <input class="inp" id="dc-prev-${sh.id}" type="number" value="${todaysDc? (pf.prevCounter||0) : prevInfo.val}" placeholder="0" oninput="updateDcCalc('${sh.id}')" onfocus="clearIfZero(this)" />
@@ -1637,7 +2142,7 @@ function initDcForms() {
   }).join('');
 
   activeDcShop = STATE.shops[0]?.id;
-  STATE.shops.forEach(sh => updateDcCalc(sh.id));
+  STATE.shops.forEach(sh => { updateDcCalc(sh.id); renderDailyExpenses(sh.id); });
 }
 
 function switchDcShop(shopId) {
@@ -1652,6 +2157,88 @@ function switchDcShop(shopId) {
 function clearIfZero(inp) {
   if (parseFloat(inp.value) === 0 || inp.value === '0') inp.value = '';
 }
+
+// ─── Daily Expense (Counter / Home / GP) — itemized quick expenses ──
+const DE_SOURCE_LABEL = { COUNTER:'Counter', HOME:'Home', GP:'GP' };
+const DE_SOURCE_COLOR = { COUNTER:'var(--warn)', HOME:'var(--accent)', GP:'var(--accent2)' };
+
+function deSetDesc(shopId, text) {
+  const el = $(`de-desc-${shopId}`);
+  if (el) { el.value = text; el.focus(); }
+}
+
+function addDailyExpense(shopId) {
+  const descEl = $(`de-desc-${shopId}`);
+  const amtEl  = $(`de-amt-${shopId}`);
+  const desc   = (descEl?.value || '').trim();
+  const amt    = parseFloat(amtEl?.value) || 0;
+  const source = chipValue(`de-source-${shopId}`) || 'COUNTER';
+  if (!desc) { toast('Kya khareeda wo likho pehle', 'error'); return; }
+  if (!amt || amt <= 0) { toast('Amount daalo', 'error'); return; }
+
+  const entryDate = $(`dc-date-${shopId}`)?.value || todayStr();
+  STATE.dailyExpenses.unshift({
+    id: newId('DE'), shopId, date: entryDate, desc, source, amount: amt, deleted: false
+  });
+
+  descEl.value = ''; amtEl.value = '';
+  chipPick(`de-source-${shopId}`, 'COUNTER');
+
+  renderDailyExpenses(shopId);
+  syncDcExpenseFromItems(shopId);
+  if (source === 'GP') {
+    const sh = STATE.shops.find(s=>s.id===shopId);
+    if (sh) sh.online = (sh.online||0) - amt;
+    renderDashboard();
+  }
+  auditLog('DAILY_EXPENSE', `${shopName(shopId)} — ${desc} (${DE_SOURCE_LABEL[source]}) ₹${amt}`);
+  saveStateLocal();
+  toast(`${desc} — ₹${fmtNum(amt)} added (${DE_SOURCE_LABEL[source]})`, 'success');
+}
+
+function removeDailyExpense(id) {
+  const idx = STATE.dailyExpenses.findIndex(x=>x.id===id);
+  if (idx === -1) return;
+  const e = STATE.dailyExpenses[idx];
+  if (e.source === 'GP') {
+    const sh = STATE.shops.find(s=>s.id===e.shopId);
+    if (sh) sh.online = (sh.online||0) + e.amount;
+  }
+  STATE.dailyExpenses.splice(idx, 1);
+  renderDailyExpenses(e.shopId);
+  syncDcExpenseFromItems(e.shopId);
+  renderDashboard();
+  saveStateLocal();
+}
+
+// Sum selected date's COUNTER-source items for a shop and push into the Counter Expenses field
+function syncDcExpenseFromItems(shopId) {
+  const entryDate = $(`dc-date-${shopId}`)?.value || todayStr();
+  const total = STATE.dailyExpenses
+    .filter(e => e.shopId===shopId && e.date===entryDate && e.source==='COUNTER' && !e.deleted)
+    .reduce((s,e)=>s+(e.amount||0), 0);
+  const expEl = $(`dc-exp-${shopId}`);
+  if (expEl) { expEl.value = total || ''; updateDcCalc(shopId); }
+}
+
+function renderDailyExpenses(shopId) {
+  const listEl = $(`de-list-${shopId}`), sumEl = $(`de-summary-${shopId}`);
+  if (!listEl) return;
+  const entryDate = $(`dc-date-${shopId}`)?.value || todayStr();
+  const items = STATE.dailyExpenses.filter(e => e.shopId===shopId && e.date===entryDate && !e.deleted);
+
+  listEl.innerHTML = items.map(e => `
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;background:var(--panel2);border:1px solid var(--line);border-radius:7px;padding:7px 10px;">
+      <div style="flex:1;font-size:12px;">${e.desc} <span style="color:${DE_SOURCE_COLOR[e.source]};font-weight:600;">(${DE_SOURCE_LABEL[e.source]})</span></div>
+      <div class="mono" style="font-size:12px;font-weight:700;">₹${fmtNum(e.amount)}</div>
+      <button type="button" onclick="removeDailyExpense('${e.id}')" style="background:none;border:none;color:var(--bad);cursor:pointer;font-size:13px;padding:2px 4px;"><i class="fa-solid fa-xmark"></i></button>
+    </div>`).join('') || `<div style="font-size:11px;color:var(--muted);">${fmtDate(entryDate)} ko koi expense add nahi hua abhi tak</div>`;
+
+  const bySource = { COUNTER:0, HOME:0, GP:0 };
+  items.forEach(e => bySource[e.source] = (bySource[e.source]||0) + (e.amount||0));
+  sumEl.innerHTML = `Counter: <strong style="color:${DE_SOURCE_COLOR.COUNTER};">₹${fmtNum(bySource.COUNTER)}</strong> &nbsp;|&nbsp; Home: <strong style="color:${DE_SOURCE_COLOR.HOME};">₹${fmtNum(bySource.HOME)}</strong> &nbsp;|&nbsp; GP: <strong style="color:${DE_SOURCE_COLOR.GP};">₹${fmtNum(bySource.GP)}</strong>`;
+}
+
 
 function updateDcCalc(shopId) {
   const g = id => parseFloat($(id)?.value)||0;
@@ -1700,10 +2287,11 @@ function submitDayClose(shopId) {
   const profitVal  = $(`dc-profit-${shopId}`)?.value;
   const profit     = (profitVal!=='' && profitVal!=null && !isNaN(parseFloat(profitVal))) ? parseFloat(profitVal) : autoProfit;
   const note = $(`dc-note-${shopId}`)?.value?.trim() || '';
-  const today = todayStr();
+  const entryDate = $(`dc-date-${shopId}`)?.value || todayStr();
+  const isToday = entryDate === todayStr();
 
-  // Check if today's DC already exists for this shop (edit-in-place)
-  const existing = STATE.dayClose.find(r => r.shopId===shopId && r.date===today && !r.deleted);
+  // Check if a DC already exists for this shop+date (edit-in-place)
+  const existing = STATE.dayClose.find(r => r.shopId===shopId && r.date===entryDate && !r.deleted);
   const isUpdate = !!existing;
 
   if (isUpdate) {
@@ -1727,18 +2315,18 @@ function submitDayClose(shopId) {
       sh.online = (sh.online||0) + gpay;
       sh.galla  = counter;
     }
-    auditLog('DAY_CLOSE', `[UPDATE] ${shopName(shopId)} — Sale ${fmt(sale)} · Profit ${fmt(profit)} · Counter ${fmt(counter)}`);
+    auditLog('DAY_CLOSE', `[UPDATE] ${shopName(shopId)} ${fmtDate(entryDate)} — Sale ${fmt(sale)} · Profit ${fmt(profit)} · Counter ${fmt(counter)}`);
     saveStateLocal();
     initDcForms();  // rebuild so Update label reflects
     renderDcHistory();
     renderDashboard();
-    toast(`${shopName(shopId)} Today's Day Close updated — Sale ${fmt(sale)} · Profit ${fmt(profit)}`, 'success');
+    toast(`${shopName(shopId)} ${isToday ? "Today's" : fmtDate(entryDate) + " ki"} Day Close updated — Sale ${fmt(sale)} · Profit ${fmt(profit)}`, 'success');
     return;
   }
 
   // Create fresh entry
   const entry = {
-    id: newId('DC'), shopId, shopName: shopName(shopId), date: today,
+    id: newId('DC'), shopId, shopName: shopName(shopId), date: entryDate,
     cashHome: home, counterCash: counter, gpay, expense: exp, prevCounter: prev,
     sale, profit, autoProfit, note, deleted: false
   };
@@ -1747,22 +2335,75 @@ function submitDayClose(shopId) {
     sh.galla = counter;
     sh.online = (sh.online||0) + gpay;
   }
-  auditLog('DAY_CLOSE', `${shopName(shopId)} — Sale ${fmt(sale)} · Profit ${fmt(profit)} · Counter ${fmt(counter)} · GPay ${fmt(gpay)}`);
+  auditLog('DAY_CLOSE', `${shopName(shopId)} ${fmtDate(entryDate)} — Sale ${fmt(sale)} · Profit ${fmt(profit)} · Counter ${fmt(counter)} · GPay ${fmt(gpay)}`);
   saveStateLocal();
   initDcForms();
   renderDcHistory();
   renderDashboard();
-  toast(`${shopName(shopId)} Day Close done — Sale ${fmt(sale)} · Profit ${fmt(profit)}`, 'success');
+  toast(`${shopName(shopId)} Day Close done (${fmtDate(entryDate)}) — Sale ${fmt(sale)} · Profit ${fmt(profit)}`, 'success');
 }
 
-// Date-aware previous counter — checks actual yesterday first, then falls back to last entry
-function getPrevCounterForShop(shopId) {
-  const y = new Date(); y.setDate(y.getDate()-1);
-  const yStr = y.toISOString().split('T')[0];
-  const yEntry = STATE.dayClose.find(r => r.shopId===shopId && r.date===yStr && !r.deleted);
-  if (yEntry) return { val: yEntry.counterCash, label: `Yesterday (${fmtDate(yStr)})` };
-  const last = STATE.dayClose.find(r => r.shopId===shopId && !r.deleted);
-  if (last) return { val: last.counterCash, label: `Last entry (${fmtDate(last.date)})` };
+// Called when user changes the date picker in a DC form
+function onDcDateChange(shopId) {
+  const dateEl = $(`dc-date-${shopId}`);
+  if (!dateEl) return;
+  const entryDate = dateEl.value || todayStr();
+  const today = todayStr();
+
+  // Update prev counter based on selected date
+  const prevInfo = getPrevCounterForShop(shopId, entryDate);
+  const prevEl = $(`dc-prev-${shopId}`);
+  if (prevEl) prevEl.value = prevInfo.val;
+
+  // Update the "Yesterday's Counter" label
+  const prevLabel = prevEl?.parentElement?.querySelector('.lbl');
+  if (prevLabel) prevLabel.innerHTML = `Previous Counter Cash (₹) <span style="color:var(--accent2);font-weight:400;text-transform:none;letter-spacing:0;margin-left:6px;">${prevInfo.label}</span>`;
+
+  // Check if entry exists for this date → toggle edit/new badge
+  const existing = STATE.dayClose.find(r => r.shopId===shopId && r.date===entryDate && !r.deleted);
+  const submitBtn = $(`dc-submit-btn-${shopId}`);
+  if (submitBtn) {
+    if (existing) {
+      submitBtn.className = 'btn btn-warn';
+      submitBtn.innerHTML = `<i class="fa-solid fa-pen-to-square"></i> Update ${fmtDate(entryDate)} Day Close`;
+    } else {
+      submitBtn.className = 'btn btn-primary';
+      submitBtn.innerHTML = `<i class="fa-solid fa-calendar-check"></i> Submit Day Close (${fmtDate(entryDate)})`;
+    }
+  }
+
+  // Prefill fields from existing entry if editing
+  if (existing) {
+    const setVal = (id, v) => { const el = $(id); if (el) el.value = v || ''; };
+    setVal(`dc-home-${shopId}`, existing.cashHome);
+    setVal(`dc-counter-${shopId}`, existing.counterCash);
+    setVal(`dc-gpay-${shopId}`, existing.gpay);
+    setVal(`dc-exp-${shopId}`, existing.expense);
+    setVal(`dc-prev-${shopId}`, existing.prevCounter);
+    const pInp = $(`dc-profit-${shopId}`);
+    if (pInp) { pInp.value = existing.profit != null ? existing.profit : ''; pInp.dataset.userEdited = existing.profit != null ? '1' : ''; }
+    const noteEl = $(`dc-note-${shopId}`);
+    if (noteEl) noteEl.value = existing.note || '';
+  } else {
+    // Clear fields for new entry (keep prev counter)
+    [`dc-home-${shopId}`, `dc-counter-${shopId}`, `dc-gpay-${shopId}`, `dc-exp-${shopId}`].forEach(id => { const el = $(id); if (el) el.value = ''; });
+    const pInp = $(`dc-profit-${shopId}`); if (pInp) { pInp.value = ''; delete pInp.dataset.userEdited; }
+    const noteEl = $(`dc-note-${shopId}`); if (noteEl) noteEl.value = '';
+  }
+
+  // Re-render daily expenses for this date
+  renderDailyExpenses(shopId);
+  updateDcCalc(shopId);
+}
+
+// Date-aware previous counter — finds the entry just before the given date
+function getPrevCounterForShop(shopId, refDate) {
+  refDate = refDate || todayStr();
+  // Find the latest non-deleted entry for this shop strictly before refDate
+  const sorted = STATE.dayClose
+    .filter(r => r.shopId===shopId && !r.deleted && r.date < refDate)
+    .sort((a,b) => b.date.localeCompare(a.date));
+  if (sorted.length) return { val: sorted[0].counterCash, label: `Prev (${fmtDate(sorted[0].date)})` };
   return { val: '', label: 'No prior entry' };
 }
 
@@ -1837,23 +2478,26 @@ function openDcDetail(id) {
 function deleteDayClose(id) {
   const r = STATE.dayClose.find(x=>x.id===id);
   if (!r || r.deleted) return;
-  if (!confirm(`Delete Day Close of ${r.shopName||shopName(r.shopId)} — ${fmtDate(r.date)}?\n\nShop balances will be rolled back. You can restore from history.`)) return;
-  r.deleted = true;
-
-  // Soft rollback: reverse this DC's effect on shop balances
-  const sh = STATE.shops.find(s=>s.id===r.shopId);
-  if (sh) {
-    sh.online = Math.max(0, (sh.online||0) - (r.gpay||0));
-    // Restore galla to the most recent non-deleted prior DC's counter (or its prevCounter if none)
-    const priorDC = STATE.dayClose.find(x =>
-      x.shopId===r.shopId && !x.deleted && x.id!==r.id &&
-      (x.date < r.date || (x.date===r.date && STATE.dayClose.indexOf(x) > STATE.dayClose.indexOf(r)))
-    );
-    sh.galla = priorDC ? (priorDC.counterCash||0) : (r.prevCounter||0);
-  }
-  auditLog('DELETE_DC', `Soft-deleted DC: ${r.shopName||shopName(r.shopId)} — ${fmtDate(r.date)} — Sale ${fmt(r.sale)} (rollback applied)`);
-  saveStateLocal(); renderDcHistory(); renderDashboard(); initDcForms();
-  toast(`Deleted — balances rolled back. Undo from history.`, 'info');
+  showConfirm({
+    title:'Delete Day Close?',
+    msg:`<strong>${escHtml(r.shopName||shopName(r.shopId))}</strong> — ${escHtml(fmtDate(r.date))}<br><br>Shop balances roll back honge. History se restore kar sakte ho.`,
+    icon:'🗑️',yesText:'Delete Karo',yesCls:'btn-bad',
+    onYes:()=>{
+      r.deleted = true;
+      const sh = STATE.shops.find(s=>s.id===r.shopId);
+      if (sh) {
+        sh.online = Math.max(0, (sh.online||0) - (r.gpay||0));
+        const priorDC = STATE.dayClose.find(x =>
+          x.shopId===r.shopId && !x.deleted && x.id!==r.id &&
+          (x.date < r.date || (x.date===r.date && STATE.dayClose.indexOf(x) > STATE.dayClose.indexOf(r)))
+        );
+        sh.galla = priorDC ? (priorDC.counterCash||0) : (r.prevCounter||0);
+      }
+      auditLog('DELETE_DC', `Soft-deleted DC: ${r.shopName||shopName(r.shopId)} — ${fmtDate(r.date)} — Sale ${fmt(r.sale)} (rollback applied)`);
+      saveStateLocal(); renderDcHistory(); renderDashboard(); initDcForms();
+      toast(`Deleted — balances rolled back. Undo from history.`, 'info');
+    }
+  });
 }
 
 function restoreDayClose(id) {
@@ -1876,11 +2520,17 @@ function hardDeleteDayClose(id) {
   const idx = STATE.dayClose.findIndex(x=>x.id===id);
   if (idx < 0) return;
   const r = STATE.dayClose[idx];
-  if (!confirm(`Permanently remove this record?\n${r.shopName||shopName(r.shopId)} — ${fmtDate(r.date)}`)) return;
-  STATE.dayClose.splice(idx, 1);
-  auditLog('DELETE_DC', `Purged: ${r.shopName||shopName(r.shopId)} — ${fmtDate(r.date)}`);
-  saveStateLocal(); renderDcHistory();
-  toast(`Record purged`, 'info');
+  showConfirm({
+    title:'Permanently Delete?',
+    msg:`<strong>${escHtml(r.shopName||shopName(r.shopId))}</strong> — ${escHtml(fmtDate(r.date))}<br><br>Yeh record hamesha ke liye hat jayega.`,
+    icon:'💀',yesText:'Permanently Delete',yesCls:'btn-bad',
+    onYes:()=>{
+      STATE.dayClose.splice(idx, 1);
+      auditLog('DELETE_DC', `Purged: ${r.shopName||shopName(r.shopId)} — ${fmtDate(r.date)}`);
+      saveStateLocal(); renderDcHistory();
+      toast(`Record purged`, 'info');
+    }
+  });
 }
 
 // ─── Udhaari ────────────────────────────────────────────────────
@@ -2244,6 +2894,16 @@ function saveHomeExpense() {  const desc = $('he-desc').value.trim();
   const note = $('he-note').value.trim();
   if (!desc || !amt || !date) { toast('Description, amount aur date chahiye', 'error'); return; }
 
+  function _heFinish() {
+    const entry = { id:newId('HE'), desc, category:cat, amount:amt, date, mode, paidFrom:from, note };
+    STATE.homeExpenses.unshift(entry);
+    auditLog('HOME_EXPENSE', `${desc} (${cat}) — ${fmt(amt)} via ${mode} from ${from==='PERSONAL'?'Personal':shopName(from)}`);
+    saveStateLocal(); renderHomeExpenses(); renderDashboard();
+    closeModal('modal-add-homeexp');
+    $('he-desc').value=''; $('he-amt').value=''; $('he-note').value=''; chipPick('he-from','PERSONAL'); setHeFromHint();
+    toast(`Home expense add — ${desc} ${fmt(amt)}`);
+  }
+
   // If paid from a shop, deduct from shop's balance
   if (from !== 'PERSONAL') {
     const sh = STATE.shops.find(s=>s.id===from);
@@ -2251,19 +2911,21 @@ function saveHomeExpense() {  const desc = $('he-desc').value.trim();
     const useGpay = (mode==='GPay' || mode==='Bank Transfer');
     const available = useGpay ? sh.online : sh.galla;
     if (available < amt) {
-      if (!confirm(`${sh.name} ${useGpay?'GPay':'Counter Cash'} me sirf ${fmt(available)} hai. Phir bhi log karein?`)) return;
+      showConfirm({
+        title:'Low Balance!',
+        msg:`<strong>${escHtml(sh.name)}</strong> ${useGpay?'GPay':'Counter Cash'} me sirf <strong>${fmt(available)}</strong> available hai. Phir bhi log karein?`,
+        icon:'⚠️',yesText:'Haan, Log Karo',yesCls:'btn-bad',
+        onYes:()=>{
+          if (useGpay) sh.online = Math.max(0, (sh.online||0) - amt);
+          else sh.galla = Math.max(0, (sh.galla||0) - amt);
+          _heFinish();
+        }
+      }); return;
     }
     if (useGpay) sh.online = Math.max(0, (sh.online||0) - amt);
     else sh.galla = Math.max(0, (sh.galla||0) - amt);
   }
-
-  const entry = { id:newId('HE'), desc, category:cat, amount:amt, date, mode, paidFrom:from, note };
-  STATE.homeExpenses.unshift(entry);
-  auditLog('HOME_EXPENSE', `${desc} (${cat}) — ${fmt(amt)} via ${mode} from ${from==='PERSONAL'?'Personal':shopName(from)}`);
-  saveStateLocal(); renderHomeExpenses(); renderDashboard();
-  closeModal('modal-add-homeexp');
-  $('he-desc').value=''; $('he-amt').value=''; $('he-note').value=''; chipPick('he-from','PERSONAL'); setHeFromHint();
-  toast(`Home expense add — ${desc} ${fmt(amt)}`);
+  _heFinish();
 }
 
 function setHeFromHint() {
@@ -2284,11 +2946,17 @@ function deleteHomeExpense(id) {
   const idx = STATE.homeExpenses.findIndex(x=>x.id===id);
   if (idx < 0) return;
   const r = STATE.homeExpenses[idx];
-  if (!confirm(`Delete "${r.desc}" — ${fmt(r.amount)}?`)) return;
-  STATE.homeExpenses.splice(idx,1);
-  auditLog('HOME_EXPENSE', `Deleted: ${r.desc} — ${fmt(r.amount)}`);
-  saveStateLocal(); renderHomeExpenses();
-  toast('Expense delete');
+  showConfirm({
+    title:'Delete Expense?',
+    msg:`<strong>"${escHtml(r.desc)}"</strong> — ${fmt(r.amount)}<br>Yeh record delete ho jayega.`,
+    icon:'🗑️',yesText:'Delete Karo',yesCls:'btn-bad',
+    onYes:()=>{
+      STATE.homeExpenses.splice(idx,1);
+      auditLog('HOME_EXPENSE', `Deleted: ${r.desc} — ${fmt(r.amount)}`);
+      saveStateLocal(); renderHomeExpenses();
+      toast('Expense delete');
+    }
+  });
 }
 
 function renderHomeExpenses() {
@@ -2431,9 +3099,115 @@ function buildDailySummary() {
   return msg;
 }
 
+// Build a per-shop daily summary message
+function buildShopDailySummary(shopId, dateStr) {
+  const sh = STATE.shops.find(s => s.id === shopId);
+  if (!sh) return '';
+  const d = dateStr || todayStr();
+  const nf = n => 'Rs ' + (parseFloat(n)||0).toLocaleString('en-IN');
+  const dc = STATE.dayClose.find(r => r.shopId===shopId && r.date===d && !r.deleted);
+  const items = STATE.dailyExpenses.filter(e => e.shopId===shopId && e.date===d && !e.deleted);
+  const udhaariNew = STATE.udhaari.filter(u => u.shopId===shopId && u.date===d);
+  const udhaariCollected = STATE.udhaari.filter(u => u.shopId===shopId && u.status==='Settle' && (u.lastCollectedDate||u.date)===d);
+  const outNew = STATE.outflows.filter(o => o.shopId===shopId && o.date===d);
+  const loanNew = STATE.loans.filter(l => l.shopId===shopId && l.date===d);
+  const isNew = STATE.intershop.filter(i => (i.fromShop===shopId || i.toShop===shopId) && i.date===d);
+  const remPending = (STATE.reminders||[]).filter(r => daysUntil(r.dueDate) <= 3);
+
+  let m = `*${sh.name}* — ${fmtDate(d)}\n`;
+  m += `━━━━━━━━━━━━━━━\n`;
+
+  if (dc) {
+    m += `💰 *Day Close*\n`;
+    m += `Sale: ${nf(dc.sale)}\n`;
+    m += `Profit: ${nf(dc.profit != null ? dc.profit : Math.round((dc.sale||0)*(sh.profitPct||40)/100))}\n`;
+    m += `Cash Home: ${nf(dc.cashHome)}\n`;
+    m += `Counter: ${nf(dc.counterCash)}\n`;
+    m += `GPay: ${nf(dc.gpay)}\n`;
+    m += `Expenses: ${nf(dc.expense)}\n`;
+    if (dc.note) m += `Note: ${dc.note}\n`;
+  } else {
+    m += `⚠️ Day Close pending\n`;
+  }
+
+  if (items.length) {
+    m += `\n🧾 *Expenses (${items.length})*\n`;
+    items.forEach(e => m += `• ${e.desc} — ${nf(e.amount)} (${DE_SOURCE_LABEL[e.source]})\n`);
+  }
+
+  if (udhaariNew.length) {
+    m += `\n📒 *Nayi Udhaari*\n`;
+    udhaariNew.forEach(u => m += `• ${u.customer}: ${nf(u.totalBill)}\n`);
+  }
+  if (udhaariCollected.length) {
+    m += `\n✅ *Udhaari Collected*\n`;
+    udhaariCollected.forEach(u => m += `• ${u.customer}: ${nf(u.received)}\n`);
+  }
+
+  if (outNew.length) {
+    m += `\n📤 *Outflows*\n`;
+    outNew.forEach(o => m += `• ${o.payee} (${o.category}): ${nf(o.amount)}\n`);
+  }
+
+  if (loanNew.length) {
+    m += `\n🏦 *Loans*\n`;
+    loanNew.forEach(l => m += `• ${l.from}: ${nf(l.amount)} — ${l.purpose||''}\n`);
+  }
+
+  if (isNew.length) {
+    m += `\n🔄 *Inter-shop*\n`;
+    isNew.forEach(i => m += `• ${shopName(i.fromShop)} → ${shopName(i.toShop)}: ${nf(i.amount)}\n`);
+  }
+
+  if (remPending.length) {
+    m += `\n⏰ *Pending Reminders*\n`;
+    remPending.slice(0, 3).forEach(r => {
+      const du = daysUntil(r.dueDate);
+      const label = du === 0 ? 'due today' : du < 0 ? `${Math.abs(du)}d overdue` : `in ${du}d`;
+      m += `• ${r.name} — ${nf(r.amount)} (${label})\n`;
+    });
+  }
+
+  m += `\n_Sent from JMD Traders_`;
+  return m.trim();
+}
+
+function sendShopWaSummary(shopId) {
+  const msg = buildShopDailySummary(shopId);
+  const phone = ($('wa-phone').value||'').replace(/[^0-9]/g,'');
+  const encoded = encodeURIComponent(msg);
+  const url = phone ? `https://wa.me/${phone}?text=${encoded}` : `https://wa.me/?text=${encoded}`;
+  window.open(url, '_blank');
+}
+
+function sendAllShopsWaSummary() {
+  const phone = ($('wa-phone').value||'').replace(/[^0-9]/g,'');
+  STATE.shops.forEach((sh, i) => {
+    setTimeout(() => {
+      const msg = buildShopDailySummary(sh.id);
+      const encoded = encodeURIComponent(msg);
+      const url = phone ? `https://wa.me/${phone}?text=${encoded}` : `https://wa.me/?text=${encoded}`;
+      window.open(url, '_blank');
+    }, i * 1500);
+  });
+}
+
 function openWaShareModal() {
   const msg = buildDailySummary();
   $('wa-msg').value = msg;
+
+  // Build per-shop summary buttons
+  const shopBtnsEl = $('wa-shop-btns');
+  if (shopBtnsEl) {
+    shopBtnsEl.innerHTML = STATE.shops.map(sh =>
+      `<button class="btn btn-ghost btn-xs" style="display:inline-flex;align-items:center;gap:5px;border-left:3px solid ${shopColor(sh.id)};" onclick="sendShopWaSummary('${sh.id}')">
+        <i class="fa-brands fa-whatsapp" style="color:#25D366;"></i> ${sh.name}
+      </button>`
+    ).join('') + `<button class="btn btn-good btn-xs" style="display:inline-flex;align-items:center;gap:5px;" onclick="sendAllShopsWaSummary()">
+        <i class="fa-brands fa-whatsapp"></i> Send All (separate)
+      </button>`;
+  }
+
   // Populate saved contacts
   const chipWrap = $('wa-contacts-chips');
   const contacts = STATE.waContacts || [];
@@ -2457,24 +3231,30 @@ function pickWaContact(phone) { $('wa-phone').value = phone; }
 function saveWaContact() {
   const phone = ($('wa-phone').value||'').replace(/[^0-9]/g,'');
   if (!phone) { toast('Phone number enter karo', 'error'); return; }
-  const name = prompt('Contact ka naam kya rakhe?', 'Partner');
-  if (!name) return;
   STATE.waContacts = STATE.waContacts || [];
   if (STATE.waContacts.find(c=>c.phone===phone)) { toast('Ye number pehle se saved hai', 'info'); return; }
-  STATE.waContacts.unshift({ name, phone });
-  saveStateLocal();
-  toast(`Saved: ${name}`);
-  openWaShareModal(); // refresh chips
+  showPrompt('Contact Name','Contact ka naam enter karo:','e.g. Partner','Partner',(name)=>{
+    STATE.waContacts.unshift({ name, phone });
+    saveStateLocal();
+    toast(`Saved: ${name}`);
+    openWaShareModal();
+  });
 }
 
 function removeWaContact(idx) {
   if (!STATE.waContacts) return;
   const c = STATE.waContacts[idx];
   if (!c) return;
-  if (!confirm(`Remove ${c.name}?`)) return;
-  STATE.waContacts.splice(idx,1);
-  saveStateLocal();
-  openWaShareModal();
+  showConfirm({
+    title:'Remove Contact?',
+    msg:`<strong>${escHtml(c.name)}</strong> ko WhatsApp contacts se hata dein?`,
+    icon:'👤',yesText:'Remove Karo',yesCls:'btn-bad',
+    onYes:()=>{
+      STATE.waContacts.splice(idx,1);
+      saveStateLocal();
+      openWaShareModal();
+    }
+  });
 }
 
 function copyWaMessage() {
@@ -2608,6 +3388,7 @@ function openAddReminderModal(id) {
     $('rem-cat').value='EMI'; $('rem-repeat').value='monthly';
     if (!$('rem-date').value) $('rem-date').value = todayStr();
   }
+  syncSelectUI('rem-cat'); syncSelectUI('rem-repeat');
   openModal('modal-add-reminder');
 }
 
@@ -2638,11 +3419,17 @@ function deleteReminder(id) {
   const idx = STATE.reminders.findIndex(x=>x.id===id);
   if (idx < 0) return;
   const r = STATE.reminders[idx];
-  if (!confirm(`Delete reminder "${r.name}"?`)) return;
-  STATE.reminders.splice(idx,1);
-  auditLog('REMINDER', `Deleted: ${r.name} — ${fmt(r.amount)}`);
-  saveStateLocal(); renderReminders(); updateBadges();
-  toast('Reminder delete');
+  showConfirm({
+    title:'Delete Reminder?',
+    msg:`Reminder <strong>"${r.name}"</strong> delete ho jayega.`,
+    icon:'🔔',yesText:'Delete Karo',yesCls:'btn-bad',
+    onYes:()=>{
+      STATE.reminders.splice(idx,1);
+      auditLog('REMINDER', `Deleted: ${r.name} — ${fmt(r.amount)}`);
+      saveStateLocal(); renderReminders(); updateBadges();
+      toast('Reminder delete');
+    }
+  });
 }
 
 let activeReminderId = null;
@@ -2675,41 +3462,50 @@ function confirmReminderPaid() {
   const from = chipValue('pr-from') || 'PERSONAL';
   if (amt<=0) { toast('Amount enter karo', 'error'); return; }
 
+  function _logPayment(sh, useGpay) {
+    if (sh) {
+      if (useGpay) sh.online = Math.max(0, sh.online - amt);
+      else sh.galla = Math.max(0, sh.galla - amt);
+    }
+    STATE.homeExpenses.unshift({
+      id:newId('HE'), desc:r.name, category:r.category, amount:amt,
+      date: todayStr(), mode, paidFrom:from, note:`Auto from reminder: ${r.name}`
+    });
+    auditLog('HOME_EXPENSE', `[REMINDER PAID] ${r.name} — ${fmt(amt)} via ${mode} from ${from==='PERSONAL'?'Personal':shopName(from)}`);
+    if (r.repeat && r.repeat !== 'none') {
+      const d = new Date(r.dueDate);
+      if (r.repeat==='monthly')      d.setMonth(d.getMonth()+1);
+      else if (r.repeat==='quarterly') d.setMonth(d.getMonth()+3);
+      else if (r.repeat==='yearly')  d.setFullYear(d.getFullYear()+1);
+      r.dueDate = d.toISOString().split('T')[0];
+      r.lastPaidOn = todayStr();
+    } else {
+      const idx = STATE.reminders.findIndex(x=>x.id===r.id);
+      if (idx>=0) STATE.reminders.splice(idx,1);
+    }
+    saveStateLocal(); renderReminders(); renderHomeExpenses(); renderDashboard(); updateBadges();
+    closeModal('modal-pay-reminder');
+    toast(`${r.name} paid — ${fmt(amt)} logged as expense`);
+  }
+
   // Deduct from shop if needed
   if (from !== 'PERSONAL') {
     const sh = STATE.shops.find(s=>s.id===from);
     if (sh) {
       const useGpay = (mode==='GPay' || mode==='Bank Transfer');
       const available = useGpay ? sh.online : sh.galla;
-      if (available < amt && !confirm(`${sh.name} ${useGpay?'GPay':'Cash'} sirf ${fmt(available)} — phir bhi log karein?`)) return;
-      if (useGpay) sh.online = Math.max(0, sh.online - amt);
-      else sh.galla = Math.max(0, sh.galla - amt);
+      if (available < amt) {
+        showConfirm({
+          title:'Low Balance!',
+          msg:`<strong>${sh.name}</strong> ${useGpay?'GPay':'Cash'} me sirf <strong>${fmt(available)}</strong> — phir bhi log karein?`,
+          icon:'⚠️',yesText:'Haan, Log Karo',yesCls:'btn-bad',
+          onYes:()=>_logPayment(sh, useGpay)
+        }); return;
+      }
+      _logPayment(sh, useGpay); return;
     }
   }
-
-  // Create expense record
-  STATE.homeExpenses.unshift({
-    id:newId('HE'), desc:r.name, category:r.category, amount:amt,
-    date: todayStr(), mode, paidFrom:from, note:`Auto from reminder: ${r.name}`
-  });
-  auditLog('HOME_EXPENSE', `[REMINDER PAID] ${r.name} — ${fmt(amt)} via ${mode} from ${from==='PERSONAL'?'Personal':shopName(from)}`);
-
-  // Advance recurring dueDate, else remove
-  if (r.repeat && r.repeat !== 'none') {
-    const d = new Date(r.dueDate);
-    if (r.repeat==='monthly')      d.setMonth(d.getMonth()+1);
-    else if (r.repeat==='quarterly') d.setMonth(d.getMonth()+3);
-    else if (r.repeat==='yearly')  d.setFullYear(d.getFullYear()+1);
-    r.dueDate = d.toISOString().split('T')[0];
-    r.lastPaidOn = todayStr();
-  } else {
-    const idx = STATE.reminders.findIndex(x=>x.id===r.id);
-    if (idx>=0) STATE.reminders.splice(idx,1);
-  }
-
-  saveStateLocal(); renderReminders(); renderHomeExpenses(); renderDashboard(); updateBadges();
-  closeModal('modal-pay-reminder');
-  toast(`${r.name} paid — ${fmt(amt)} logged as expense`);
+  _logPayment(null, false);
 }
 
 function renderReminders() {
@@ -2824,7 +3620,8 @@ async function testSheetConnection() {
   const url = effectiveSheetUrl();
   if(!url){ toast('Pehle URL save karo','error'); return; }
   try {
-    const res=await fetch(url+'?action=ping');
+    const pingUrl = SHEET_AUTH_TOKEN ? url+'?action=ping&token='+encodeURIComponent(SHEET_AUTH_TOKEN) : url+'?action=ping';
+    const res=await fetch(pingUrl);
     const json=await res.json();
     toast(json.success?'Connection OK — Sheet connected!':'Sheet error: '+json.error, json.success?'success':'error');
   } catch(e){ toast('Connection fail — URL check karo','error'); }
@@ -2837,6 +3634,336 @@ function changePin() {
   toast('PIN change ho gaya!');
 }
 function resetAll() { STATE=defaultState(); saveStateLocal(); location.reload(); }
+
+// ─── Excel Export ──────────────────────────────────────────────────
+function exportExcelReport() {
+  if (typeof XLSX === 'undefined') { toast('Excel library loading... try again', 'error'); return; }
+  const wb = XLSX.utils.book_new();
+  const nf = n => (parseFloat(n)||0);
+
+  // Helper: create a styled worksheet with column widths
+  function makeSheet(headers, rows, colWidths) {
+    const ws = XLSX.utils.aoa_to_sheet([headers, ...rows]);
+    ws['!cols'] = colWidths.map(w => ({ wch: w }));
+    // Format number cells
+    const range = XLSX.utils.decode_range(ws['!ref']);
+    for (let R = range.s.r + 1; R <= range.e.r; R++) {
+      for (let C = 0; C < headers.length; C++) {
+        const addr = XLSX.utils.encode_cell({ r: R, c: C });
+        const cell = ws[addr];
+        if (cell && typeof cell.v === 'number') {
+          cell.t = 'n';
+          cell.z = '#,##0';
+        }
+        // Date columns (first column usually)
+        if (C === 0 && typeof cell?.v === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(cell.v)) {
+          cell.t = 's';
+          cell.z = 'dd-mmm-yyyy';
+        }
+      }
+    }
+    return ws;
+  }
+
+  // Summary sheet
+  const summaryRows = STATE.shops.map(sh => {
+    const dcs = STATE.dayClose.filter(r => r.shopId===sh.id && !r.deleted);
+    const totalSale = dcs.reduce((s,r) => s+(r.sale||0), 0);
+    const totalProfit = dcs.reduce((s,r) => s+(r.profit!=null?r.profit:Math.round((r.sale||0)*(sh.profitPct||40)/100)), 0);
+    const totalExp = dcs.reduce((s,r) => s+(r.expense||0), 0);
+    return [sh.name, dcs.length, totalSale, totalProfit, totalExp, sh.galla, sh.online];
+  });
+  const summaryWs = makeSheet(
+    ['Shop', 'Days Recorded', 'Total Sale', 'Total Profit', 'Total Expenses', 'Counter Cash', 'GPay/Online'],
+    summaryRows, [16, 14, 14, 14, 14, 14, 14]
+  );
+  XLSX.utils.book_append_sheet(wb, summaryWs, 'Summary');
+
+  // Day Close
+  const dcRows = STATE.dayClose.filter(r=>!r.deleted).map(r => [
+    r.date, r.shopName||shopName(r.shopId), r.cashHome||0, r.counterCash||0,
+    r.gpay||0, r.expense||0, r.prevCounter||0, r.sale||0, r.profit||0, r.note||''
+  ]);
+  if (dcRows.length) XLSX.utils.book_append_sheet(wb, makeSheet(
+    ['Date','Shop','Cash Home','Counter Cash','GPay','Expenses','Prev Counter','Sale','Profit','Note'],
+    dcRows, [12,14,12,12,12,12,12,12,12,20]
+  ), 'Day Close');
+
+  // Udhaari
+  const uRows = STATE.udhaari.map(u => [u.date, u.customer, shopName(u.shopId), u.dueDate, u.totalBill||0, u.received||0, (u.totalBill-u.received)||0, u.status]);
+  if (uRows.length) XLSX.utils.book_append_sheet(wb, makeSheet(
+    ['Date','Customer','Shop','Due Date','Total Bill','Received','Pending','Status'],
+    uRows, [12,16,14,12,12,12,12,10]
+  ), 'Udhaari');
+
+  // Outflows
+  const oRows = STATE.outflows.map(o => [o.dueDate, o.payee, shopName(o.shopId), o.category, o.amount||0, o.paid||0, (o.amount-o.paid)||0, o.status]);
+  if (oRows.length) XLSX.utils.book_append_sheet(wb, makeSheet(
+    ['Due Date','Payee','Shop','Category','Amount','Paid','Pending','Status'],
+    oRows, [12,16,14,12,12,12,12,10]
+  ), 'Outflows');
+
+  // Loans
+  const lRows = STATE.loans.map(l => [l.date, l.from, l.shopId==='GENERAL'?'General':shopName(l.shopId), l.purpose||'', l.amount||0, l.repaid||0, (l.amount-l.repaid)||0, l.status]);
+  if (lRows.length) XLSX.utils.book_append_sheet(wb, makeSheet(
+    ['Date','From','Shop','Purpose','Amount','Repaid','Pending','Status'],
+    lRows, [12,14,14,18,12,12,12,10]
+  ), 'Loans');
+
+  // InterShop
+  const isRows = STATE.intershop.map(i => [i.date, shopName(i.fromShop), shopName(i.toShop), i.amount||0, i.reason||'', i.status]);
+  if (isRows.length) XLSX.utils.book_append_sheet(wb, makeSheet(
+    ['Date','From Shop','To Shop','Amount','Reason','Status'],
+    isRows, [12,14,14,12,20,10]
+  ), 'InterShop');
+
+  // Home Expenses
+  const heRows = (STATE.homeExpenses||[]).map(e => [e.date, e.desc, e.category, e.amount||0, e.mode||'', e.paidFrom==='PERSONAL'?'Personal':shopName(e.paidFrom)]);
+  if (heRows.length) XLSX.utils.book_append_sheet(wb, makeSheet(
+    ['Date','Description','Category','Amount','Paid Via','Paid From'],
+    heRows, [12,20,14,12,12,14]
+  ), 'Home Expenses');
+
+  // Daily Expenses
+  const deRows = (STATE.dailyExpenses||[]).filter(e=>!e.deleted).map(e => [e.date, shopName(e.shopId), e.desc, DE_SOURCE_LABEL[e.source]||e.source, e.amount||0]);
+  if (deRows.length) XLSX.utils.book_append_sheet(wb, makeSheet(
+    ['Date','Shop','Description','Source','Amount'],
+    deRows, [12,14,20,10,12]
+  ), 'Daily Expenses');
+
+  // Reminders
+  const remRows = (STATE.reminders||[]).map(r => [r.name, r.category, r.amount||0, r.dueDate, r.repeat||'none', r.note||'']);
+  if (remRows.length) XLSX.utils.book_append_sheet(wb, makeSheet(
+    ['Name','Category','Amount','Next Due','Repeat','Note'],
+    remRows, [18,14,12,12,10,20]
+  ), 'Reminders');
+
+  const fname = `JMD_Traders_Report_${todayStr()}.xlsx`;
+  XLSX.writeFile(wb, fname);
+  toast(`Excel exported: ${fname}`, 'success');
+}
+
+// ─── PDF Export ────────────────────────────────────────────────────
+function exportPdfReport() {
+  if (typeof window.jspdf === 'undefined' && typeof jspdf === 'undefined') { toast('PDF library loading... try again', 'error'); return; }
+  const { jsPDF } = window.jspdf || jspdf;
+  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+  const pageW = doc.internal.pageSize.getWidth();
+  const nf = n => 'Rs ' + (parseFloat(n)||0).toLocaleString('en-IN');
+  let y = 10;
+
+  function checkPage(needed) {
+    if (y + needed > doc.internal.pageSize.getHeight() - 15) {
+      doc.addPage();
+      y = 15;
+    }
+  }
+
+  function sectionTitle(title) {
+    checkPage(15);
+    doc.setFillColor(124, 92, 252);
+    doc.rect(10, y, pageW - 20, 8, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(11);
+    doc.setFont('helvetica', 'bold');
+    doc.text(title, 14, y + 5.5);
+    y += 12;
+    doc.setTextColor(0, 0, 0);
+  }
+
+  // Header
+  doc.setFillColor(10, 10, 15);
+  doc.rect(0, 0, pageW, 22, 'F');
+  doc.setTextColor(240, 240, 244);
+  doc.setFontSize(16);
+  doc.setFont('helvetica', 'bold');
+  doc.text('JMD Traders', 14, 10);
+  doc.setFontSize(9);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(136, 136, 168);
+  doc.text('Command Center Report', 14, 16);
+  doc.text('Generated: ' + new Date().toLocaleString('en-IN'), pageW - 14, 16, { align: 'right' });
+  y = 28;
+  doc.setTextColor(0, 0, 0);
+
+  // Summary box
+  const totalGalla = STATE.shops.reduce((s,sh)=>s+sh.galla,0);
+  const totalOnline = STATE.shops.reduce((s,sh)=>s+sh.online,0);
+  const totalUd = STATE.udhaari.filter(u=>u.status==='Active').reduce((s,u)=>s+(u.totalBill-u.received),0);
+  const totalLiab = STATE.outflows.filter(o=>o.status==='Pending').reduce((s,o)=>s+(o.amount+o.lateFee-o.paid),0);
+  const totHc = STATE.shops.reduce((s,sh)=>s+shopHomeCash(sh.id), 0);
+  const persDrain = personalWalletDrain();
+  const personalWallet = Math.max(0, totHc - persDrain);
+  const netPos = personalWallet + totalOnline + totalUd - totalLiab;
+
+  sectionTitle('Net Position');
+  doc.autoTable({
+    startY: y,
+    head: [['Personal Wallet', 'GPay/Online', 'Udhaari Due', 'Bills Pending', 'NET POSITION']],
+    body: [[nf(personalWallet), nf(totalOnline), nf(totalUd), nf(totalLiab), nf(netPos)]],
+    theme: 'grid',
+    headStyles: { fillColor: [124, 92, 252], fontSize: 8, fontStyle: 'bold' },
+    bodyStyles: { fontSize: 9, fontStyle: 'bold' },
+    columnStyles: { 4: { textColor: [34, 197, 94] } },
+    margin: { left: 10, right: 10 }
+  });
+  y = doc.lastAutoTable.finalY + 8;
+
+  // Shop summary
+  sectionTitle('Shop Balances');
+  const shopSummaryBody = STATE.shops.map(sh => {
+    const hc = shopHomeCash(sh.id);
+    const shopUd = STATE.udhaari.filter(u=>u.shopId===sh.id&&u.status==='Active').reduce((s,u)=>s+(u.totalBill-u.received),0);
+    const shopLiab = STATE.outflows.filter(o=>o.shopId===sh.id&&o.status==='Pending').reduce((s,o)=>s+(o.amount+o.lateFee-o.paid),0);
+    const net = hc + sh.online + shopUd - shopLiab;
+    return [sh.name, nf(hc), nf(sh.galla), nf(sh.online), nf(shopUd), nf(shopLiab), nf(net)];
+  });
+  doc.autoTable({
+    startY: y,
+    head: [['Shop', 'Home Cash', 'Counter', 'GPay', 'Udhaari', 'Bills', 'Net']],
+    body: shopSummaryBody,
+    theme: 'striped',
+    headStyles: { fillColor: [124, 92, 252], fontSize: 8 },
+    bodyStyles: { fontSize: 8 },
+    margin: { left: 10, right: 10 }
+  });
+  y = doc.lastAutoTable.finalY + 8;
+
+  // Day Close
+  const dcActive = STATE.dayClose.filter(r=>!r.deleted);
+  if (dcActive.length) {
+    sectionTitle('Day Close History');
+    doc.autoTable({
+      startY: y,
+      head: [['Date','Shop','Sale','Profit','Cash Home','Counter','GPay','Expenses']],
+      body: dcActive.map(r => [fmtDate(r.date), r.shopName||shopName(r.shopId), nf(r.sale), nf(r.profit||0), nf(r.cashHome), nf(r.counterCash), nf(r.gpay), nf(r.expense)]),
+      theme: 'striped',
+      headStyles: { fillColor: [124, 92, 252], fontSize: 7 },
+      bodyStyles: { fontSize: 7 },
+      margin: { left: 10, right: 10 }
+    });
+    y = doc.lastAutoTable.finalY + 8;
+  }
+
+  // Udhaari
+  if (STATE.udhaari.length) {
+    sectionTitle('Market Udhaari');
+    doc.autoTable({
+      startY: y,
+      head: [['Date','Customer','Shop','Bill','Received','Pending','Status']],
+      body: STATE.udhaari.map(u => [fmtDate(u.date), u.customer, shopName(u.shopId), nf(u.totalBill), nf(u.received), nf(u.totalBill-u.received), u.status]),
+      theme: 'striped',
+      headStyles: { fillColor: [124, 92, 252], fontSize: 7 },
+      bodyStyles: { fontSize: 7 },
+      margin: { left: 10, right: 10 }
+    });
+    y = doc.lastAutoTable.finalY + 8;
+  }
+
+  // Outflows
+  if (STATE.outflows.length) {
+    sectionTitle('Outflows');
+    doc.autoTable({
+      startY: y,
+      head: [['Due Date','Payee','Shop','Category','Amount','Paid','Pending','Status']],
+      body: STATE.outflows.map(o => [fmtDate(o.dueDate), o.payee, shopName(o.shopId), o.category, nf(o.amount), nf(o.paid), nf(o.amount-o.paid), o.status]),
+      theme: 'striped',
+      headStyles: { fillColor: [124, 92, 252], fontSize: 7 },
+      bodyStyles: { fontSize: 7 },
+      margin: { left: 10, right: 10 }
+    });
+    y = doc.lastAutoTable.finalY + 8;
+  }
+
+  // Loans
+  if (STATE.loans.length) {
+    sectionTitle('Loans');
+    doc.autoTable({
+      startY: y,
+      head: [['Date','From','Shop','Amount','Repaid','Pending','Status']],
+      body: STATE.loans.map(l => [fmtDate(l.date), l.from, l.shopId==='GENERAL'?'General':shopName(l.shopId), nf(l.amount), nf(l.repaid), nf(l.amount-l.repaid), l.status]),
+      theme: 'striped',
+      headStyles: { fillColor: [124, 92, 252], fontSize: 7 },
+      bodyStyles: { fontSize: 7 },
+      margin: { left: 10, right: 10 }
+    });
+    y = doc.lastAutoTable.finalY + 8;
+  }
+
+  // InterShop
+  if (STATE.intershop.length) {
+    sectionTitle('InterShop Transfers');
+    doc.autoTable({
+      startY: y,
+      head: [['Date','From','To','Amount','Reason','Status']],
+      body: STATE.intershop.map(i => [fmtDate(i.date), shopName(i.fromShop), shopName(i.toShop), nf(i.amount), i.reason||'', i.status]),
+      theme: 'striped',
+      headStyles: { fillColor: [124, 92, 252], fontSize: 7 },
+      bodyStyles: { fontSize: 7 },
+      margin: { left: 10, right: 10 }
+    });
+    y = doc.lastAutoTable.finalY + 8;
+  }
+
+  // Home Expenses
+  if ((STATE.homeExpenses||[]).length) {
+    sectionTitle('Home Expenses');
+    doc.autoTable({
+      startY: y,
+      head: [['Date','Description','Category','Amount','Mode','From']],
+      body: STATE.homeExpenses.map(e => [fmtDate(e.date), e.desc, e.category, nf(e.amount), e.mode||'', e.paidFrom==='PERSONAL'?'Personal':shopName(e.paidFrom)]),
+      theme: 'striped',
+      headStyles: { fillColor: [124, 92, 252], fontSize: 7 },
+      bodyStyles: { fontSize: 7 },
+      margin: { left: 10, right: 10 }
+    });
+    y = doc.lastAutoTable.finalY + 8;
+  }
+
+  // Daily Expenses
+  const deActive = (STATE.dailyExpenses||[]).filter(e=>!e.deleted);
+  if (deActive.length) {
+    sectionTitle('Daily Expenses');
+    doc.autoTable({
+      startY: y,
+      head: [['Date','Shop','Description','Source','Amount']],
+      body: deActive.map(e => [fmtDate(e.date), shopName(e.shopId), e.desc, DE_SOURCE_LABEL[e.source]||e.source, nf(e.amount)]),
+      theme: 'striped',
+      headStyles: { fillColor: [124, 92, 252], fontSize: 7 },
+      bodyStyles: { fontSize: 7 },
+      margin: { left: 10, right: 10 }
+    });
+    y = doc.lastAutoTable.finalY + 8;
+  }
+
+  // Reminders
+  if ((STATE.reminders||[]).length) {
+    sectionTitle('Reminders');
+    doc.autoTable({
+      startY: y,
+      head: [['Name','Category','Amount','Next Due','Repeat']],
+      body: STATE.reminders.map(r => [r.name, r.category, nf(r.amount), fmtDate(r.dueDate), r.repeat||'none']),
+      theme: 'striped',
+      headStyles: { fillColor: [124, 92, 252], fontSize: 8 },
+      bodyStyles: { fontSize: 8 },
+      margin: { left: 10, right: 10 }
+    });
+    y = doc.lastAutoTable.finalY + 8;
+  }
+
+  // Footer on last page
+  const pageCount = doc.internal.getNumberOfPages();
+  for (let i = 1; i <= pageCount; i++) {
+    doc.setPage(i);
+    doc.setFontSize(8);
+    doc.setTextColor(136, 136, 168);
+    doc.text(`JMD Traders — Page ${i} of ${pageCount}`, pageW / 2, doc.internal.pageSize.getHeight() - 8, { align: 'center' });
+  }
+
+  const fname = `JMD_Traders_Report_${todayStr()}.pdf`;
+  doc.save(fname);
+  toast(`PDF exported: ${fname}`, 'success');
+}
 
 // ─── Google Sheet Sync ───────────────────────────────────────────
 function updateSyncUI() {
@@ -2855,7 +3982,9 @@ function pushToSheet() {
     const dot=$('sync-dot'), lbl=$('sync-label');
     dot.className='sync-dot syncing'; lbl.textContent='Syncing...';
     try {
-      await fetch(url,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'save',data:STATE}),mode:'no-cors'});
+      const headers = {'Content-Type':'text/plain'};
+      if (SHEET_AUTH_TOKEN) headers['X-JMD-Token'] = SHEET_AUTH_TOKEN;
+      await fetch(url,{method:'POST',headers,body:JSON.stringify({action:'save',data:STATE}),mode:'no-cors'});
       dot.className='sync-dot'; dot.style.background='var(--good)';
       lbl.textContent = INBUILT_SHEET_URL ? 'Team Synced' : 'Synced';
     } catch(e){ dot.className='sync-dot error'; lbl.textContent='Sync Error'; }
@@ -2865,7 +3994,8 @@ async function pullFromSheet() {
   const url = effectiveSheetUrl();
   if(!url) return;
   try {
-    const res=await fetch(url+'?action=load');
+    const loadUrl = SHEET_AUTH_TOKEN ? url+'?action=load&token='+encodeURIComponent(SHEET_AUTH_TOKEN) : url+'?action=load';
+    const res=await fetch(loadUrl);
     const json=await res.json();
     if(json&&json.data){
       Object.assign(STATE,json.data);
@@ -2885,6 +4015,69 @@ function manualSync() {
   pushToSheet();
 }
 
+// ─── Custom Confirm / Prompt ─────────────────────────────────────
+// Sanitize user-controlled strings before inserting into innerHTML
+function escHtml(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+// Close any open JMD modal on Escape
+document.addEventListener('keydown', (e) => {
+  if (e.key !== 'Escape') return;
+  if (document.getElementById('jmd-confirm-modal').classList.contains('open')) _jmdNo();
+  else if (document.getElementById('jmd-prompt-modal').classList.contains('open')) _jmdPromptCancel();
+});
+
+let _jmdConfirmCb = null;
+function showConfirm(o) {
+  if (typeof o === 'string') o = { msg: o };
+  const { icon='⚠️', title='Confirm', msg='', yesText='Confirm', yesCls='btn-bad', noText='Cancel', onYes=null } = o;
+  document.getElementById('jmd-ci').textContent = icon;
+  document.getElementById('jmd-ct').textContent = title;
+  // msg may contain safe hardcoded HTML (<strong>, <br>); user data must be pre-escaped via escHtml()
+  document.getElementById('jmd-cm').innerHTML   = msg;
+  const yBtn = document.getElementById('jmd-cy');
+  yBtn.textContent = yesText;
+  yBtn.className   = `btn ${yesCls}`;
+  yBtn.style.flex  = '2';
+  document.getElementById('jmd-cn').textContent = noText;
+  _jmdConfirmCb = onYes;
+  document.getElementById('jmd-confirm-modal').classList.add('open');
+}
+function _jmdYes() {
+  document.getElementById('jmd-confirm-modal').classList.remove('open');
+  if (_jmdConfirmCb) { const f = _jmdConfirmCb; _jmdConfirmCb = null; f(); }
+}
+function _jmdNo() {
+  document.getElementById('jmd-confirm-modal').classList.remove('open');
+  _jmdConfirmCb = null;
+}
+
+let _jmdPromptCb = null;
+function showPrompt(title, msg, placeholder, defaultVal, onOk) {
+  document.getElementById('jmd-pt').textContent = title  || 'Input';
+  document.getElementById('jmd-pm').textContent = msg    || '';
+  document.getElementById('jmd-pi').textContent = '✏️';
+  const inp = document.getElementById('jmd-pinput');
+  inp.placeholder = placeholder || '';
+  inp.value       = defaultVal  || '';
+  _jmdPromptCb    = onOk;
+  document.getElementById('jmd-prompt-modal').classList.add('open');
+  setTimeout(() => inp.focus(), 80);
+}
+function _jmdPromptOk() {
+  const val = (document.getElementById('jmd-pinput').value || '').trim();
+  if (!val) return;
+  document.getElementById('jmd-prompt-modal').classList.remove('open');
+  if (_jmdPromptCb) { const f = _jmdPromptCb; _jmdPromptCb = null; f(val); }
+}
+function _jmdPromptCancel() {
+  document.getElementById('jmd-prompt-modal').classList.remove('open');
+  _jmdPromptCb = null;
+}
+
 // ─── Set today's date on date inputs ────────────────────────────
 window.addEventListener('DOMContentLoaded', () => {
   const today=todayStr();
@@ -2893,44 +4086,6 @@ window.addEventListener('DOMContentLoaded', () => {
   updateSyncUI();
 });
 </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a189100effe40e6e',t:'MTc4MzYxODI5MQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><iframe height="1" width="1" style="position: absolute; top: 0px; left: 0px; border-width: medium; border-style: none; border-color: currentcolor; border-image: initial; visibility: hidden;" src="./JMD Traders — Command Center_files/saved_resource.html"></iframe><script defer="" src="./JMD Traders — Command Center_files/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon="{&quot;version&quot;:&quot;2024.11.0&quot;,&quot;token&quot;:&quot;7f7b0fd8732c4326aae4b9d58d5c514a&quot;,&quot;server_timing&quot;:{&quot;name&quot;:{&quot;cfCacheStatus&quot;:true,&quot;cfEdge&quot;:true,&quot;cfExtPri&quot;:true,&quot;cfL4&quot;:true,&quot;cfOrigin&quot;:true,&quot;cfSpeedBrain&quot;:true},&quot;location_startswith&quot;:null}}" crossorigin="anonymous"></script>
-
-
-<div id="give-freely-root-ejkiikneibegknkgimmihdpcbcedgmpo" class="give-freely-root" data-extension-id="ejkiikneibegknkgimmihdpcbcedgmpo" data-extension-name="Volume Booster" style="display: block;"><template shadowrootmode="open"><style>
-  :host {
-    all: initial;
-  }
-
-  .gf-scroll-remove::-webkit-scrollbar {
-    border-radius-bottom-right: 15px;
-  }
-
-  button {
-    cursor: pointer;
-    transition: transform 0.1s ease;
-  }
-
-  button:active {
-    transform: scale(0.98);
-  }
-
-  .give-freely-close-button:hover {
-    opacity: 0.7;
-  }
-
-  input[type="radio"] {
-    margin-right: 8px;
-  }
-
-  hr {
-    border: none;
-    border-top: 1px solid #e5e5e5;
-    margin: 1em 0;
-  }
-
-  @media (max-width: 600px), (max-height: 480px) {
-    #give-freely-checkout-popup {
-      display: none !important;
-    }
-  }
-</style><div><div class="gf-app"></div></div></template></div><iframe frameborder="0" scrolling="no" style="background-color: transparent; border: 0px; display: none;" src="./JMD Traders — Command Center_files/saved_resource(1).html"></iframe><div id="GOOGLE_INPUT_CHEXT_FLAG" input="" input_stat="{&quot;tlang&quot;:true,&quot;tsbc&quot;:true,&quot;pun&quot;:true,&quot;mk&quot;:true,&quot;ss&quot;:true}" style="display: none;"></div><div style="position: relative;" id="zp-16-0-1-licdn-root-apollo_everywhere"><template shadowrootmode="open"><div class="zp apolloio-css-vars-reset x_lAIzV x_ktWFc" dir="ltr" data-has-tooltip-listener=""><div class="x_BJJxg" data-disable-focus-trap="true" data-testid="toast-container-bottom"></div><div class="x_KfhZL" aria-live="polite" aria-atomic="true" data-disable-focus-trap="true" data-testid="toast-container-top"></div><span data-name="tooltip-listener" aria-hidden="true" style="display: none;"></span></div> </template></div></body></html>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"75124c326cb447fe934cde04713ae013","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
+</html>
